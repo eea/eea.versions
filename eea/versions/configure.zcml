@@ -1,0 +1,82 @@
+<configure
+	xmlns="http://namespaces.zope.org/zope"
+	xmlns:five="http://namespaces.zope.org/five"
+	xmlns:browser="http://namespaces.zope.org/browser"
+	xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+	i18n_domain="eea.versions">
+
+	<genericsetup:registerProfile
+		name="default"
+		title="eea.versions"
+		directory="profiles/default"
+		description="Extension profile for EEA Versions"
+		provides="Products.GenericSetup.interfaces.EXTENSION"
+		/>
+
+	<adapter for="*"
+		provides=".interfaces.IVersionControl"
+		factory=".versions.VersionControl"
+		/>
+
+	<browser:page
+		for="*"
+		name="getVersions"
+		permission="zope2.View"
+		class=".versions.GetVersions"
+		allowed_interface=".interfaces.IGetVersions"
+		/>
+
+	<browser:page
+		for="*"
+		name="getVersionId"
+		permission="zope2.View"
+		class=".versions.GetVersionId"
+		/>
+
+	<browser:page
+		for="*"
+		name="getLatestVersionLink"
+		permission="zope2.View"
+		class=".versions.GetLatestVersionLink"
+		/>
+
+	<browser:page
+		for="*"
+		name="hasVersions"
+		permission="zope2.View"
+		class=".versions.HasVersions"
+		/>
+
+	<browser:page
+		for="*"
+		name="createVersion"
+		permission="cmf.ModifyPortalContent"
+		class=".versions.CreateVersion"
+		/>
+
+	<browser:page
+		for="*"
+		name="revokeVersion"
+		permission="cmf.ModifyPortalContent"
+		class=".versions.RevokeVersion"
+		/>
+
+	<browser:menuItem
+		for="eea.versions.interfaces.IVersionEnhanced"
+		menu="object_buttons"
+		title="Create new version"
+		action="@@createVersion"
+		description="Create a new version"
+		permission="cmf.ModifyPortalContent"
+		/>
+
+	<browser:menuItem
+		for="eea.versions.interfaces.IVersionEnhanced"
+		menu="object_buttons"
+		title="Revoke version"
+		action="@@revokeVersion"
+		description="Revoke a version"
+		permission="cmf.ModifyPortalContent"
+		/>
+
+</configure>

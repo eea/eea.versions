@@ -1,0 +1,17 @@
+<configure
+	xmlns="http://namespaces.zope.org/zope"
+	xmlns:five="http://namespaces.zope.org/five"
+	xmlns:browser="http://namespaces.zope.org/browser"
+	xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
+
+  <five:registerPackage package="." initialize=".initialize" />
+  
+  <genericsetup:registerProfile
+      name="default"
+      title="Sample"
+      directory="profiles/default"
+      description=""
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+</configure>

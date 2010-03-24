@@ -1,0 +1,56 @@
+Overview
+========
+
+Datasets provide a versioning system based on a version ID to group certains
+objects and effectiveDate to determine version number.
+
+Lets use the sandbox.
+
+    >>> self.loginAsPortalOwner()
+    >>> _ = self.portal.invokeFactory('Folder', 'sandbox')
+    >>> sandbox = portal._getOb('sandbox')
+
+Lets add a Dataset.
+
+    >>> _ = sandbox.invokeFactory('Sample Data', 'data1')
+    >>> data1 = sandbox.data1
+    >>> form = {
+    ...   'title': 'Dataset',
+    ...   'description': 'Organisation description 1',
+    ...	  'somedata':'Some Data 1',
+    ... }
+    >>> data1.processForm(values=form, data=1, metadata=1)
+
+Now lets create a new version of the above dataset.
+
+    >>> createVersionView = data1.unrestrictedTraverse('@@createVersion')
+    >>> vertmp = createVersionView()
+    >>> dataVer = sandbox._getOb('dataset-1')
+
+Verify if properties were copyed on the new version.
+
+    >>> dataVer.Title() == data1.Title()
+    True
+    >>> dataVer.getSomedata() == data1.getSomedata()
+    True
+
+Effective date of the new version object should be greater then its
+parent effective date.
+
+    >>> dataVer.getEffectiveDate() > data1.getEffectiveDate()
+    True
+
+Both objects should have the same version ID.
+
+    >>> from eea.versions.interfaces import IVersionControl
+    >>> IVersionControl(dataVer).getVersionId() == IVersionControl(data1).getVersionId()
+    True
+
+To check if "link to latest version" works, we will create a new dataset and verify the versionId.
+
+    >>> _ = sandbox.invokeFactory('Sample Data', 'data2')
+    >>> data2 = sandbox.data2
+    >>> getLatestVersionLink = data2.unrestrictedTraverse('@@getLatestVersionLink')
+    >>> verId = getLatestVersionLink()
+    >>> len(verId) > 0
+    True
