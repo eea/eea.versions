@@ -210,7 +210,7 @@ class HasVersions(object):
 
 
 class CreateVersion(object):
-    """ Create a new version
+    """ This view, when called, will create a new version of an object
     """
 
     def __init__(self, context, request):
@@ -218,44 +218,51 @@ class CreateVersion(object):
         self.request = request
 
     def __call__(self):
-        pu = getToolByName(self.context, 'plone_utils')
-        obj_uid = self.context.UID()
-        obj_id = self.context.getId()
-        obj_title = self.context.Title()
-        obj_type = self.context.portal_type
-        parent = utils.parent(self.context)
-
-        # Adapt version parent (if case)
-        if not IVersionEnhanced.providedBy(self.context):
-            alsoProvides(self.context, IVersionEnhanced)
-        verparent = IVersionControl(self.context)
-        verId = verparent.getVersionId()
-        if not verId:
-            verId = _get_random(10)
-            verparent.setVersionId(verId)
-            _reindex(self.context)
-
-        # Create version object
-        cp = parent.manage_copyObjects(ids=[obj_id])
-        res = parent.manage_pasteObjects(cp)
-        new_id = res[0]['new_id']
-
-        ver = getattr(parent, new_id)
-
-        # Remove copy_of from ID
-        id = ver.getId()
-        new_id = id.replace('copy_of_', '')
-        new_id = generateNewId(parent, new_id, ver.UID())
-        parent.manage_renameObject(id=id, new_id=new_id)
-
-        # Set effective date today
-        ver.setEffectiveDate(DateTime())
-
-        # Set new state
-        ver.reindexObject()
-        _reindex(self.context)  #some indexed values of the context may depend on versions
-
+        ver = create_version(self.context)
         return self.request.RESPONSE.redirect(ver.absolute_url())
+
+
+def create_version(context):
+    """Create a new version of an object"""
+
+    pu = getToolByName(context, 'plone_utils')
+    obj_uid = context.UID()
+    obj_id = context.getId()
+    obj_title = context.Title()
+    obj_type = context.portal_type
+    parent = utils.parent(context)
+
+    # Adapt version parent (if case)
+    if not IVersionEnhanced.providedBy(context):
+        alsoProvides(context, IVersionEnhanced)
+    verparent = IVersionControl(context)
+    verId = verparent.getVersionId()
+    if not verId:
+        verId = _get_random(10)
+        verparent.setVersionId(verId)
+        _reindex(context)
+
+    # Create version object
+    cp = parent.manage_copyObjects(ids=[obj_id])
+    res = parent.manage_pasteObjects(cp)
+    new_id = res[0]['new_id']
+
+    ver = getattr(parent, new_id)
+
+    # Remove copy_of from ID
+    id = ver.getId()
+    new_id = id.replace('copy_of_', '')
+    new_id = generateNewId(parent, new_id, ver.UID())
+    parent.manage_renameObject(id=id, new_id=new_id)
+
+    # Set effective date today
+    ver.setEffectiveDate(DateTime())
+
+    # Set new state
+    ver.reindexObject()
+    _reindex(context)  #some indexed values of the context may depend on versions
+
+    return ver
 
 
 class RevokeVersion(object):
