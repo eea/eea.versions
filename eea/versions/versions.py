@@ -96,6 +96,16 @@ class GetVersions(object):
             'date': value
         }
 
+    def version_number(self):
+        """ Return the current version number
+        """
+        if not self.versions:
+            self()
+        for k,v in self.versions.items():
+            if v == self.context:
+                return k
+        return 0
+
     def newest(self):
         """ Return new versions
         """
