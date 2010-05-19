@@ -274,6 +274,25 @@ def create_version(context):
 
     return ver
 
+class AssignVersion(object):
+    """ Assign new version ID
+    """
+
+    def __call__(self):
+        pu = getToolByName(self.context, 'plone_utils')
+        new_version = self.request.get('new-version', '')
+
+        if new_version:
+            obj = self.context
+            verparent = IVersionControl(obj)
+            verparent.setVersionId(new_version)
+            obj.reindexObject()
+            message = _(u'Version ID changed.')
+        else:
+            message = _(u'Please specify a valid Version ID.')
+
+        pu.addPortalMessage(message, 'structure')
+        return self.request.RESPONSE.redirect(self.context.absolute_url())
 
 class RevokeVersion(object):
     """ Revoke the context as being a version

@@ -1,0 +1,23 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="plone">
+
+<body>
+
+    <div metal:fill-slot="main">
+        <h1 i18n:translate="">Assign version</h1>
+
+        <p class="documentDescription" i18n:translate="">
+          Fill the new Version ID will be assigned to object.
+        </p>
+
+        <form name="frmAssignVersion" method="put" id="assign-version"
+              tal:attributes="action string:${context/absolute_url}/@@assign_version">
+            <input type="text" name="new-version" id="new-version" alt="Fill the new Version ID" />
+            <input class="context" type="submit" name="assign" value="Assign version" />
+        </form>
+    </div>
+
+</body>
+</html>
