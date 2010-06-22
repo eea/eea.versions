@@ -170,6 +170,20 @@ class GetVersions(object):
         return self.versions
 
 
+def get_versions_api(context):
+    #TODO: at this moment the code sits in views, which makes it awkward to reuse
+    # this API in python code and tests. There are the get_..._api() functions 
+    #treat those views as API classes. This can and should be refactored
+    return GetVersions(context, request=None)
+
+
+def get_latest_version_link(context):
+    ctrl = IVersionControl(context)
+    anno = IAnnotations(context)
+    ver = anno.get(VERSION_ID)
+    return ver[VERSION_ID]
+
+
 class GetLatestVersionLink(object):
     """ Get latest version link
     """
@@ -179,11 +193,18 @@ class GetLatestVersionLink(object):
         self.request = request
 
     def __call__(self):
-        ctrl = IVersionControl(self.context)
+        return get_latest_version_link(self.context)
 
-        anno = IAnnotations(self.context)
-        ver = anno.get(VERSION_ID)
-        return ver[VERSION_ID]
+
+def get_version_id(context):
+    res = None
+    try:
+        ver = IVersionControl(context)
+        res = ver.getVersionId()
+    except (ComponentLookupError, TypeError, ValueError):
+        res = None
+
+    return res
 
 
 class GetVersionId(object):
@@ -195,14 +216,19 @@ class GetVersionId(object):
         self.request = request
 
     def __call__(self):
-        res = None
-        try:
-            ver = IVersionControl(self.context)
-            res = ver.getVersionId()
-        except (ComponentLookupError, TypeError, ValueError):
-            res = None
+        return get_version_id(self.context)
 
-        return res
+
+def get_version_id_api(context):
+    return GetVersionId(context, request=None)
+
+
+def has_versions(context):
+    #TODO: this doesn't guarantee that there are versions
+    #a better name for this would be "is_versioned"
+    if IVersionEnhanced.providedBy(context):
+        return True
+    return False
 
 
 class HasVersions(object):
@@ -214,9 +240,7 @@ class HasVersions(object):
         self.request = request
 
     def __call__(self):
-        if IVersionEnhanced.providedBy(self.context):
-            return True
-        return False
+        return has_versions(self.context)
 
 
 class CreateVersion(object):
@@ -274,6 +298,24 @@ def create_version(context):
 
     return ver
 
+
+def assign_version(context, new_version):
+    """Assign a specific version id to an object"""
+
+    # Verify if there are more objects under this version 
+    cat = getToolByName(context, 'portal_catalog') 
+    brains = cat.searchResults({'getVersionId' : new_version, 
+                                'show_inactive': True}) 
+    if brains and not IVersionEnhanced.providedBy(context): 
+        alsoProvides(context, IVersionEnhanced) 
+
+    # Set new version ID 
+
+    verparent = IVersionControl(context)
+    verparent.setVersionId(new_version)
+    context.reindexObject()
+
+
 class AssignVersion(object):
     """ Assign new version ID
     """
@@ -283,26 +325,23 @@ class AssignVersion(object):
         new_version = self.request.get('new-version', '')
 
         if new_version:
-            obj = self.context
-
-            # Verify if there are more objects under this version
-            cat = getToolByName(self.context, 'portal_catalog')
-            brains = cat.searchResults({'getVersionId' : new_version,
-                                        'show_inactive': True})
-            if brains and not IVersionEnhanced.providedBy(obj):
-                alsoProvides(obj, IVersionEnhanced)
-
-            # Set new version ID
-            verparent = IVersionControl(obj)
-            verparent.setVersionId(new_version)
-
-            obj.reindexObject()
+            assign_version(self.context, new_version)
             message = _(u'Version ID changed.')
         else:
             message = _(u'Please specify a valid Version ID.')
 
         pu.addPortalMessage(message, 'structure')
         return self.request.RESPONSE.redirect(self.context.absolute_url())
+
+
+def revoke_version(context):
+    """Revokes the context from being a version
+    """
+    obj = context
+    verparent = IVersionControl(obj)
+    verparent.setVersionId('')
+    directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
+
 
 class RevokeVersion(object):
     """ Revoke the context as being a version
@@ -313,16 +352,13 @@ class RevokeVersion(object):
         self.request = request
 
     def __call__(self):
-        obj = self.context
-        verparent = IVersionControl(obj)
-        verparent.setVersionId('')
-        directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
-
+        revoke_version(self.context)
         pu = getToolByName(self.context, 'plone_utils')
         message = _(u'Version revoked.')
         pu.addPortalMessage(message, 'structure')
 
         return self.request.RESPONSE.redirect(self.context.absolute_url())
+
 
 def generateNewId(context, id, uid):
     tmp = id.split('-')[-1]
