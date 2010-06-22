@@ -10,6 +10,7 @@ from zope.component import adapts
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
 from zope.interface import implements
+from zope.cachedescriptors.property import Lazy
 import random
 
 
@@ -76,7 +77,23 @@ class GetVersions(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        self.versions = {}
+
+    @Lazy
+    def versions(self):
+        ver = IVersionControl(self.context)
+        verId = ver.getVersionId()
+
+        if not verId:
+            return {}
+
+        cat = getToolByName(self.context, 'portal_catalog')
+        brains = cat.searchResults({'getVersionId' : verId,
+                                    'sort_on': 'effective'})
+
+        versions = {}
+        for index, brain in enumerate(brains):
+            versions[index+1] = brain.getObject()
+        return versions
 
     def extract(self, version):
         """ Extract needed properties
@@ -99,18 +116,14 @@ class GetVersions(object):
     def version_number(self):
         """ Return the current version number
         """
-        if not self.versions:
-            self()
         for k,v in self.versions.items():
             if v == self.context:
                 return k
         return 0
 
     def newest(self):
-        """ Return new versions
+        """ Return info on new versions
         """
-        if not self.versions:
-            self()
         versions = self.versions.items()
         versions.sort(reverse=True)
 
@@ -127,11 +140,18 @@ class GetVersions(object):
             return []
         return res
 
+    def latest_version(self):
+        """Returns the latest version of an object"""
+
+        if not self.versions:
+            return self.context
+
+        latest = sorted(self.versions.keys())[-1]
+        return self.versions[latest]
+
     def oldest(self):
         """ Return old versions
         """
-        if not self.versions:
-            self()
         versions = self.versions.items()
         versions.sort()
 
@@ -152,21 +172,6 @@ class GetVersions(object):
         return res
 
     def __call__(self):
-        if self.versions:
-            return self.versions
-
-        ver = IVersionControl(self.context)
-        verId = ver.getVersionId()
-
-        if not verId:
-            return self.versions
-
-        cat = getToolByName(self.context, 'portal_catalog')
-        brains = cat.searchResults({'getVersionId' : verId,
-                                    'sort_on': 'effective'})
-
-        for index, brain in enumerate(brains):
-            self.versions[index+1] = brain.getObject()
         return self.versions
 
 
