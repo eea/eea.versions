@@ -10,7 +10,7 @@
 
         <p class="documentDescription">
           <span i18n:translate="">Current Version ID:</span>
-          <tal:versionId content="content/@@getVersionId" /><br />
+          <tal:versionId content="context/@@getVersionId" /><br />
           <span i18n:translate="">
             Fill the new Version ID will be assigned to object.
           </span>
