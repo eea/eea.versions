@@ -172,7 +172,7 @@ class GetVersions(object):
 
 def get_versions_api(context):
     #TODO: at this moment the code sits in views, which makes it awkward to reuse
-    # this API in python code and tests. There are the get_..._api() functions 
+    # this API in python code and tests. There are the get_..._api() functions
     #treat those views as API classes. This can and should be refactored
     return GetVersions(context, request=None)
 
@@ -302,15 +302,18 @@ def create_version(context):
 def assign_version(context, new_version):
     """Assign a specific version id to an object"""
 
-    # Verify if there are more objects under this version 
-    cat = getToolByName(context, 'portal_catalog') 
-    brains = cat.searchResults({'getVersionId' : new_version, 
-                                'show_inactive': True}) 
-    if brains and not IVersionEnhanced.providedBy(context): 
-        alsoProvides(context, IVersionEnhanced) 
+    # Verify if there are more objects under this version
+    cat = getToolByName(context, 'portal_catalog')
+    brains = cat.searchResults({'getVersionId' : new_version,
+                                'show_inactive': True})
+    if brains and not IVersionEnhanced.providedBy(context):
+        alsoProvides(context, IVersionEnhanced)
+    if len(brains) == 1:
+        target_ob = brains[0].getObject()
+        if not IVersionEnhanced.providedBy(target_ob):
+            alsoProvides(target_ob, IVersionEnhanced)
 
-    # Set new version ID 
-
+    # Set new version ID
     verparent = IVersionControl(context)
     verparent.setVersionId(new_version)
     context.reindexObject()
