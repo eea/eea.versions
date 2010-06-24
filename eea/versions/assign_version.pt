@@ -10,14 +10,14 @@
 
         <p class="documentDescription">
           <span i18n:translate="">Current Version ID:</span>
-          <tal:versionId content="context/@@getVersionId" /><br />
-          <span i18n:translate="">
-            Fill the new Version ID will be assigned to object.
-          </span>
+          <tal:versionId content="context/@@getVersionId" />
         </p>
 
         <form name="frmAssignVersion" method="put" id="assign-version"
               tal:attributes="action string:${context/absolute_url}/@@assign_version">
+            <label for="new-version" i18n:translate="">
+              Fill the new Version ID to be assigned
+            </label><br />
             <input type="text" name="new-version" id="new-version" alt="Fill the new Version ID" />
             <input class="context" type="submit" name="assign" value="Assign version" />
         </form>

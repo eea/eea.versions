@@ -7,7 +7,6 @@ from zope.component.exceptions import ComponentLookupError
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute
 from eea.versions.interfaces import IVersionControl
 
-
 def getVersionIdForIndex(object, portal, **kwargs):
     try:
         ver = IVersionControl(object)

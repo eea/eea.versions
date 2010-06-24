@@ -23,14 +23,12 @@ def _reindex(obj):
     ctool = getToolByName(obj, 'portal_catalog')
     ctool.reindexObject(obj)
 
-
 def _get_random(size=0):
     chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ023456789"
     res = ''
     for k in range(size):
         res += random.choice(chars)
     return res
-
 
 class VersionControl(object):
     """ Version adapter
@@ -67,7 +65,6 @@ class VersionControl(object):
         """ Return version number """
         #TODO: to be implemented
         pass
-
 
 class GetVersions(object):
     """ Get all versions
@@ -174,20 +171,17 @@ class GetVersions(object):
     def __call__(self):
         return self.versions
 
-
 def get_versions_api(context):
     #TODO: at this moment the code sits in views, which makes it awkward to reuse
     # this API in python code and tests. There are the get_..._api() functions
     #treat those views as API classes. This can and should be refactored
     return GetVersions(context, request=None)
 
-
 def get_latest_version_link(context):
     ctrl = IVersionControl(context)
     anno = IAnnotations(context)
     ver = anno.get(VERSION_ID)
     return ver[VERSION_ID]
-
 
 class GetLatestVersionLink(object):
     """ Get latest version link
@@ -200,7 +194,6 @@ class GetLatestVersionLink(object):
     def __call__(self):
         return get_latest_version_link(self.context)
 
-
 def get_version_id(context):
     res = None
     try:
@@ -210,7 +203,6 @@ def get_version_id(context):
         res = None
 
     return res
-
 
 class GetVersionId(object):
     """ Get version ID
@@ -223,10 +215,8 @@ class GetVersionId(object):
     def __call__(self):
         return get_version_id(self.context)
 
-
 def get_version_id_api(context):
     return GetVersionId(context, request=None)
-
 
 def has_versions(context):
     #TODO: this doesn't guarantee that there are versions
@@ -234,7 +224,6 @@ def has_versions(context):
     if IVersionEnhanced.providedBy(context):
         return True
     return False
-
 
 class HasVersions(object):
     """ Check if object has versions
@@ -247,7 +236,6 @@ class HasVersions(object):
     def __call__(self):
         return has_versions(self.context)
 
-
 class CreateVersion(object):
     """ This view, when called, will create a new version of an object
     """
@@ -259,7 +247,6 @@ class CreateVersion(object):
     def __call__(self):
         ver = create_version(self.context)
         return self.request.RESPONSE.redirect(ver.absolute_url())
-
 
 def create_version(context):
     """Create a new version of an object"""
@@ -303,7 +290,6 @@ def create_version(context):
 
     return ver
 
-
 def assign_version(context, new_version):
     """Assign a specific version id to an object"""
 
@@ -323,7 +309,6 @@ def assign_version(context, new_version):
     verparent.setVersionId(new_version)
     context.reindexObject()
 
-
 class AssignVersion(object):
     """ Assign new version ID
     """
@@ -341,7 +326,6 @@ class AssignVersion(object):
         pu.addPortalMessage(message, 'structure')
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
-
 def revoke_version(context):
     """Revokes the context from being a version
     """
@@ -349,7 +333,6 @@ def revoke_version(context):
     verparent = IVersionControl(obj)
     verparent.setVersionId('')
     directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
-
 
 class RevokeVersion(object):
     """ Revoke the context as being a version
@@ -366,7 +349,6 @@ class RevokeVersion(object):
         pu.addPortalMessage(message, 'structure')
 
         return self.request.RESPONSE.redirect(self.context.absolute_url())
-
 
 def generateNewId(context, id, uid):
     tmp = id.split('-')[-1]
@@ -393,4 +375,3 @@ def generateNewId(context, id, uid):
                     id = new_id
                     break
     return id
-
