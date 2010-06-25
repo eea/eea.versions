@@ -27,10 +27,9 @@
 				</div>
 				<div class="portalMessage informationMessage" tal:define="oldest python:versions.oldest()"
 					tal:condition="python:has_versions and (not newest) and oldest">
-					<span i18n:translate="">This is the latest version published. See</span>
-					<a tal:attributes="href string:${previous_version}#previous-versions"
-					   tal:define="previous_version python:oldest[-1]['url']"
-						i18n:translate="">previous versions</a>
+					<span i18n:translate="">This is the latest published version. </span>
+					<a href="#previous-versions"
+						i18n:translate="" tal:condition="python:has_versions and oldest">See older versions.</a>
 				</div>
 			</tal:new>
 
