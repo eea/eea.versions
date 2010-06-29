@@ -23,12 +23,14 @@ def _reindex(obj):
     ctool = getToolByName(obj, 'portal_catalog')
     ctool.reindexObject(obj)
 
+
 def _get_random(size=0):
     chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ023456789"
     res = ''
     for k in range(size):
         res += random.choice(chars)
     return res
+
 
 class VersionControl(object):
     """ Version adapter
@@ -66,6 +68,7 @@ class VersionControl(object):
         #TODO: to be implemented
         pass
 
+
 class GetVersions(object):
     """ Get all versions
     """
@@ -95,7 +98,7 @@ class GetVersions(object):
     def extract(self, version):
         """ Extract needed properties
         """
-        field = version.getField('lastUpload')  #XXX: this is a specific to dataservice
+        field = version.getField('lastUpload')  #TODO: this is a specific to dataservice
         if not field:
             value = version.getEffectiveDate()
         else:
@@ -137,6 +140,7 @@ class GetVersions(object):
             return []
         return res
 
+    #TODO: add first_version method
     def latest_version(self):
         """Returns the latest version of an object"""
 
@@ -171,17 +175,20 @@ class GetVersions(object):
     def __call__(self):
         return self.versions
 
+
 def get_versions_api(context):
     #TODO: at this moment the code sits in views, which makes it awkward to reuse
-    # this API in python code and tests. There are the get_..._api() functions
-    #treat those views as API classes. This can and should be refactored
+    #this API in python code and tests. There are the get_..._api() functions
+    #Treat those views as API classes. This can and should be refactored
     return GetVersions(context, request=None)
+
 
 def get_latest_version_link(context):
     ctrl = IVersionControl(context)
     anno = IAnnotations(context)
     ver = anno.get(VERSION_ID)
     return ver[VERSION_ID]
+
 
 class GetLatestVersionLink(object):
     """ Get latest version link
@@ -194,6 +201,7 @@ class GetLatestVersionLink(object):
     def __call__(self):
         return get_latest_version_link(self.context)
 
+
 def get_version_id(context):
     res = None
     try:
@@ -203,6 +211,7 @@ def get_version_id(context):
         res = None
 
     return res
+
 
 class GetVersionId(object):
     """ Get version ID
@@ -215,8 +224,10 @@ class GetVersionId(object):
     def __call__(self):
         return get_version_id(self.context)
 
+
 def get_version_id_api(context):
     return GetVersionId(context, request=None)
+
 
 def has_versions(context):
     #TODO: this doesn't guarantee that there are versions
@@ -224,6 +235,7 @@ def has_versions(context):
     if IVersionEnhanced.providedBy(context):
         return True
     return False
+
 
 class HasVersions(object):
     """ Check if object has versions
@@ -235,6 +247,7 @@ class HasVersions(object):
 
     def __call__(self):
         return has_versions(self.context)
+
 
 class CreateVersion(object):
     """ This view, when called, will create a new version of an object
@@ -248,14 +261,12 @@ class CreateVersion(object):
         ver = create_version(self.context)
         return self.request.RESPONSE.redirect(ver.absolute_url())
 
-def create_version(context):
+
+def create_version(context, reindex=True):
     """Create a new version of an object"""
 
     pu = getToolByName(context, 'plone_utils')
-    obj_uid = context.UID()
     obj_id = context.getId()
-    obj_title = context.Title()
-    obj_type = context.portal_type
     parent = utils.parent(context)
 
     # Adapt version parent (if case)
@@ -269,26 +280,30 @@ def create_version(context):
         _reindex(context)
 
     # Create version object
-    cp = parent.manage_copyObjects(ids=[obj_id])
-    res = parent.manage_pasteObjects(cp)
+    clipb = parent.manage_copyObjects(ids=[obj_id])
+    res = parent.manage_pasteObjects(clipb)
     new_id = res[0]['new_id']
 
     ver = getattr(parent, new_id)
 
-    # Remove copy_of from ID
+    # Fixes the generated id: remove copy_of from ID
+    #TODO: add -vX sufix to the ids
     id = ver.getId()
     new_id = id.replace('copy_of_', '')
     new_id = generateNewId(parent, new_id, ver.UID())
     parent.manage_renameObject(id=id, new_id=new_id)
+    ver = parent[new_id]
 
     # Set effective date today
+    ver.setCreationDate(DateTime())
     ver.setEffectiveDate(DateTime())
 
-    # Set new state
-    ver.reindexObject()
-    _reindex(context)  #some indexed values of the context may depend on versions
+    if reindex:
+        ver.reindexObject()
+        _reindex(context)  #some indexed values of the context may depend on versions
 
     return ver
+
 
 def assign_version(context, new_version):
     """Assign a specific version id to an object"""
@@ -309,6 +324,7 @@ def assign_version(context, new_version):
     verparent.setVersionId(new_version)
     context.reindexObject()
 
+
 class AssignVersion(object):
     """ Assign new version ID
     """
@@ -326,6 +342,7 @@ class AssignVersion(object):
         pu.addPortalMessage(message, 'structure')
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
+
 def revoke_version(context):
     """Revokes the context from being a version
     """
@@ -333,6 +350,7 @@ def revoke_version(context):
     verparent = IVersionControl(obj)
     verparent.setVersionId('')
     directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
+
 
 class RevokeVersion(object):
     """ Revoke the context as being a version
@@ -349,6 +367,7 @@ class RevokeVersion(object):
         pu.addPortalMessage(message, 'structure')
 
         return self.request.RESPONSE.redirect(self.context.absolute_url())
+
 
 def generateNewId(context, id, uid):
     tmp = id.split('-')[-1]
@@ -376,13 +395,14 @@ def generateNewId(context, id, uid):
                     break
     return id
 
+
 def versionIdHandler(obj, event):
     """ Set a versionId as annotation without setting the
         version marker interface just to have a perma link
         to last version
     """
-    hasVersions = obj.unrestrictedTraverse('@@hasVersions')
-    if not hasVersions():
+    #hasVersions = obj.unrestrictedTraverse('@@hasVersions')
+    if not has_versions(obj):
         verId = _get_random(10)
         anno = IAnnotations(obj)
         ver = anno.get(VERSION_ID)

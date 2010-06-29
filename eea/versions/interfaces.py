@@ -25,6 +25,12 @@ class IGetVersions(Interface):
         """ Return oldest versions
         """
 
+    def latest_version():
+        """ Return the object that is the latest version """
+
+    def version_number():
+        """ Return the current version number """
+
     def __call__():
         """ Get all versions
         """
