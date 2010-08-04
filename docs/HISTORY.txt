@@ -3,6 +3,8 @@ Changelog
 
 1.1 - (Unreleased)
 ------------------
+ * If there is no EffectiveDate, version number is computed
+     based on CreationDate [ghicaale #3506]
 
 1.0 -(2010-07-01)
 -----------------

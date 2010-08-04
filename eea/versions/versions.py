@@ -90,9 +90,24 @@ class GetVersions(object):
         brains = cat.searchResults({'getVersionId' : verId,
                                     'sort_on': 'effective'})
 
+        objects = []
+        for brain in brains:
+            objects.append(brain.getObject())
+
+        def getDateForSorting(ob):
+            res = ob.getEffectiveDate()
+            if not res:
+                res = ob.creation_date
+            if not isinstance(res, DateTime):
+                res = DateTime(res)
+            return res
+
+        # Some objects don't have EffectiveDate so we have to sort them using CreationDate
+        sortedObjects = sorted(objects, key=getDateForSorting)
+
         versions = {}
-        for index, brain in enumerate(brains):
-            versions[index+1] = brain.getObject()
+        for index, ob in enumerate(sortedObjects):
+            versions[index+1] = ob
         return versions
 
     def extract(self, version):
@@ -101,6 +116,8 @@ class GetVersions(object):
         field = version.getField('lastUpload')  #TODO: this is a specific to dataservice
         if not field:
             value = version.getEffectiveDate()
+            if not value:
+                value = version.creation_date
         else:
             value = field.getAccessor(version)()
 
