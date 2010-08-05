@@ -29,8 +29,8 @@
 					tal:define="oldest python:versions.oldest();
 					            state  python:here.portal_workflow.getInfoFor(context, 'review_state', '(Unknown)')"
 					tal:condition="python:has_versions and (not newest) and oldest">
-					<span i18n:translate="" tal:condition="state == 'published'">This is the latest published version. </span>
-					<span i18n:translate="" tal:condition="state != 'published'">This is the latest version. </span>
+					<span i18n:translate="" tal:condition="python:state == 'published'">This is the latest published version. </span>
+					<span i18n:translate="" tal:condition="python:state != 'published'">This is the latest version. </span>
 					<a href="#previous-versions"
 						i18n:translate="" tal:condition="python:has_versions and oldest">See older versions.</a>
 				</div>
