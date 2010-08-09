@@ -34,6 +34,9 @@ def _get_random(size=0):
 
 class VersionControl(object):
     """ Version adapter
+
+    TODO: creating an adapter instance of an object has the side-effect of making
+    that object versioned. This is not very intuitive
     """
     implements(IVersionControl)
     adapts(IVersionEnhanced)
@@ -87,23 +90,11 @@ class GetVersions(object):
             return {}
 
         cat = getToolByName(self.context, 'portal_catalog')
-        brains = cat.searchResults({'getVersionId' : verId,
-                                    'sort_on': 'effective'})
-
-        objects = []
-        for brain in brains:
-            objects.append(brain.getObject())
-
-        def getDateForSorting(ob):
-            res = ob.getEffectiveDate()
-            if not res:
-                res = ob.creation_date
-            if not isinstance(res, DateTime):
-                res = DateTime(res)
-            return res
+        brains = cat.searchResults({'getVersionId' : verId})
+        objects = [b.getObject() for b in brains]
 
         # Some objects don't have EffectiveDate so we have to sort them using CreationDate
-        sortedObjects = sorted(objects, key=getDateForSorting)
+        sortedObjects = sorted(objects, key=lambda o: o.effective_date or o.creation_date)
 
         versions = {}
         for index, ob in enumerate(sortedObjects):
