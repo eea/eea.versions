@@ -1,6 +1,9 @@
 Changelog
 =========
 
+1.2 - (unreleased)
+------------------
+
 1.1 - (2010-08-16)
 ------------------
  * If there is no EffectiveDate, version number is computed
