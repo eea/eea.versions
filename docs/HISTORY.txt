@@ -6,9 +6,9 @@ Changelog
 
 1.1 - (2010-08-16)
 ------------------
- * If there is no EffectiveDate, version number is computed
+ * Feature: If there is no EffectiveDate, version number is computed
      based on CreationDate [ghicaale #3506]
 
 1.0 -(2010-07-01)
 -----------------
- * Initial release based on code from eea.dataservice [tiberich]
+ * Initial release, based on code from eea.dataservice [tiberich]
