@@ -1,112 +1,71 @@
 <html xmlns:metal="http://xml.zope.org/namespaces/metal"
-	i18n:domain="plone">
-	<body>
+      i18n:domain="plone">
+  <body>
 
-		<div metal:define-macro="versions" tal:define="
-			versions nocall:versions | nocall:here/@@getVersions;
-			has_versions has_versions | here/@@hasVersions;
-			">
+    <div metal:define-macro="versions"
+         tal:define="versions nocall:versions | nocall:here/@@getVersions;
+                     has_versions has_versions | here/@@hasVersions;
+                     anon portal/portal_membership/isAnonymousUser">
 
-			<!-- Information about new versions -->
-			<tal:new metal:define-slot="new" tal:define="newest python:versions.newest();">
-				<div class="portalMessage warningMessage"
-					tal:condition="python:has_versions and newest">
-					<strong i18n:translate="new_version_available">
-						Note: new version is available!
-					</strong>
-					<ul>
-						<li tal:repeat="doc python:newest[:1]">
-							<a tal:define="
-								doc_url doc/url;
-								doc_published doc/date;
-								doc_title doc/title;
-								doc_title python:doc_published and '%s - %s' % (toLocalizedTime(doc_published), doc_title) or doc_title;"
-								tal:attributes="href doc_url" tal:content="doc_title" />
-						</li>
-					</ul>
-				</div>
-				<div class="portalMessage informationMessage"
-					tal:define="oldest python:versions.oldest();
-					            state  python:here.portal_workflow.getInfoFor(context, 'review_state', '(Unknown)')"
-					tal:condition="python:has_versions and (not newest) and oldest">
-					<span i18n:translate="" tal:condition="python:state == 'published'">This is the latest published version. </span>
-					<span i18n:translate="" tal:condition="python:state != 'published'">This is the latest version. </span>
-					<a href="#previous-versions"
-						i18n:translate="" tal:condition="python:has_versions and oldest">See older versions.</a>
-				</div>
-			</tal:new>
+      <!-- Information about new versions -->
+      <tal:new metal:define-slot="new" tal:define="newest python:versions.newest();">
+        <div class="portalMessage warningMessage"
+             tal:condition="python:has_versions and newest">
+          <tal:messages define="state python:newest[0]['review_state']">
+            <strong tal:condition="anon" i18n:translate="new_version_available">
+              Note: new version is available!
+            </strong>
+            <strong tal:condition="not:anon">
+              <span i18n:translate="">Note: new version is available! State: </span>
+              <span tal:content="state" />
+            </strong>
+          </tal:messages>
+          <ul>
+            <li tal:repeat="doc python:newest[:1]">
+              <a tal:define="doc_url doc/url;
+                             doc_published doc/date;
+                             doc_title doc/title;
+                             doc_title python:doc_published and '%s - %s' % (toLocalizedTime(doc_published), doc_title) or doc_title;"
+                 tal:attributes="href doc_url" tal:content="doc_title" />
+            </li>
+          </ul>
+        </div>
+        <div class="portalMessage informationMessage"
+             tal:define="oldest python:versions.oldest()"
+             tal:condition="python:has_versions and (not newest) and oldest">
+          <tal:messages define="state python:here.portal_workflow.getInfoFor(context, 'review_state', '(Unknown)')">
+            <span i18n:translate="" tal:condition="anon">This is the latest published version. </span>
 
-			<!-- Information about old versions -->
-			<tal:old metal:define-slot="old" tal:define="versions python:versions.oldest()">
-				<dl class="portlet portlet-rss publicationPortlet" id="previous-versions"
-					tal:condition="python:has_versions and versions">
-					<dt class="portletHeader" i18n:translate="report_older_versions">
-						Older versions
-					</dt>
-					<dt class="portletItem" tal:repeat="doc versions">
-						<a tal:define="
-							doc_url doc/url;
-							doc_published doc/date;
-							doc_title doc/title;
-							doc_title python:doc_published and '%s - %s' % (toLocalizedTime(doc_published), doc_title) or doc_title;"
-							tal:attributes="href doc_url" tal:content="doc_title" />
-					</dt>
-				</dl>
-			</tal:old>
+            <span i18n:translate="" tal:condition="not:anon">This is the latest version. State: </span>
+            <span tal:condition="not:anon" tal:content="state" />
+            <br tal:condition="not:anon" />
+          </tal:messages>
+          <a href="#previous-versions" i18n:translate=""
+             tal:condition="python:has_versions and oldest">See older versions.</a>
+        </div>
+      </tal:new>
 
-		</div>
+      <!-- Information about old versions -->
+      <tal:old metal:define-slot="old" tal:define="versions python:versions.oldest()">
+        <dl class="portlet portlet-rss publicationPortlet" id="previous-versions"
+            tal:condition="python:has_versions and versions">
+          <dt class="portletHeader" i18n:translate="report_older_versions">
+            Older versions
+          </dt>
+          <dt class="portletItem" tal:repeat="doc versions">
+            <a tal:define="doc_url doc/url;
+                           doc_published doc/date;
+                           doc_title doc/title;
+                           doc_state doc/review_state;
+                           doc_title python:doc_published and '%s - %s' % (toLocalizedTime(doc_published), doc_title) or doc_title;"
+              tal:attributes="href doc_url;
+                              class string:state-$doc_state"
+              tal:content="doc_title" />
+          </dt>
+        </dl>
+      </tal:old>
 
-		<!-- XXX Obsolete -->
-		<div metal:define-macro="portlet"
-			tal:omit-tag="">
+    </div>
 
-			<table align="right" class="sortable listing" id="versioning" style="float:right; clear: right;"
-				tal:define="versions here/@@getVersions; has_versions here/@@hasVersions"
-				tal:condition="python:has_versions and versions">
-				<thead>
-					<tr>
-						<th title="More than one version is available. Select by clicking below" class="nosort"
-							tal:attributes="colspan python:len(versions.keys())+1">
-							<center>Versions</center>
-						</th>
-					</tr>
-					<tr>
-						<th class="nosort"> </th>
-						<th class="nosort" tal:repeat="key versions/keys" tal:content="string:V${key}">V1</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>English</td>
-						<tal:block repeat="verNumber versions/keys">
-							<tal:block define="ver python:versions[verNumber]">
-								<td style="background: rgb(245, 130, 31) none repeat scroll 0% 0%;
-									-moz-background-clip: -moz-initial;
-									-moz-background-origin: -moz-initial;
-									-moz-background-inline-policy: -moz-initial;"
-									title="The dataset currently selected"
-									tal:condition="python:ver.UID() == context.UID()">
-									<center>S</center>
-								</td>
-								<td align="center"
-									tal:condition="python:ver.UID() != context.UID()">
-									<a tal:attributes="href ver/absolute_url;
-										title string:English version ${verNumber} (Everybody including world)">
-										see
-									</a>
-								</td>
-							</tal:block>
-						</tal:block>
-					</tr>
-					<tr tal:condition="python:not context.getEffectiveDate() == versions[len(versions.keys())].getEffectiveDate()">
-						<td tal:attributes="colspan python:len(versions.keys())+1"
-							style="color: darkred;">
-							A newer version of this<br/>dataset is available
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-
-	</body>
+  </body>
 </html>

@@ -1,21 +1,21 @@
+import random
 from DateTime import DateTime
+
+from zope.component import adapts
+from Products.CMFPlone import utils
+from zope.interface import implements
+from persistent.dict import PersistentDict
+from zope.cachedescriptors.property import Lazy
+from eea.versions.interfaces import IGetVersions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
-from Products.CMFPlone import utils
-from eea.versions.interfaces import IGetVersions
-from eea.versions.interfaces import IVersionControl, IVersionEnhanced
-from persistent.dict import PersistentDict
 from zope.app.annotation.interfaces import IAnnotations
-from zope.component import adapts
 from zope.component.exceptions import ComponentLookupError
+from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
-from zope.interface import implements
-from zope.cachedescriptors.property import Lazy
-import random
 
 
 VERSION_ID = 'versionId'
-
 
 def _reindex(obj):
     """ Reindex document
@@ -90,7 +90,11 @@ class GetVersions(object):
             return {}
 
         cat = getToolByName(self.context, 'portal_catalog')
-        brains = cat.searchResults({'getVersionId' : verId})
+        query = {'getVersionId' : verId}
+        if self.context.portal_membership.isAnonymousUser():
+            query['review_state'] = 'published'
+
+        brains = cat(**query)
         objects = [b.getObject() for b in brains]
 
         # Some objects don't have EffectiveDate so we have to sort them using CreationDate
@@ -104,6 +108,8 @@ class GetVersions(object):
     def extract(self, version):
         """ Extract needed properties
         """
+        wftool = getToolByName(version, 'portal_workflow')
+        state = wftool.getInfoFor(version, 'review_state', '(Unknown)')
         field = version.getField('lastUpload')  #TODO: this is a specific to dataservice
         if not field:
             value = version.getEffectiveDate()
@@ -118,7 +124,8 @@ class GetVersions(object):
         return {
             'title': version.title_or_id(),
             'url': version.absolute_url(),
-            'date': value
+            'date': value,
+            'review_state': state
         }
 
     def version_number(self):

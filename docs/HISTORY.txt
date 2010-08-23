@@ -3,6 +3,8 @@ Changelog
 
 1.2 - (unreleased)
 ------------------
+ * Feature: Versions listing colored based on review_state [ghicaale #3576]
+ * Bug fix: Do not display versions in 'public draft' for anonymous [ghicaale #3576]
 
 1.1 - (2010-08-16)
 ------------------
