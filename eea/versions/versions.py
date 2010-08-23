@@ -109,8 +109,15 @@ class GetVersions(object):
         """ Extract needed properties
         """
         wftool = getToolByName(version, 'portal_workflow')
-        state = wftool.getInfoFor(version, 'review_state', '(Unknown)')
-        field = version.getField('lastUpload')  #TODO: this is a specific to dataservice
+        review_state = wftool.getInfoFor(version, 'review_state', '(Unknown)')
+
+        # Get title of the workflow state
+        try:
+            title_state = wftool.getWorkflowsFor(version)[0].states[review_state].title
+        except:
+            title_state = ''
+
+        field = version.getField('lastUpload') #TODO: this is a specific to dataservice
         if not field:
             value = version.getEffectiveDate()
             if not value:
@@ -125,7 +132,8 @@ class GetVersions(object):
             'title': version.title_or_id(),
             'url': version.absolute_url(),
             'date': value,
-            'review_state': state
+            'review_state': review_state,
+            'title_state': title_state
         }
 
     def version_number(self):

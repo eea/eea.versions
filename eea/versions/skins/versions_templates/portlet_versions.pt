@@ -11,12 +11,12 @@
       <tal:new metal:define-slot="new" tal:define="newest python:versions.newest();">
         <div class="portalMessage warningMessage"
              tal:condition="python:has_versions and newest">
-          <tal:messages define="state python:newest[0]['review_state']">
+          <tal:messages define="title_state python:newest[0]['title_state']">
             <strong tal:condition="anon" i18n:translate="new_version_available">
               Note: new version is available!
             </strong>
             <strong tal:condition="not:anon">
-              <span i18n:translate="">Note: there is a new version available with state:</span> <span tal:replace="state" />
+              <span i18n:translate="">Note: there is a new version available with state:</span> <span tal:replace="title_state" />
             </strong>
           </tal:messages>
           <ul>
@@ -32,12 +32,16 @@
         <div class="portalMessage informationMessage"
              tal:define="oldest python:versions.oldest()"
              tal:condition="python:has_versions and (not newest) and oldest">
-          <tal:messages define="state python:here.portal_workflow.getInfoFor(context, 'review_state', '(Unknown)')">
+          <tal:messages define="wftool python:here.portal_workflow">
             <span i18n:translate="" tal:condition="anon">This is the latest published version. </span>
 
-            <span i18n:translate="" tal:condition="not:anon">This is the latest version. State: </span>
-            <span tal:condition="not:anon" tal:content="state" />
-            <br tal:condition="not:anon" />
+            <tal:non-anonymous tal:condition="not:anon">
+              <span i18n:translate="">This is the latest version with state: </span>
+              <span tal:define="review_state python:wftool.getInfoFor(context, 'review_state', '(Unknown)');
+                                title_state python:wftool.getWorkflowsFor(context)[0].states[review_state].title"
+                    tal:content="title_state" />
+              <br />
+            </tal:non-anonymous>
           </tal:messages>
           <a href="#previous-versions" i18n:translate=""
              tal:condition="python:has_versions and oldest">See older versions.</a>
