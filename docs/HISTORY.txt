@@ -1,5 +1,7 @@
 Changelog
 =========
+[Alexandru Ghica - alec.ghica@eaudeweb.ro]
+[Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
 1.2 - (unreleased)
 ------------------
