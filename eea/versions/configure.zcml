@@ -75,6 +75,13 @@
     class=".versions.AssignVersion"
     />
 
+  <browser:page
+    for="*"
+    name="getWorkflowStateTitle"
+    permission="zope2.View"
+    class=".versions.GetWorkflowStateTitle"
+    />
+
   <browser:menuItem
     for="eea.versions.interfaces.IVersionEnhanced"
     menu="object_buttons"

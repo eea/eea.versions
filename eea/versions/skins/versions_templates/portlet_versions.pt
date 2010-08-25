@@ -37,8 +37,8 @@
 
             <tal:non-anonymous tal:condition="not:anon">
               <span i18n:translate="">This is the latest version with state: </span>
-              <span tal:define="review_state python:wftool.getInfoFor(context, 'review_state', '(Unknown)');
-                                title_state python:wftool.getWorkflowsFor(context)[0].states[review_state].title"
+              <span tal:define="GetWorkflowStateTitle nocall:context/@@getWorkflowStateTitle;
+                                title_state python:GetWorkflowStateTitle(object=context)"
                     tal:content="title_state" />
               <br />
             </tal:non-anonymous>

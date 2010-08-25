@@ -4,7 +4,9 @@ from DateTime import DateTime
 from zope.component import adapts
 from Products.CMFPlone import utils
 from zope.interface import implements
+from Products.Five import BrowserView
 from persistent.dict import PersistentDict
+from zope.component import queryMultiAdapter
 from zope.cachedescriptors.property import Lazy
 from eea.versions.interfaces import IGetVersions
 from Products.CMFCore.utils import getToolByName
@@ -112,10 +114,8 @@ class GetVersions(object):
         review_state = wftool.getInfoFor(version, 'review_state', '(Unknown)')
 
         # Get title of the workflow state
-        try:
-            title_state = wftool.getWorkflowsFor(version)[0].states[review_state].title
-        except:
-            title_state = ''
+        GetWorkflowStateTitle = queryMultiAdapter((self.context, self.request), name=u'getWorkflowStateTitle')
+        title_state = GetWorkflowStateTitle(object=version)
 
         field = version.getField('lastUpload') #TODO: this is a specific to dataservice
         if not field:
@@ -246,6 +246,23 @@ class GetVersionId(object):
 
     def __call__(self):
         return get_version_id(self.context)
+
+class GetWorkflowStateTitle(BrowserView):
+    """ Returns the title of the workflow state of the given object
+    """
+
+    def __call__(self, object=None):
+        title_state = 'Unknown'
+        if object:
+            wftool = getToolByName(self.context, 'portal_workflow')
+            review_state = wftool.getInfoFor(object, 'review_state', '(Unknown)')
+
+            try:
+                title_state = wftool.getWorkflowsFor(object)[0].states[review_state].title
+            except:
+                pass
+
+        return title_state
 
 
 def get_version_id_api(context):
