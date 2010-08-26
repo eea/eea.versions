@@ -151,16 +151,16 @@ class GetVersions(object):
         versions.sort(reverse=True)
 
         res = []
-        #found = False
+        found = False
         uid = self.context.UID()
         for key, version in versions:
             if version.UID() == uid:
-                #found = True
+                found = True
                 break
             res.append(self.extract(version))
 
-        #if not found:
-        #    return []
+        if not found:
+            return []
         return res
 
     #TODO: add first_version method
