@@ -5,6 +5,7 @@ Changelog
 
 1.2 - (unreleased)
 ------------------
+ * Bug fix: newest was incorectly determined [tiberich]
  * Feature: Messages now display title of the workflow state
      instead of its id [ghicaale #3576]
  * Feature: Versions listing colored based on review_state [ghicaale #3576]

@@ -156,8 +156,8 @@ class GetVersions(object):
         for key, version in versions:
             if version.UID() == uid:
                 found = True
+                res.append(self.extract(version))
                 break
-            res.append(self.extract(version))
 
         if not found:
             return []
