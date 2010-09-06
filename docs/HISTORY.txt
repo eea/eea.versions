@@ -3,7 +3,7 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
-1.2 - (unreleased)
+1.2 - (2010-09-06)
 ------------------
  * Feature: Messages now display title of the workflow state
      instead of its id [ghicaale #3576]
