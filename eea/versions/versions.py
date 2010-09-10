@@ -115,7 +115,10 @@ class GetVersions(object):
 
         # Get title of the workflow state
         GetWorkflowStateTitle = queryMultiAdapter((self.context, self.request), name=u'getWorkflowStateTitle')
-        title_state = GetWorkflowStateTitle(object=version)
+        if GetWorkflowStateTitle:
+            title_state = GetWorkflowStateTitle(object=version)
+        else:
+            title_state = 'Unknown'
 
         field = version.getField('lastUpload') #TODO: this is a specific to dataservice
         if not field:

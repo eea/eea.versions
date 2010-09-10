@@ -5,6 +5,7 @@ Changelog
 
 1.3 - (unreleased)
 ------------------
+ * Bug fix: fixed getting workflow state title [ghicaale]
 
 1.2 - (2010-09-06)
 ------------------
