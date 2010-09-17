@@ -3,9 +3,6 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
-1.4-dev - (unreleased)
-----------------------
-
 1.3 - (2010-09-17)
 ------------------
  * Bug fix: fixed getting workflow state title [ghicaale]
