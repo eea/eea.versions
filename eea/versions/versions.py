@@ -341,6 +341,9 @@ def create_version(context, reindex=True):
     ver.setCreationDate(DateTime())
     ver.setEffectiveDate(DateTime())
 
+    # Remove comments
+    ver.talkback = None
+
     if reindex:
         ver.reindexObject()
         _reindex(context)  #some indexed values of the context may depend on versions

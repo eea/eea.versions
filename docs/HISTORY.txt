@@ -5,6 +5,7 @@ Changelog
 
 1.4 - (unreleased)
 ------------------
+ * Feature: Delete comments when creating a new version [ghicaale #3601]
 
 1.4-dev - (2010-09-17)
 ----------------------
