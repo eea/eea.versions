@@ -13,6 +13,12 @@ class IVersionControl(Interface):
     def getVersionNumber():
         """ Return version number. """
 
+    def getVersionId():
+        """ """
+
+    def setVersionId(numbers):
+        """ """
+
 
 class IGetVersions(Interface):
     """ Get container versions """
