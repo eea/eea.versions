@@ -1,20 +1,20 @@
-import random
 from DateTime import DateTime
-
-from zope.component import adapts
-from Products.CMFPlone import utils
-from zope.interface import implements
-from Products.Five import BrowserView
-from persistent.dict import PersistentDict
-from zope.component import queryMultiAdapter
-from zope.cachedescriptors.property import Lazy
-from eea.versions.interfaces import IGetVersions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
-from zope.app.annotation.interfaces import IAnnotations
-from zope.component.exceptions import ComponentLookupError
+from Products.CMFPlone import utils
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from eea.versions.interfaces import IGetVersions
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
+from persistent.dict import PersistentDict
+from zope.app.annotation.interfaces import IAnnotations
+from zope.cachedescriptors.property import Lazy
+from zope.component import adapts
+from zope.component import queryMultiAdapter
+from zope.component.exceptions import ComponentLookupError
 from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
+from zope.interface import implements
+import random
 
 
 VERSION_ID = 'versionId'
@@ -377,7 +377,8 @@ class AssignVersion(object):
 
     def __call__(self):
         pu = getToolByName(self.context, 'plone_utils')
-        new_version = self.request.get('new-version', '')
+        new_version = self.request.form.get('new-version', '')
+        nextURL = self.request.form.get('nextURL', self.context.absolute_url())
 
         if new_version:
             assign_version(self.context, new_version)
@@ -386,7 +387,7 @@ class AssignVersion(object):
             message = _(u'Please specify a valid Version ID.')
 
         pu.addPortalMessage(message, 'structure')
-        return self.request.RESPONSE.redirect(self.context.absolute_url())
+        return self.request.RESPONSE.redirect(nextURL)
 
 
 def revoke_version(context):
