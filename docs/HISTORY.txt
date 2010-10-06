@@ -3,6 +3,9 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
+1.6-dev - (unreleased)
+----------------------
+
 1.5 - (2010-10-06)
 ------------------
  * Add a nextURL parameter in the @@assign_version view [tiberich #3650]
