@@ -3,6 +3,9 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
+1.7-dev - (unreleased)
+----------------------
+
 1.6 - (2010-10-07)
 ------------------
  * Use getToolByName instead of acquisition to retrieve portal_membership. [tiberich]
