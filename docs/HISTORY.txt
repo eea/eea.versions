@@ -5,6 +5,7 @@ Changelog
 
 1.6-dev - (unreleased)
 ----------------------
+ * Use getToolByName instead of acquisition to retrieve portal_membership. [tiberich]
 
 1.5 - (2010-10-06)
 ------------------

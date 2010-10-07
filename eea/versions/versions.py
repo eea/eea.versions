@@ -3,7 +3,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
 from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from eea.versions.interfaces import IGetVersions
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from persistent.dict import PersistentDict
@@ -93,7 +92,8 @@ class GetVersions(object):
 
         cat = getToolByName(self.context, 'portal_catalog')
         query = {'getVersionId' : verId}
-        if self.context.portal_membership.isAnonymousUser():
+        mtool = getToolByName(self.context, 'portal_membership')
+        if mtool.isAnonymousUser():
             query['review_state'] = 'published'
 
         brains = cat(**query)
