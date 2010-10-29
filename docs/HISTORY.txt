@@ -5,6 +5,8 @@ Changelog
 
 1.7-dev - (unreleased)
 ----------------------
+ * Change: changes _get_random() to make catalog checks, so that it doesn't return
+   duplicated versionIds [tiberich #3758]
 
 1.6 - (2010-10-07)
 ------------------

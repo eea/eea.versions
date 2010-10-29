@@ -25,11 +25,22 @@ def _reindex(obj):
     ctool.reindexObject(obj)
 
 
-def _get_random(size=0):
+def _get_random(context, size=0):
+    try:
+        catalog = getToolByName(context, "portal_catalog")
+    except AttributeError:
+        catalog = None  #can happen in tests
     chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ023456789"
-    res = ''
-    for k in range(size):
-        res += random.choice(chars)
+
+    while True:
+        res = ''
+        for k in range(size):
+            res += random.choice(chars)
+        if catalog and not catalog.searchResults(getVersionId=res):
+            break
+        if not catalog:
+            break
+
     return res
 
 
@@ -318,7 +329,7 @@ def create_version(context, reindex=True):
     verparent = IVersionControl(context)
     verId = verparent.getVersionId()
     if not verId:
-        verId = _get_random(10)
+        verId = _get_random(context, 10)
         verparent.setVersionId(verId)
         _reindex(context)
 
@@ -356,7 +367,7 @@ def assign_version(context, new_version):
 
     # Verify if there are more objects under this version
     cat = getToolByName(context, 'portal_catalog')
-    brains = cat.searchResults({'getVersionId' : new_version,
+    brains = cat.searchResults({'getversionid' : new_version,
                                 'show_inactive': True})
     if brains and not IVersionEnhanced.providedBy(context):
         alsoProvides(context, IVersionEnhanced)
@@ -450,7 +461,7 @@ def versionIdHandler(obj, event):
     """
     #hasVersions = obj.unrestrictedTraverse('@@hasVersions')
     if not has_versions(obj):
-        verId = _get_random(10)
+        verId = _get_random(obj, 10)
         anno = IAnnotations(obj)
         ver = anno.get(VERSION_ID)
         #TODO: tests fails with ver = None when adding an EEAFigure,
