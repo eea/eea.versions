@@ -3,6 +3,9 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
+1.9-dev - (unreleased)
+----------------------
+
 1.8 - (2010-10-29)
 ------------------
  * API Change: renamed has_versions to isVersionEnhanced, also coresponding view [tiberich #3278]
