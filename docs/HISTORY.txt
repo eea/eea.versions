@@ -3,6 +3,9 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
+1.8-dev - (unreleased)
+----------------------
+
 1.7 - (2010-10-29)
 ------------------
  * Change: changes _get_random() to make catalog checks, so that it doesn't return
