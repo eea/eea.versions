@@ -42,9 +42,9 @@
 
   <browser:page
     for="*"
-    name="hasVersions"
+    name="isVersionEnhanced"
     permission="zope2.View"
-    class=".versions.HasVersions"
+    class=".versions.IsVersionEnhanced"
     />
 
   <browser:page

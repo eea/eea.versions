@@ -283,16 +283,16 @@ def get_version_id_api(context):
     return GetVersionId(context, request=None)
 
 
-def has_versions(context):
+def isVersionEnhanced(context):
     #TODO: this doesn't guarantee that there are versions
-    #a better name for this would be "is_versioned"
+    #a better name for this would be "is_versionenhanced"
     if IVersionEnhanced.providedBy(context):
         return True
     return False
 
 
-class HasVersions(object):
-    """ Check if object has versions
+class IsVersionEnhanced(object):
+    """ Check if object is marked as version enhanced
     """
 
     def __init__(self, context, request):
@@ -300,7 +300,7 @@ class HasVersions(object):
         self.request = request
 
     def __call__(self):
-        return has_versions(self.context)
+        return isVersionEnhanced(self.context)
 
 
 class CreateVersion(object):
@@ -459,8 +459,7 @@ def versionIdHandler(obj, event):
         version marker interface just to have a perma link
         to last version
     """
-    #hasVersions = obj.unrestrictedTraverse('@@hasVersions')
-    if not has_versions(obj):
+    if not isVersionEnhanced(obj):
         verId = _get_random(obj, 10)
         anno = IAnnotations(obj)
         ver = anno.get(VERSION_ID)
