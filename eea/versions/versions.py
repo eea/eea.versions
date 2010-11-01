@@ -1,8 +1,14 @@
+from App.Dialogs import MessageDialog
 from DateTime import DateTime
+from OFS import Moniker
+from OFS.CopySupport import CopyError, _cb_decode, eInvalid, eNotFound
+from OFS.CopySupport import eNotSupported
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
 from Products.Five import BrowserView
+from ZODB.POSException import ConflictError
+from cgi import escape
 from eea.versions.interfaces import IGetVersions
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from persistent.dict import PersistentDict
@@ -14,6 +20,7 @@ from zope.component.exceptions import ComponentLookupError
 from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
 from zope.interface import implements
 import random
+import sys
 
 
 VERSION_ID = 'versionId'
@@ -335,7 +342,8 @@ def create_version(context, reindex=True):
 
     # Create version object
     clipb = parent.manage_copyObjects(ids=[obj_id])
-    res = parent.manage_pasteObjects(clipb)
+    #res = parent.manage_pasteObjects(clipb)
+    res = pasteObjects(parent, clipb)
     new_id = res[0]['new_id']
 
     ver = getattr(parent, new_id)
@@ -360,6 +368,64 @@ def create_version(context, reindex=True):
         _reindex(context)  #some indexed values of the context may depend on versions
 
     return ver
+
+def pasteObjects(context, cp):
+    try:
+        op, mdatas = _cb_decode(cp)
+    except:
+        raise CopyError, eInvalid
+
+    oblist = []
+    app = context.getPhysicalRoot()
+    for mdata in mdatas:
+        m = Moniker.loadMoniker(mdata)
+        try:
+            ob = m.bind(app)
+        except ConflictError:
+            raise
+        except:
+            raise CopyError, eNotFound
+        context._verifyObjectPaste(ob, validate_src=op+1)
+        oblist.append(ob)
+
+    result = []
+    for ob in oblist:
+        orig_id = ob.getId()
+        if not ob.cb_isCopyable():
+            raise CopyError, eNotSupported % escape(orig_id)
+
+        try:
+            ob._notifyOfCopyTo(context, op=0)
+        except ConflictError:
+            raise
+        except:
+            raise CopyError, MessageDialog(
+                title="Copy Error",
+                message=sys.exc_info()[1],
+                action='manage_main')
+
+        id = context._get_id(orig_id)
+        result.append({'id': orig_id, 'new_id': id})
+
+        orig_ob = ob
+        ob = ob._getCopy(context)
+        ob._setId(id)
+        #notify(ObjectCopiedEvent(ob, orig_ob))
+
+        context._setObject(id, ob)
+        ob = context._getOb(id)
+        ob.wl_clearLocks()
+
+        ob._postCopy(context, op=0)
+
+        #OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
+
+        #notify(ObjectClonedEvent(ob))
+
+        #if REQUEST is not None:
+            #return self.manage_main(self, REQUEST, update_menu=1,
+                                    #cb_dataValid=1)
+    return result
 
 
 def assign_version(context, new_version):
