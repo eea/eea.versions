@@ -362,7 +362,7 @@ def create_version(context, reindex=True):
 
     # Set effective date today
     ver.setCreationDate(DateTime())
-    ver.setEffectiveDate(DateTime())
+    ver.setEffectiveDate(None)
 
     # Remove comments
     ver.talkback = None
