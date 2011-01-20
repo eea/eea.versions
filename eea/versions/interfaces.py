@@ -44,3 +44,10 @@ class IGetVersions(Interface):
 
 class IVersionCreatedEvent(IObjectEvent):
     """An event triggered after a new version of an object is created"""
+
+    def __init__(object, original):
+        """Constructor
+
+        object is the new, versioned, object
+        original is the object that was versioned
+        """
