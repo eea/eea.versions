@@ -9,7 +9,7 @@ from Products.CMFPlone import utils
 from Products.Five import BrowserView
 from ZODB.POSException import ConflictError
 from cgi import escape
-from eea.versions.interfaces import IGetVersions
+from eea.versions.interfaces import IGetVersions, IVersionCreatedEvent 
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from persistent.dict import PersistentDict
 from zope.app.annotation.interfaces import IAnnotations
@@ -19,8 +19,10 @@ from zope.component import queryMultiAdapter
 from zope.component.exceptions import ComponentLookupError
 from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
 from zope.interface import implements
+from zope.event import notify
 import random
 import sys
+from zope.app.event.objectevent import ObjectEvent
 
 
 VERSION_ID = 'versionId'
@@ -323,6 +325,13 @@ class CreateVersion(object):
         return self.request.RESPONSE.redirect(ver.absolute_url())
 
 
+class VersionCreatedEvent(ObjectEvent):
+    """An event object for new versions being created"""
+
+    implements(IVersionCreatedEvent)
+
+
+
 def create_version(context, reindex=True):
     """Create a new version of an object"""
 
@@ -342,8 +351,10 @@ def create_version(context, reindex=True):
 
     # Create version object
     clipb = parent.manage_copyObjects(ids=[obj_id])
-    #res = parent.manage_pasteObjects(clipb)
-    res = pasteObjects(parent, clipb)
+    #tibi test
+    #res = pasteObjects(parent, clipb)
+    res = parent.manage_pasteObjects(clipb)
+
     new_id = res[0]['new_id']
 
     ver = getattr(parent, new_id)
@@ -362,7 +373,12 @@ def create_version(context, reindex=True):
 
     # Remove comments
     ver.talkback = None
+    notify(VersionCreatedEvent(ver))
 
+    #{'indicators_workflow': ({'action': None, 'review_state': 'draft', 'actor': 'alec', 'comments': '', 
+                                #'time': DateTime('2010/07/05 16:31:44.217 GMT+2')}, 
+                        #{'action': 'quickPublish', 'review_state': 'published', 'actor': 'alec', 
+                            #'comments': 'Set by migration script.', 'time': DateTime('2010/07/05 16:31:44.464 GMT+2')})}
     if reindex:
         ver.reindexObject()
         _reindex(context)  #some indexed values of the context may depend on versions

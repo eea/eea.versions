@@ -1,4 +1,5 @@
 from zope.interface import Interface, Attribute
+from zope.app.event.interfaces import IObjectEvent
 
 
 class IVersionEnhanced(Interface):
@@ -40,3 +41,6 @@ class IGetVersions(Interface):
     def __call__():
         """ Get all versions
         """
+
+class IVersionCreatedEvent(IObjectEvent):
+    """An event triggered after a new version of an object is created"""
