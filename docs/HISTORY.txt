@@ -6,7 +6,7 @@ Changelog
 1.9-dev - (unreleased)
 ----------------------
  * Feature: make versioning trigger IVersionCreated event [tiberich #3988]
- * Change: set effective date to None when creating a version [tiberich #4000]
+ * Change: set effective and expiration date to None when creating a version [tiberich #4000]
 
 1.8 - (2010-10-29)
 ------------------
