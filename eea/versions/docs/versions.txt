@@ -34,10 +34,9 @@ Verify if properties were copyed on the new version.
     >>> dataVer.getSomedata() == data1.getSomedata()
     True
 
-Effective date of the new version object should be greater then its
-parent effective date.
+Effective dates of both objects should be set to None (according to ticket $4000)
 
-    >>> dataVer.getEffectiveDate() > data1.getEffectiveDate()
+    >>> dataVer.getEffectiveDate() == data1.getEffectiveDate() == None
     True
 
 Both objects should have the same version ID.
