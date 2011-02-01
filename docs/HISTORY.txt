@@ -3,6 +3,9 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
+1.10-dev - (unreleased)
+-----------------------
+
 1.9 - (2011-02-01)
 ------------------
  * Feature: make versioning trigger IVersionCreated event [tiberich #3988]
