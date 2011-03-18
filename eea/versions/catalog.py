@@ -7,9 +7,9 @@ from zope.component.exceptions import ComponentLookupError
 from Products.CMFPlone.CatalogTool import registerIndexableAttribute
 from eea.versions.interfaces import IVersionControl
 
-def getVersionIdForIndex(object, portal, **kwargs):
+def getVersionIdForIndex(obj, portal, **kwargs):
     try:
-        ver = IVersionControl(object)
+        ver = IVersionControl(obj)
         return ver.getVersionId()
     except (ComponentLookupError, TypeError, ValueError):
         # The catalog expects AttributeErrors when a value can't be found

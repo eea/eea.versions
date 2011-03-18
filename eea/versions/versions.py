@@ -23,7 +23,8 @@ from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
 from zope.interface import implements
 import random
 import sys
-
+import logging
+logger = logging.getLogger('eea.versions.versions')
 
 VERSION_ID = 'versionId'
 
@@ -43,7 +44,7 @@ def _get_random(context, size=0):
 
     while True:
         res = ''
-        for k in range(size):
+        for _k in range(size):
             res += random.choice(chars)
         if catalog and not catalog.searchResults(getVersionId=res):
             break
@@ -134,9 +135,9 @@ class GetVersions(object):
         review_state = wftool.getInfoFor(version, 'review_state', '(Unknown)')
 
         # Get title of the workflow state
-        GetWorkflowStateTitle = queryMultiAdapter((self.context, self.request), name=u'getWorkflowStateTitle')
-        if GetWorkflowStateTitle:
-            title_state = GetWorkflowStateTitle(object=version)
+        getWorkflowStateTitle = queryMultiAdapter((self.context, self.request), name=u'getWorkflowStateTitle')
+        if getWorkflowStateTitle:
+            title_state = getWorkflowStateTitle(object=version)
         else:
             title_state = 'Unknown'
 
@@ -176,7 +177,7 @@ class GetVersions(object):
         res = []
         found = False
         uid = self.context.UID()
-        for key, version in versions:
+        for _key, version in versions:
             if version.UID() == uid:
                 found = True
                 break
@@ -205,7 +206,7 @@ class GetVersions(object):
         res = []
         found = False
         uid = self.context.UID()
-        for key, version in versions:
+        for _key, version in versions:
             self.extract(version)
             if version.UID() == uid:
                 found = True
@@ -230,7 +231,7 @@ def get_versions_api(context):
 
 
 def get_latest_version_link(context):
-    ctrl = IVersionControl(context)
+    IVersionControl(context) #ctrl = 
     anno = IAnnotations(context)
     ver = anno.get(VERSION_ID)
     return ver[VERSION_ID]
@@ -274,16 +275,16 @@ class GetWorkflowStateTitle(BrowserView):
     """ Returns the title of the workflow state of the given object
     """
 
-    def __call__(self, object=None):
+    def __call__(self, obj=None):
         title_state = 'Unknown'
-        if object:
+        if obj:
             wftool = getToolByName(self.context, 'portal_workflow')
-            review_state = wftool.getInfoFor(object, 'review_state', '(Unknown)')
+            review_state = wftool.getInfoFor(obj, 'review_state', '(Unknown)')
 
             try:
-                title_state = wftool.getWorkflowsFor(object)[0].states[review_state].title
-            except:
-                pass
+                title_state = wftool.getWorkflowsFor(obj)[0].states[review_state].title
+            except Exception, err:
+                logger.info(err)
 
         return title_state
 
@@ -328,7 +329,7 @@ class CreateVersion(object):
 def create_version(context, reindex=True):
     """Create a new version of an object"""
 
-    pu = getToolByName(context, 'plone_utils')
+    #pu = getToolByName(context, 'plone_utils')
     obj_id = context.getId()
     parent = utils.parent(context)
 
@@ -354,10 +355,10 @@ def create_version(context, reindex=True):
 
     # Fixes the generated id: remove copy_of from ID
     #TODO: add -vX sufix to the ids
-    id = ver.getId()
-    new_id = id.replace('copy_of_', '')
+    vid = ver.getId()
+    new_id = vid.replace('copy_of_', '')
     new_id = generateNewId(parent, new_id, ver.UID())
-    parent.manage_renameObject(id=id, new_id=new_id)
+    parent.manage_renameObject(id=vid, new_id=new_id)
     ver = parent[new_id]
 
     # Set effective date today
@@ -378,7 +379,7 @@ def create_version(context, reindex=True):
 def pasteObjects(context, cp):
     try:
         op, mdatas = _cb_decode(cp)
-    except:
+    except Exception:
         raise CopyError, eInvalid
 
     oblist = []
@@ -404,22 +405,22 @@ def pasteObjects(context, cp):
             ob._notifyOfCopyTo(context, op=0)
         except ConflictError:
             raise
-        except:
+        except Exception:
             raise CopyError, MessageDialog(
                 title="Copy Error",
                 message=sys.exc_info()[1],
                 action='manage_main')
 
-        id = context._get_id(orig_id)
-        result.append({'id': orig_id, 'new_id': id})
+        cid = context._get_id(orig_id)
+        result.append({'id': orig_id, 'new_id': cid})
 
-        orig_ob = ob
+        #orig_ob = ob
         ob = ob._getCopy(context)
-        ob._setId(id)
+        ob._setId(cid)
         #notify(ObjectCopiedEvent(ob, orig_ob))
 
-        context._setObject(id, ob)
-        ob = context._getOb(id)
+        context._setObject(cid, ob)
+        ob = context._getOb(cid)
         ob.wl_clearLocks()
 
         ob._postCopy(context, op=0)
@@ -499,31 +500,31 @@ class RevokeVersion(object):
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
 
-def generateNewId(context, id, uid):
-    tmp = id.split('-')[-1]
+def generateNewId(context, gid, uid):
+    tmp = gid.split('-')[-1]
     try:
-        num = int(tmp)
-        id = '-'.join(id.split('-')[:-1])
-    except ValueError:
-        pass
+        int(tmp)
+        gid = '-'.join(gid.split('-')[:-1])
+    except ValueError, err:
+        logger.info(err)
 
-    if id in context.objectIds():
-        tmp_ob = getattr(context, id)
+    if gid in context.objectIds():
+        tmp_ob = getattr(context, gid)
         if tmp_ob.UID() != uid:
             idx = 1
             while idx <= 100:
-                new_id = "%s-%d" % (id, idx)
+                new_id = "%s-%d" % (gid, idx)
                 new_ob = getattr(context, new_id, None)
                 if new_ob:
                     if new_ob.UID() != uid:
                         idx += 1
                     else:
-                        id = new_id
+                        gid = new_id
                         break
                 else:
-                    id = new_id
+                    gid = new_id
                     break
-    return id
+    return gid
 
 
 def versionIdHandler(obj, event):

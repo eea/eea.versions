@@ -2,7 +2,8 @@ from Globals import package_home
 from Products.CMFCore import utils as cmfutils
 from Products.CMFCore.DirectoryView import registerDirectory
 from os.path import dirname
-import eea.versions.catalog
+from eea.versions import catalog
+catalog
 
 
 ppath = cmfutils.ProductsPath

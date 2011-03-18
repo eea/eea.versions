@@ -8,6 +8,6 @@ class VersionCreatedEvent(ObjectEvent):
 
     implements(IVersionCreatedEvent)
 
-    def __init__(self, object, original):
-        self.object = object
+    def __init__(self, obj, original):
+        self.object = obj
         self.original = original

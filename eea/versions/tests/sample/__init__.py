@@ -1,15 +1,15 @@
 from Products.Archetypes import atapi
 from Products.CMFCore import utils
 from eea.versions.tests.sample import config
-import eea.versions.catalog
-
+from eea.versions import catalog
+catalog
 
 def initialize(context):
     """Initializer called when used as a Zope 2 product.
     """
-    import eea.versions.tests.sample.content
-
-    content_types, constructors, ftis = atapi.process_types(
+    from eea.versions.tests.sample import content
+    content
+    content_types, constructors, _ftis = atapi.process_types(
         atapi.listTypes(config.PROJECTNAME),
         config.PROJECTNAME)
 

@@ -1,4 +1,4 @@
-from Globals import package_home
+#from Globals import package_home
 from Products.Five import fiveconfigure
 from Products.Five import zcml
 from Testing import ZopeTestCase as ztc
@@ -15,7 +15,8 @@ from Products.PloneTestCase.PloneTestCase import PloneTestCase
 from Products.PloneTestCase.PloneTestCase import FunctionalTestCase
 from Products.PloneTestCase.PloneTestCase import setupPloneSite
 from Products.PloneTestCase.layer import onsetup
-
+import logging
+logger = logging.getLogger('eea.version.tests.base')
 
 @onsetup
 def setup_test():
@@ -45,9 +46,9 @@ def setup_test():
     try:
         ztc.installPackage('eea.versions')
         ztc.installPackage('eea.versions.tests.sample')
-    except AttributeError:
+    except AttributeError, err:
         # Old ZopeTestCase
-        pass
+        logger.info(err)
 
 # The order here is important: We first call the (deferred) function which
 # installs the products we need for the Optilux package. Then, we let
