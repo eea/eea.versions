@@ -38,7 +38,7 @@
             <tal:non-anonymous tal:condition="not:anon">
               <span i18n:translate="">This is the latest version with state: </span>
               <span tal:define="GetWorkflowStateTitle nocall:context/@@getWorkflowStateTitle;
-                                title_state python:GetWorkflowStateTitle(object=context)"
+                                title_state python:GetWorkflowStateTitle(obj=context)"
                     tal:content="title_state" />
               <br />
             </tal:non-anonymous>

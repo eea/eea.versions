@@ -137,7 +137,7 @@ class GetVersions(object):
         # Get title of the workflow state
         getWorkflowStateTitle = queryMultiAdapter((self.context, self.request), name=u'getWorkflowStateTitle')
         if getWorkflowStateTitle:
-            title_state = getWorkflowStateTitle(object=version)
+            title_state = getWorkflowStateTitle(obj=version)
         else:
             title_state = 'Unknown'
 
