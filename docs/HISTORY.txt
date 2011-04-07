@@ -3,8 +3,8 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
-1.10-dev - (unreleased)
------------------------
+1.10 - (2011-04-07)
+-------------------
  * Bug fix: omitted the change of object to obj which broke the version portlet [ichimdav]
  * Cleanup: of pyflakes warnings [ichimdav #4141]
  * Cleanup: of pylint violations [ichimdav #4140]
