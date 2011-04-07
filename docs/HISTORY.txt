@@ -3,6 +3,9 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
+1.11-dev - (unreleased)
+-----------------------
+
 1.10 - (2011-04-07)
 -------------------
  * Bug fix: omitted the change of object to obj which broke the version portlet [ichimdav]
