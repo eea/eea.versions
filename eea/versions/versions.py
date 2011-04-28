@@ -230,8 +230,9 @@ class GetVersions(object):
 def get_versions_api(context):
     """returns version api class
     """
-    #TODO: at this moment the code sits in views, which makes it awkward to reuse
-    #this API in python code and tests. There are the get_..._api() functions
+    #TODO: at this moment the code sits in views, which makes it 
+    #awkward to reuse this API in python code and tests. There are 
+    #the get_..._api() functions
     #Treat those views as API classes. This can and should be refactored
     return GetVersions(context, request=None)
 
