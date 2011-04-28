@@ -5,7 +5,7 @@ Changelog
 
 4.0-dev - (unreleased)
 -----------------------
- * Feature: ported to Plone 4 [tiberich #4275]
+ * Feature: Plone 4.0.4 compatible release [tiberich #4275]
 
 1.10 - (2011-04-07)
 -------------------
