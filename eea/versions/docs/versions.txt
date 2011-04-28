@@ -25,7 +25,8 @@ Now lets create a new version of the above dataset.
 
     >>> createVersionView = data1.unrestrictedTraverse('@@createVersion')
     >>> vertmp = createVersionView()
-    >>> dataVer = sandbox._getOb('data1-1')
+    >>> id = vertmp[vertmp.rfind('/')+1:]
+    >>> dataVer = sandbox._getOb(id)
 
 Verify if properties were copyed on the new version.
 

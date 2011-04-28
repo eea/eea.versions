@@ -3,8 +3,9 @@ Changelog
 [Alexandru Ghica - alec.ghica@eaudeweb.ro]
 [Tiberiu Ichim - tiberiu.ichim@eaudeweb.ro]
 
-1.11-dev - (unreleased)
+4.0-dev - (unreleased)
 -----------------------
+ * Feature: ported to Plone 4 [tiberich #4275]
 
 1.10 - (2011-04-07)
 -------------------
