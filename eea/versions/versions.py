@@ -13,17 +13,18 @@ from eea.versions.events import VersionCreatedEvent
 from eea.versions.interfaces import IGetVersions
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from persistent.dict import PersistentDict
-from zope.app.annotation.interfaces import IAnnotations
+from zope.annotation.interfaces import IAnnotations
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.component import queryMultiAdapter
-from zope.component.exceptions import ComponentLookupError
+#from zope.component.exceptions import ComponentLookupError
 from zope.event import notify
 from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
-from zope.interface import implements
+from zope.interface import implements, providedBy
+import logging
 import random
 import sys
-import logging
+
 logger = logging.getLogger('eea.versions.versions')
 
 VERSION_ID = 'versionId'
@@ -254,7 +255,7 @@ def get_version_id(context):
     try:
         ver = IVersionControl(context)
         res = ver.getVersionId()
-    except (ComponentLookupError, TypeError, ValueError):
+    except (TypeError, ValueError): #ComponentLookupError, 
         res = None
 
     return res
@@ -542,3 +543,11 @@ def versionIdHandler(obj, event):
             if not ver.values()[0]:
                 ver[VERSION_ID] = verId
                 _reindex(obj)
+
+
+class GetContextInterfaces(object):
+
+    def __call__(self):
+        ifaces = providedBy(self.context)
+        return ['.'.join((iface.__module__, iface.__name__)) 
+                        for iface in ifaces]

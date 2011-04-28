@@ -1,16 +1,19 @@
-<dl metal:define-macro="permalinks" tal:define="lastVersion context/@@getLatestVersionLink;">
-  <!-- GID (persistent link)  -->
-  <dt i18n:translate="dataset_gid">Permalink to this version</dt>
-  <dd tal:define="uid context/UID">
-    <a tal:attributes="href string:${context/aq_parent/absolute_url}/ds_resolveuid/${uid};
-      title uid"
-      tal:content="uid" />
-  </dd>
-  <!-- permalink to latest version -->
-  <dt i18n:translate="dataset_lastVersion">Permalink to latest version</dt>
-  <dd>
-    <a tal:attributes="href string:${context/aq_parent/absolute_url}/ds_resolveuid/${lastVersion};
-      title lastVersion"
-      tal:content="lastVersion" />
-  </dd>
-</dl>
+<html xmlns:metal="http://xml.zope.org/namespaces/metal"
+  i18n:domain="eea">
+  <dl metal:define-macro="permalinks" tal:define="lastVersion context/@@getLatestVersionLink;">
+    <!-- GID (persistent link)  -->
+    <dt i18n:translate="dataset_gid">Permalink to this version</dt>
+    <dd tal:define="uid context/UID">
+      <a tal:attributes="href string:${context/aq_parent/absolute_url}/ds_resolveuid/${uid};
+        title uid"
+        tal:content="uid" />
+    </dd>
+    <!-- permalink to latest version -->
+    <dt i18n:translate="dataset_lastVersion">Permalink to latest version</dt>
+    <dd>
+      <a tal:attributes="href string:${context/aq_parent/absolute_url}/ds_resolveuid/${lastVersion};
+        title lastVersion"
+        tal:content="lastVersion" />
+    </dd>
+  </dl>
+</html>

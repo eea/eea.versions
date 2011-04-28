@@ -1,5 +1,5 @@
 from eea.versions.interfaces import IVersionCreatedEvent 
-from zope.app.event.objectevent import ObjectEvent
+from zope.component.interfaces import ObjectEvent
 from zope.interface import implements
 
 

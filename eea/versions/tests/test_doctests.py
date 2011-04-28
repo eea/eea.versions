@@ -2,7 +2,7 @@
 """
 import doctest
 import unittest
-from base import DataserviceFunctionalTestCase
+from base import VersionsFunctionalTestCase
 from Testing.ZopeTestCase import FunctionalDocFileSuite as Suite
 
 OPTIONFLAGS = (doctest.REPORT_ONLY_FIRST_FAILURE |
@@ -17,5 +17,5 @@ def test_suite():
             Suite('docs/versions.txt',
                   optionflags=OPTIONFLAGS,
                   package='eea.versions',
-                  test_class=DataserviceFunctionalTestCase) ,
+                  test_class=VersionsFunctionalTestCase) ,
               ))

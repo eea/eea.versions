@@ -1,5 +1,5 @@
 <html xmlns:metal="http://xml.zope.org/namespaces/metal"
-      i18n:domain="plone">
+      i18n:domain="eea">
   <body>
 
     <div metal:define-macro="versions"

@@ -1,0 +1,15 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+           i18n_domain="eea">
+
+  <genericsetup:registerProfile
+    name="default"
+    title="eea.versions"
+    directory="profiles/default"
+    description="Extension profile for EEA Versions"
+    provides="Products.GenericSetup.interfaces.EXTENSION"
+    />
+
+</configure>
+
+
