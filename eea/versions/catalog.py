@@ -1,4 +1,7 @@
+"""catalog utils
+"""
 # -*- coding: utf-8 -*-
+
 
 __author__ = """European Environment Agency (EEA)"""
 __docformat__ = 'plaintext'
@@ -9,6 +12,8 @@ from plone.indexer.decorator import indexer
 
 @indexer(IVersionEnhanced)
 def getVersionIdForIndex(obj):
+    """indexes versionid
+    """
     try:
         ver = IVersionControl(obj)
         return ver.getVersionId()

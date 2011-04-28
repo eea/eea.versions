@@ -1,3 +1,6 @@
+"""interfaces
+"""
+
 from zope.interface import Interface, Attribute
 from zope.component.interfaces import IObjectEvent
 
@@ -15,10 +18,10 @@ class IVersionControl(Interface):
         """ Return version number. """
 
     def getVersionId():
-        """ """
+        """returns version id """
 
     def setVersionId(numbers):
-        """ """
+        """sets version id """
 
 
 class IGetVersions(Interface):

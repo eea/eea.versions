@@ -1,8 +1,8 @@
+"""package
+"""
 from Products.Archetypes import atapi
 from Products.CMFCore import utils
 from eea.versions.tests.sample import config
-from eea.versions import catalog
-catalog
 
 def initialize(context):
     """Initializer called when used as a Zope 2 product.

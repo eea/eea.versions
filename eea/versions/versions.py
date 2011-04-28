@@ -1,3 +1,6 @@
+"""main eea.versions module
+"""
+
 from App.Dialogs import MessageDialog
 from DateTime import DateTime
 from OFS import Moniker
@@ -17,7 +20,6 @@ from zope.annotation.interfaces import IAnnotations
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.component import queryMultiAdapter
-#from zope.component.exceptions import ComponentLookupError
 from zope.event import notify
 from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
 from zope.interface import implements, providedBy
@@ -37,6 +39,8 @@ def _reindex(obj):
 
 
 def _get_random(context, size=0):
+    """returns a random id, usable as version id
+    """
     try:
         catalog = getToolByName(context, "portal_catalog")
     except AttributeError:
@@ -101,6 +105,7 @@ class GetVersions(object):
     implements(IGetVersions)
 
     def __init__(self, context, request):
+        """constructor"""
         self.context = context
         self.request = request
 
@@ -121,8 +126,10 @@ class GetVersions(object):
         brains = cat(**query)
         objects = [b.getObject() for b in brains]
 
-        # Some objects don't have EffectiveDate so we have to sort them using CreationDate
-        sortedObjects = sorted(objects, key=lambda o: o.effective_date or o.creation_date)
+        # Some objects don't have EffectiveDate so we have to sort 
+        # them using CreationDate
+        sortedObjects = sorted(objects, 
+                key=lambda o: o.effective_date or o.creation_date)
 
         versions = {}
         for index, ob in enumerate(sortedObjects):
@@ -136,13 +143,14 @@ class GetVersions(object):
         review_state = wftool.getInfoFor(version, 'review_state', '(Unknown)')
 
         # Get title of the workflow state
-        getWorkflowStateTitle = queryMultiAdapter((self.context, self.request), name=u'getWorkflowStateTitle')
+        getWorkflowStateTitle = queryMultiAdapter((self.context, self.request),
+                name=u'getWorkflowStateTitle')
         if getWorkflowStateTitle:
             title_state = getWorkflowStateTitle(obj=version)
         else:
             title_state = 'Unknown'
 
-        field = version.getField('lastUpload') #TODO: this is a specific to dataservice
+        field = version.getField('lastUpload') #TODO: specific to dataservice
         if not field:
             value = version.getEffectiveDate()
             if not value:
@@ -158,7 +166,7 @@ class GetVersions(object):
             'url': version.absolute_url(),
             'date': value,
             'review_state': review_state,
-            'title_state': title_state
+            'title_state': title_state,
         }
 
     def version_number(self):
@@ -225,6 +233,8 @@ class GetVersions(object):
 
 
 def get_versions_api(context):
+    """returns version api class
+    """
     #TODO: at this moment the code sits in views, which makes it awkward to reuse
     #this API in python code and tests. There are the get_..._api() functions
     #Treat those views as API classes. This can and should be refactored
@@ -232,6 +242,8 @@ def get_versions_api(context):
 
 
 def get_latest_version_link(context):
+    """method
+    """
     IVersionControl(context) #ctrl = 
     anno = IAnnotations(context)
     ver = anno.get(VERSION_ID)
@@ -243,14 +255,18 @@ class GetLatestVersionLink(object):
     """
 
     def __init__(self, context, request):
+        """constructor"""
         self.context = context
         self.request = request
 
     def __call__(self):
+        """view implementation"""
         return get_latest_version_link(self.context)
 
 
 def get_version_id(context):
+    """method
+    """
     res = None
     try:
         ver = IVersionControl(context)
@@ -266,10 +282,12 @@ class GetVersionId(object):
     """
 
     def __init__(self, context, request):
+        """constructor"""
         self.context = context
         self.request = request
 
     def __call__(self):
+        """view implementation"""
         return get_version_id(self.context)
 
 class GetWorkflowStateTitle(BrowserView):
@@ -291,10 +309,12 @@ class GetWorkflowStateTitle(BrowserView):
 
 
 def get_version_id_api(context):
+    """returns versionid api"""
     return GetVersionId(context, request=None)
 
 
 def isVersionEnhanced(context):
+    """returns bool if context can be version enhanced"""
     #TODO: this doesn't guarantee that there are versions
     #a better name for this would be "is_versionenhanced"
     if IVersionEnhanced.providedBy(context):
@@ -377,63 +397,65 @@ def create_version(context, reindex=True):
 
     return ver
 
-def pasteObjects(context, cp):
-    try:
-        op, mdatas = _cb_decode(cp)
-    except Exception:
-        raise CopyError, eInvalid
+#def pasteObjects(context, cp):
+    #"""a paste implementation which avoids throwing too many events
+    #"""
+    #try:
+        #op, mdatas = _cb_decode(cp)
+    #except Exception:
+        #raise CopyError, eInvalid
 
-    oblist = []
-    app = context.getPhysicalRoot()
-    for mdata in mdatas:
-        m = Moniker.loadMoniker(mdata)
-        try:
-            ob = m.bind(app)
-        except ConflictError:
-            raise
-        except:
-            raise CopyError, eNotFound
-        context._verifyObjectPaste(ob, validate_src=op+1)
-        oblist.append(ob)
+    #oblist = []
+    #app = context.getPhysicalRoot()
+    #for mdata in mdatas:
+        #m = Moniker.loadMoniker(mdata)
+        #try:
+            #ob = m.bind(app)
+        #except ConflictError:
+            #raise
+        #except:
+            #raise CopyError, eNotFound
+        #context._verifyObjectPaste(ob, validate_src=op+1)
+        #oblist.append(ob)
 
-    result = []
-    for ob in oblist:
-        orig_id = ob.getId()
-        if not ob.cb_isCopyable():
-            raise CopyError, eNotSupported % escape(orig_id)
+    #result = []
+    #for ob in oblist:
+        #orig_id = ob.getId()
+        #if not ob.cb_isCopyable():
+            #raise CopyError, eNotSupported % escape(orig_id)
 
-        try:
-            ob._notifyOfCopyTo(context, op=0)
-        except ConflictError:
-            raise
-        except Exception:
-            raise CopyError, MessageDialog(
-                title="Copy Error",
-                message=sys.exc_info()[1],
-                action='manage_main')
+        #try:
+            #ob._notifyOfCopyTo(context, op=0)
+        #except ConflictError:
+            #raise
+        #except Exception:
+            #raise CopyError, MessageDialog(
+                #title="Copy Error",
+                #message=sys.exc_info()[1],
+                #action='manage_main')
 
-        cid = context._get_id(orig_id)
-        result.append({'id': orig_id, 'new_id': cid})
+        #cid = context._get_id(orig_id)
+        #result.append({'id': orig_id, 'new_id': cid})
 
-        #orig_ob = ob
-        ob = ob._getCopy(context)
-        ob._setId(cid)
-        #notify(ObjectCopiedEvent(ob, orig_ob))
+        ##orig_ob = ob
+        #ob = ob._getCopy(context)
+        #ob._setId(cid)
+        ##notify(ObjectCopiedEvent(ob, orig_ob))
 
-        context._setObject(cid, ob)
-        ob = context._getOb(cid)
-        ob.wl_clearLocks()
+        #context._setObject(cid, ob)
+        #ob = context._getOb(cid)
+        #ob.wl_clearLocks()
 
-        ob._postCopy(context, op=0)
+        #ob._postCopy(context, op=0)
 
-        #OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
+        ##OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
 
-        #notify(ObjectClonedEvent(ob))
+        ##notify(ObjectClonedEvent(ob))
 
-        #if REQUEST is not None:
-            #return self.manage_main(self, REQUEST, update_menu=1,
-                                    #cb_dataValid=1)
-    return result
+        ##if REQUEST is not None:
+            ##return self.manage_main(self, REQUEST, update_menu=1,
+                                    ##cb_dataValid=1)
+    #return result
 
 
 def assign_version(context, new_version):
@@ -502,6 +524,7 @@ class RevokeVersion(object):
 
 
 def generateNewId(context, gid, uid):
+    """generate a new id based on existing id"""
     tmp = gid.split('-')[-1]
     try:
         int(tmp)
@@ -546,6 +569,7 @@ def versionIdHandler(obj, event):
 
 
 class GetContextInterfaces(object):
+    """Utility view that returns a list of FQ dotted interface names"""
 
     def __call__(self):
         ifaces = providedBy(self.context)

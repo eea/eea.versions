@@ -1,3 +1,5 @@
+"""Base tests configuration
+"""
 from Products.Five import fiveconfigure
 from Products.Five import zcml
 from Testing import ZopeTestCase as ztc
@@ -47,5 +49,5 @@ class VersionsTestCase(PloneTestCase):
     """
 
 class VersionsFunctionalTestCase(FunctionalTestCase, VersionsTestCase):
-    """Base class for functional integration tests for the 'eea.versions' product.
+    """Base class for functional integration tests for 'eea.versions' product.
     """
