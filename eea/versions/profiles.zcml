@@ -4,9 +4,9 @@
 
   <genericsetup:registerProfile
     name="default"
-    title="eea.versions"
+    title="EEA Versions"
     directory="profiles/default"
-    description="Extension profile for EEA Versions"
+    description="Profile for EEA Versions"
     provides="Products.GenericSetup.interfaces.EXTENSION"
     />
 
