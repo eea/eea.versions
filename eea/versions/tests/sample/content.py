@@ -4,7 +4,6 @@
 from Products.ATContentTypes.content import base
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from eea.versions.tests.sample.config import PROJECTNAME
 from eea.versions.tests.sample.interfaces import ISampleData
 from zope.interface import implements
 
@@ -38,4 +37,3 @@ class SampleData(base.ATCTContent):
     schema = SampleDataSchema
 
 
-atapi.registerType(SampleData, PROJECTNAME)

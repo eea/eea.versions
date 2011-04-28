@@ -101,9 +101,11 @@ class GetVersions(object):
         """constructor"""
         self.context = context
         self.request = request
-
+    
+    #TODO: replace Lazy with @memoize from plone
     @Lazy
     def versions(self):
+        """ Returns versions objects"""
         ver = IVersionControl(self.context)
         verId = ver.getVersionId()
 
@@ -165,7 +167,7 @@ class GetVersions(object):
     def version_number(self):
         """ Return the current version number
         """
-        for k,v in self.versions.items():
+        for k, v in self.versions.items():
             if v == self.context:
                 return k
         return 0
@@ -294,7 +296,8 @@ class GetWorkflowStateTitle(BrowserView):
             review_state = wftool.getInfoFor(obj, 'review_state', '(Unknown)')
 
             try:
-                title_state = wftool.getWorkflowsFor(obj)[0].states[review_state].title
+                title_state = wftool.getWorkflowsFor(obj)[0].\
+                        states[review_state].title
             except Exception, err:
                 logger.info(err)
 
@@ -386,7 +389,8 @@ def create_version(context, reindex=True):
 
     if reindex:
         ver.reindexObject()
-        _reindex(context)  #some indexed values of the context may depend on versions
+        #some catalogued values of the context may depend on versions
+        _reindex(context)  
 
     return ver
 
