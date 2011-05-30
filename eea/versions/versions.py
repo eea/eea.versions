@@ -519,7 +519,7 @@ class GetContextInterfaces(object):
         ifaces = providedBy(self.context)
         ifaces = set(['.'.join((iface.__module__, iface.__name__)) 
                         for iface in ifaces])
-        return bool(ifaces.intersection(iface_names)
+        return bool(ifaces.intersection(iface_names))
 
 
 
