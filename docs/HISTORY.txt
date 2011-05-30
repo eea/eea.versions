@@ -6,6 +6,7 @@ Changelog
 4.0-dev - (unreleased)
 -----------------------
  * Feature: Plone 4.0.4 compatible release [tiberich #4275]
+ * Feature: added a utility view, @@get_interfaces [tiberich #4275]
 
 1.10 - (2011-04-07)
 -------------------

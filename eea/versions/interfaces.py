@@ -54,3 +54,14 @@ class IVersionCreatedEvent(IObjectEvent):
         object is the new, versioned, object
         original is the object that was versioned
         """
+
+
+class IGetContextInterfaces(Interface):
+    """A view that can return information about interfaces for context
+    """
+
+    def __call__():
+        """ call"""
+
+    def has_any_of(ifaces):
+        """ Returns True if any specified interface is provided by context"""

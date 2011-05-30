@@ -18,6 +18,7 @@
         name="get_interfaces"
         permission="zope2.View"
         class=".versions.GetContextInterfaces"
+        allowed_interface=".interfaces.IGetContextInterfaces"
         />
 
     <browser:page

@@ -508,11 +508,18 @@ def versionIdHandler(obj, event):
 
 class GetContextInterfaces(object):
     """Utility view that returns a list of FQ dotted interface names"""
+    implements(IGetContextInterfaces)
 
     def __call__(self):
         ifaces = providedBy(self.context)
         return ['.'.join((iface.__module__, iface.__name__)) 
                         for iface in ifaces]
+
+    def has_any_of(self, iface_names):
+        ifaces = providedBy(self.context)
+        ifaces = set(['.'.join((iface.__module__, iface.__name__)) 
+                        for iface in ifaces])
+        return bool(ifaces.intersection(iface_names)
 
 
 
