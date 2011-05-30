@@ -7,7 +7,7 @@ from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
 from Products.Five import BrowserView
 from eea.versions.events import VersionCreatedEvent
-from eea.versions.interfaces import IGetVersions
+from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from persistent.dict import PersistentDict
 from zope.annotation.interfaces import IAnnotations
