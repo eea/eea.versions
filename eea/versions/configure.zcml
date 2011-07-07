@@ -5,6 +5,7 @@
 
     <include file="profiles.zcml" />
     <include file="skins.zcml" />
+    <include package=".upgrades" />
 
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 
