@@ -5,7 +5,8 @@
     <div metal:define-macro="versions"
          tal:define="versions nocall:versions | nocall:here/@@getVersions;
                      isVersionEnhanced isVersionEnhanced | here/@@isVersionEnhanced;
-                     anon context/@@plone_portal_state/anonymous;">
+                     anon context/@@plone_portal_state/anonymous;
+                     toLocalizedTime nocall:context/@@plone/toLocalizedTime;">
 
       <!-- Information about new versions -->
       <tal:new metal:define-slot="new" tal:define="newest python:versions.newest();">
