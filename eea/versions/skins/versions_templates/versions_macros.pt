@@ -11,9 +11,13 @@
     <!-- permalink to latest version -->
     <dt i18n:translate="dataset_lastVersion">Permalink to latest version</dt>
     <dd>
-      <a tal:attributes="href string:${context/aq_parent/absolute_url}/ds_resolveuid/${lastVersion};
-        title lastVersion"
-        tal:content="lastVersion" />
+      <a tal:define="start string:${context/aq_parent/absolute_url}/ds_resolveuid/;
+                     uid context/UID;
+                     version python:lastVersion if len(lastVersion) else uid;
+                     "
+        tal:attributes="href string:${start}${version};
+        title version"
+        tal:content="version" />
     </dd>
   </dl>
 </html>
