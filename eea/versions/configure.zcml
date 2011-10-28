@@ -60,6 +60,22 @@
 
     <browser:page
         for="*"
+        name="createVersionId"
+        permission="cmf.ModifyPortalContent"
+        class=".versions.CreateVersion"
+        attribute="getPossibleId"
+        />
+
+    <browser:page
+        for="*"
+        name="justCreateVersion"
+        permission="cmf.ModifyPortalContent"
+        class=".versions.CreateVersion"
+        attribute="create_version"
+        />
+
+    <browser:page
+        for="*"
         name="revokeVersion"
         permission="cmf.ModifyPortalContent"
         class=".versions.RevokeVersion"

@@ -343,7 +343,35 @@ class CreateVersion(object):
         ver = create_version(self.context)
         return self.request.RESPONSE.redirect(ver.absolute_url())
 
+    def getPossibleId(self ):
+        context = self.context
+        obj_id = context.getId()
+        parent = utils.parent(context)
 
+        tmp = obj_id.split('-')[-1]
+        try:
+            int(tmp)
+            obj_id = '-'.join(obj_id.split('-')[:-1])
+        except ValueError, err:
+            logger.info(err)
+
+        if obj_id in parent.objectIds():
+            tmp_ob = getattr(context, obj_id)
+            idx = 1
+            while idx <= 100:
+                new_id = "%s-%d" % (obj_id, idx)
+                new_ob = getattr(parent, new_id, None)
+                if new_ob:
+                    idx += 1
+                else:
+                    obj_id = new_id
+                    break
+        return obj_id
+
+
+    def create_version(self):
+        create_version(self.context)
+        
 def create_version(context, reindex=True):
     """Create a new version of an object"""
 
@@ -591,3 +619,27 @@ class GetContextInterfaces(object):
     #return result
 
 
+def create_version_id(context):
+    obj_id = context.getId()
+    parent = utils.parent(context)
+
+    tmp = obj_id.split('-')[-1]
+    try:
+        int(tmp)
+        obj_id = '-'.join(gid.split('-')[:-1])
+    except ValueError, err:
+        logger.info(err)
+
+    if obj_id in parent.objectIds():
+        tmp_ob = getattr(context, obj_id)
+        idx = 1
+        while idx <= 100:
+            new_id = "%s-%d" % (obj_id, idx)
+            new_ob = getattr(parent, new_id, None)
+            if new_ob:
+                idx += 1
+            else:
+                obj_id = new_id
+                break
+    return obj_id
+            

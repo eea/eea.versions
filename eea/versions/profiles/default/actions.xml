@@ -4,7 +4,7 @@
     <object name="create_version" meta_type="CMF Action" i18n:domain="eea">
       <property name="title" i18n:translate="">Create new version</property>
       <property name="description" i18n:translate=""/>
-      <property name="url_expr">string:${globals_view/getCurrentObjectUrl}/@@createVersion</property>
+      <property name="url_expr">string:javascript:startCreationOfNewVersion();</property>
       <property name="available_expr">python:'eea.versions.interfaces.IVersionEnhanced' in object.restrictedTraverse('@@get_interfaces')()</property>
       <property name="permissions">
         <element value="Modify portal content"/>

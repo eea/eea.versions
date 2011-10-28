@@ -4,8 +4,11 @@ Changelog
 
 4.0-dev - (unreleased)
 ----------------------
+* Feature: Avoid timeout error message on creating new version, display fancybox while copying, show link to the new version when copy is done
+  [szabozo0 #4612]
+
 * Bugfix: fixed "Permalink to latest version" in case if only one entry is available
-  [szabozo #4630]
+  [szabozo0 #4630]
 
 * Feature: added a utility view, @@get_interfaces
   [tiberich #4275]
