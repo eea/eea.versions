@@ -227,6 +227,7 @@ class GetVersions(object):
         return self.versions
 
     def getLatestVersionUrl(self):
+        """returns the url of the latest version"""
         return self.latest_version().absolute_url()
 
 def get_versions_api(context):
