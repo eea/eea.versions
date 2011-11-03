@@ -4,6 +4,9 @@ Changelog
 
 4.0-dev - (unreleased)
 ----------------------
+* Change: Cleaned up versions.py, the modal box copes with server errors, it displays an error message in case of any error (except apache timeout)
+  [szabozo0 #4612]
+
 * Feature: Avoid timeout error message on creating new version, display fancybox while copying, show link to the new version when copy is done
   [szabozo0 #4612]
 

@@ -226,6 +226,8 @@ class GetVersions(object):
     def __call__(self):
         return self.versions
 
+    def getLatestVersionUrl(self):
+        return self.latest_version().absolute_url()
 
 def get_versions_api(context):
     """returns version api class
@@ -343,35 +345,7 @@ class CreateVersion(object):
         ver = create_version(self.context)
         return self.request.RESPONSE.redirect(ver.absolute_url())
 
-    def getPossibleId(self):
-        """ Get the id what will be assigned to the new version of an object
-        """
-        context = self.context
-        obj_id = context.getId()
-        parent = utils.parent(context)
-
-        tmp = obj_id.split('-')[-1]
-        try:
-            int(tmp)
-            obj_id = '-'.join(obj_id.split('-')[:-1])
-        except ValueError, err:
-            logger.info(err)
-
-        if obj_id in parent.objectIds():
-            #tmp_ob = getattr(context, obj_id)
-            idx = 1
-            while idx <= 100:
-                new_id = "%s-%d" % (obj_id, idx)
-                new_ob = getattr(parent, new_id, None)
-                if new_ob:
-                    idx += 1
-                else:
-                    obj_id = new_id
-                    break
-        return obj_id
-
-
-    def create_version(self):
+    def create_version_ajax(self):
         """ Create a new version of an object"""
         create_version(self.context)
 

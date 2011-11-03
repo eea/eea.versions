@@ -32,6 +32,14 @@
 
     <browser:page
         for="*"
+        name="getLatestVersionUrl"
+        permission="zope2.View"
+        class=".versions.GetVersions"
+        attribute="getLatestVersionUrl"
+        />
+
+    <browser:page
+        for="*"
         name="getVersionId"
         permission="zope2.View"
         class=".versions.GetVersionId"
@@ -60,18 +68,10 @@
 
     <browser:page
         for="*"
-        name="createVersionId"
+        name="createVersionAjax"
         permission="cmf.ModifyPortalContent"
         class=".versions.CreateVersion"
-        attribute="getPossibleId"
-        />
-
-    <browser:page
-        for="*"
-        name="justCreateVersion"
-        permission="cmf.ModifyPortalContent"
-        class=".versions.CreateVersion"
-        attribute="create_version"
+        attribute="create_version_ajax"
         />
 
     <browser:page
