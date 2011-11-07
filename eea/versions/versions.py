@@ -230,6 +230,7 @@ class GetVersions(object):
         """returns the url of the latest version"""
         return self.latest_version().absolute_url()
 
+
 def get_versions_api(context):
     """returns version api class
     """
@@ -289,6 +290,7 @@ class GetVersionId(object):
         """view implementation"""
         return get_version_id(self.context)
 
+
 class GetWorkflowStateTitle(BrowserView):
     """ Returns the title of the workflow state of the given object
     """
@@ -347,8 +349,10 @@ class CreateVersion(object):
         return self.request.RESPONSE.redirect(ver.absolute_url())
 
     def create_version_ajax(self):
-        """ Create a new version of an object"""
+        """ Create a new version of an object. Does not redirect"""
         create_version(self.context)
+        return "OK"
+
 
 def create_version(context, reindex=True):
     """Create a new version of an object"""
@@ -528,6 +532,11 @@ class GetContextInterfaces(object):
                         for iface in ifaces])
         return bool(ifaces.intersection(iface_names))
 
+
+#old code that explored if it's possible to speed up versioning by 
+#not triggering events when objects are copied
+#unfortunately it caused problems because of those missing events
+#living here, maybe this code is needed in the future
 
 
 #from App.Dialogs import MessageDialog
