@@ -1,3 +1,5 @@
+"""setup
+"""
 import os
 from os.path import join
 from setuptools import setup, find_packages
@@ -11,14 +13,14 @@ setup(name=name,
       description="EEA versions",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
-      # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Plone",
         "Programming Language :: Python",
         "Topic :: Software Development :: Libraries :: Python Modules",
         ],
       keywords='eea, dataservice, data, service',
-      author='Alec Ghica (Eaudeweb), Antonio De Marinis (EEA), European Environment Agency',
+      author='Alec Ghica (Eaudeweb), Tiberiu Ichim (Eaudeweb), '
+             'Antonio De Marinis (EEA), European Environment Agency',
       author_email='webadmin@eea.europa.eu',
       url='http://svn.eionet.europa.eu/projects/Zope',
       license='GPL',
@@ -28,6 +30,7 @@ setup(name=name,
       zip_safe=False,
       install_requires=[
           'setuptools',
+          #'p4a.common',
       ],
       entry_points="""
       # -*- Entry points: -*-

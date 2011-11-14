@@ -1,5 +1,8 @@
+"""interfaces
+"""
+
 from zope.interface import Interface, Attribute
-from zope.app.event.interfaces import IObjectEvent
+from zope.component.interfaces import IObjectEvent
 
 
 class IVersionEnhanced(Interface):
@@ -15,10 +18,10 @@ class IVersionControl(Interface):
         """ Return version number. """
 
     def getVersionId():
-        """ """
+        """returns version id """
 
     def setVersionId(numbers):
-        """ """
+        """sets version id """
 
 
 class IGetVersions(Interface):
@@ -51,3 +54,14 @@ class IVersionCreatedEvent(IObjectEvent):
         object is the new, versioned, object
         original is the object that was versioned
         """
+
+
+class IGetContextInterfaces(Interface):
+    """A view that can return information about interfaces for context
+    """
+
+    def __call__():
+        """ call"""
+
+    def has_any_of(ifaces):
+        """ Returns True if any specified interface is provided by context"""

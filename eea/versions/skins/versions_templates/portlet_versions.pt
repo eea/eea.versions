@@ -1,11 +1,12 @@
 <html xmlns:metal="http://xml.zope.org/namespaces/metal"
-      i18n:domain="plone">
+      i18n:domain="eea">
   <body>
 
     <div metal:define-macro="versions"
          tal:define="versions nocall:versions | nocall:here/@@getVersions;
                      isVersionEnhanced isVersionEnhanced | here/@@isVersionEnhanced;
-                     anon portal/portal_membership/isAnonymousUser">
+                     anon context/@@plone_portal_state/anonymous;
+                     toLocalizedTime nocall:context/@@plone/toLocalizedTime;">
 
       <!-- Information about new versions -->
       <tal:new metal:define-slot="new" tal:define="newest python:versions.newest();">

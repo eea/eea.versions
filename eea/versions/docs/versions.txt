@@ -10,7 +10,7 @@ Lets use the sandbox.
     >>> _ = self.portal.invokeFactory('Folder', 'sandbox')
     >>> sandbox = portal._getOb('sandbox')
 
-Lets add a Dataset.
+Lets add a Sample Data.
 
     >>> _ = sandbox.invokeFactory('Sample Data', 'data1')
     >>> data1 = sandbox.data1
@@ -25,7 +25,8 @@ Now lets create a new version of the above dataset.
 
     >>> createVersionView = data1.unrestrictedTraverse('@@createVersion')
     >>> vertmp = createVersionView()
-    >>> dataVer = sandbox._getOb('dataset-1')
+    >>> id = vertmp[vertmp.rfind('/')+1:]
+    >>> dataVer = sandbox._getOb(id)
 
 Verify if properties were copyed on the new version.
 
