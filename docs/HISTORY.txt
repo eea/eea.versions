@@ -1,6 +1,9 @@
 Changelog
 =========
 
+4.1-dev - (unreleased)
+----------------------
+
 4.0 - (2011-11-18)
 ------------------
 * Change: Cleaned up versions.py, the modal box copes with server errors, it displays an error message in case of any error (except apache timeout)
