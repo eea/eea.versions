@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.2-dev - (unreleased)
-----------------------
+4.2 - (2011-11-22)
+------------------
 * Bug fix: Fixed versions portlet for items with non-ASCII chars
   [voineali #4760]
 
