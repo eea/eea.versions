@@ -24,9 +24,11 @@
             <li tal:repeat="doc python:newest[:1]">
               <a tal:define="doc_url doc/url;
                              doc_published doc/date;
-                             doc_title doc/title;
-                             doc_title python:doc_published and '%s - %s' % (toLocalizedTime(doc_published), doc_title) or doc_title;"
-                 tal:attributes="href doc_url" tal:content="doc_title" />
+                             doc_title doc/title;"
+                 tal:attributes="href doc_url">
+                 <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
+                 <tal:title replace="doc_title" />
+              </a>
             </li>
           </ul>
         </div>
@@ -60,11 +62,12 @@
             <a tal:define="doc_url doc/url;
                            doc_published doc/date;
                            doc_title doc/title;
-                           doc_state doc/review_state;
-                           doc_title python:doc_published and '%s - %s' % (toLocalizedTime(doc_published), doc_title) or doc_title;"
+                           doc_state doc/review_state;"
               tal:attributes="href doc_url;
-                              class string:state-$doc_state"
-              tal:content="doc_title" />
+                              class string:state-$doc_state">
+              <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
+              <tal:title replace="doc_title" />
+            </a>
           </dt>
         </dl>
       </tal:old>
