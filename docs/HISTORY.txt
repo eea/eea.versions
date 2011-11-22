@@ -1,6 +1,9 @@
 Changelog
 =========
 
+4.3-dev - (unreleased)
+----------------------
+
 4.2 - (2011-11-22)
 ------------------
 * Bug fix: Fixed versions portlet for items with non-ASCII chars
