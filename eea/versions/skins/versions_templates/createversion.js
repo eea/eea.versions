@@ -8,7 +8,7 @@ function checkLatestVersion(){
         }
         else{
           jQuery.fancybox('<div style="text-align:center;width:250px;">'+
-            '<span>The new version was created, you can see'+
+            '<span>The new version was created, you can see '+
             'it by clicking on the following link:</span><br/><br/>'+
             '<a href="'+data+'">'+data+'</a></div>',
             {'modal':false}
