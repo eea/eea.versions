@@ -200,6 +200,11 @@ class GetVersions(object):
 
         latest = sorted(self.versions.keys())[-1]
         return self.versions[latest]
+    
+    def isLatest(self):
+        """ return true if this object is latest version
+        """
+        return self.context == self.latest_version()
 
     def oldest(self):
         """ Return old versions
