@@ -63,15 +63,20 @@ Talkbacks
 ---------
 When versioning, the discussion items should be removed and unindexed:
 
-    >>> catalog = data1.portal_catalog
-    >>> data1.talkback.createReply('title', 'text')
-    >>> print len(catalog.searchResults(path=data1.getPhysicalPath() + "/talkback/"))
+    >>> from Products.CMFCore.utils import getToolByName
+    >>> catalog = getToolByName(data1, "portal_catalog")
+    >>> dtool = getToolByName(data1, "portal_discussion")
+    >>> data1.allow_discussion = True
+    >>> tb = dtool.getDiscussionFor(data1)
+    >>> id = tb.createReply('title', 'text')
+    >>> print len(catalog.searchResults(path="/".join(data1.getPhysicalPath()) + "/talkback/"))
     1
     >>> createVersionView = data1.unrestrictedTraverse('@@createVersion')
     >>> vertmp = createVersionView()
     >>> id = vertmp[vertmp.rfind('/')+1:]
     >>> dataVer = sandbox._getOb(id)
-    >>> print len(dataVer.talkback.replyCount())
+    >>> tb = dtool.getDiscussionFor(dataVer)
+    >>> print tb.replyCount(dataVer)
     0
-    >>> print len(dataVer.portal_catalog.searchResults(path=dataVer.getPhysicalPath() + "/talkback/"))
+    >>> print len(dataVer.portal_catalog.searchResults(path="/".join(dataVer.getPhysicalPath()) + "/talkback/"))
     0

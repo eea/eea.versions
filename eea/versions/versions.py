@@ -1,6 +1,7 @@
 """main eea.versions module
 """
 
+from Acquisition import aq_base
 from DateTime import DateTime
 from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
@@ -401,9 +402,11 @@ def create_version(context, reindex=True):
     ver.setExpirationDate(None)
 
     # Remove comments
-    for obj in ver.talkback.objectValues():
-        obj.__of__(ver.talkback).unindexObject() 
-    ver.talkback._container = PersistentMapping()
+    if hasattr(aq_base(ver), 'talkback'):
+        tb = ver.talkback
+        for obj in tb.objectValues():
+            obj.__of__(tb).unindexObject() 
+        tb._container = PersistentMapping()
 
     notify(VersionCreatedEvent(ver, context))
 
