@@ -2,6 +2,7 @@
 """
 
 from DateTime import DateTime
+from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
@@ -400,7 +401,10 @@ def create_version(context, reindex=True):
     ver.setExpirationDate(None)
 
     # Remove comments
-    ver.talkback = None
+    for obj in ver.talkback.objectValues():
+        obj.__of__(ver.talkback).unindexObject() 
+    ver.talkback._container = PersistentMapping()
+
     notify(VersionCreatedEvent(ver, context))
 
     if reindex:
@@ -610,5 +614,4 @@ class GetContextInterfaces(object):
             ##return self.manage_main(self, REQUEST, update_menu=1,
                                     ##cb_dataValid=1)
     #return result
-
 

@@ -57,3 +57,21 @@ TODO: The below test should be fixed, as len(verId) > 0 should return True
 
     >>> len(verId) > 0
     False
+
+
+Talkbacks
+---------
+When versioning, the discussion items should be removed and unindexed:
+
+    >>> catalog = data1.portal_catalog
+    >>> data1.talkback.createReply('title', 'text')
+    >>> print len(catalog.searchResults(path=data1.getPhysicalPath() + "/talkback/"))
+    1
+    >>> createVersionView = data1.unrestrictedTraverse('@@createVersion')
+    >>> vertmp = createVersionView()
+    >>> id = vertmp[vertmp.rfind('/')+1:]
+    >>> dataVer = sandbox._getOb(id)
+    >>> print len(dataVer.talkback.replyCount())
+    0
+    >>> print len(dataVer.portal_catalog.searchResults(path=dataVer.getPhysicalPath() + "/talkback/"))
+    0
