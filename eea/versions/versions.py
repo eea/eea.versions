@@ -404,9 +404,10 @@ def create_version(context, reindex=True):
     # Remove comments
     if hasattr(aq_base(ver), 'talkback'):
         tb = ver.talkback
-        for obj in tb.objectValues():
-            obj.__of__(tb).unindexObject() 
-        tb._container = PersistentMapping()
+        if tb is not None:
+            for obj in tb.objectValues():
+                obj.__of__(tb).unindexObject() 
+            tb._container = PersistentMapping()
 
     notify(VersionCreatedEvent(ver, context))
 
