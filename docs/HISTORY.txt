@@ -4,6 +4,8 @@ Changelog
 4.4-dev - (unreleased)
 ----------------------
  * Bug fix: check if ver.talkback is None to avoid crash [tiberich #5020]
+ * Bug fix: don't allow background creation of versions for assessments
+   [tiberich #5020]
 
 4.3 - (2012-02-15)
 ------------------
