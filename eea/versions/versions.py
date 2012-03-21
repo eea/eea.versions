@@ -355,10 +355,28 @@ class CreateVersion(object):
         ver = create_version(self.context)
         return self.request.RESPONSE.redirect(ver.absolute_url())
 
-    def create_version_ajax(self):
-        """ Create a new version of an object. Does not redirect"""
-        create_version(self.context)
-        return "OK"
+
+class CreateVersionAjax(object):
+    """ Used by javascript to create a new version in a background thread
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        # We use the view instead of calling create_version to allow for 
+        # packages to override how versions are created.
+        # If view.has_custom_template is True, it means that the view wants
+        # the user to make a decision. We treat this case in javascript
+        
+        view = getMultiAdapter((self.context, self.request), 
+                                name="createVersion")
+        if view.has_custom_template:
+            return self.context.absolute_url() + "/@@createVersion"
+        else:
+            view()
+            return "OK"
 
 
 def create_version(context, reindex=True):

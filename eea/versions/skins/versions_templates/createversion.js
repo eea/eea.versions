@@ -1,13 +1,16 @@
 var latestVersionUrl = "";
 
-function checkLatestVersion(){
-  jQuery.ajax({url     : context_url+"/getLatestVersionUrl",
+function checkLatestVersion(repeat){
+  jQuery.ajax({
+      url     : context_url+"/getLatestVersionUrl",
       success : function(data){
         if (data == latestVersionUrl){
-          setTimeout("checkLatestVersion()", 5000);
-        }
-        else{
-          jQuery.fancybox('<div style="text-align:center;width:250px;">'+
+          if (repeat){ // don't start an uncontrolled number of timeouts
+            setTimeout("checkLatestVersion(false)", 5000);
+          }
+        } else {
+          jQuery.fancybox(
+            '<div style="text-align:center;width:250px;">'+
             '<span>The new version was created, you can see '+
             'it by clicking on the following link:</span><br/><br/>'+
             '<a href="'+data+'">'+data+'</a></div>',
@@ -19,7 +22,7 @@ function checkLatestVersion(){
 }
 
 function startCreationOfNewVersion(){
-  jQuery.ajax({
+  jQuery.ajax({ // get the latest version url, before new version
       url     : context_url+"/getLatestVersionUrl",
       success : function(data){
         latestVersionUrl = data;
@@ -28,13 +31,14 @@ function startCreationOfNewVersion(){
           'src="++resource++jqzoom/zoomloader.gif"/></div>', 
           {'modal':true}
         );
-        jQuery.ajax({url     : context_url+"/@@createVersionAjax",
+        jQuery.ajax({
+            url     : context_url+"/@@createVersionAjax",
             success : function() {
-              checkLatestVersion();
+              checkLatestVersion(true);
             },
             error   : function(xhr, ajaxOptions, thrownError){
               if (xhr.status == 504){
-                checkLatestVersion();
+                checkLatestVersion(true);
               }
               else {
                 jQuery.fancybox('<div style="text-align:center;width:250px;">'+

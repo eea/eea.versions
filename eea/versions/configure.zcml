@@ -70,8 +70,7 @@
         for="*"
         name="createVersionAjax"
         permission="cmf.ModifyPortalContent"
-        class=".versions.CreateVersion"
-        attribute="create_version_ajax"
+        class=".versions.CreateVersionAjax"
         />
 
     <browser:page
