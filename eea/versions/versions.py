@@ -346,6 +346,11 @@ class IsVersionEnhanced(object):
 class CreateVersion(object):
     """ This view, when called, will create a new version of an object
     """
+    
+    # usable by ajax view to decide if it should load this view instead 
+    # of just executing it. The use case is to have a @@createVersion
+    # view with a template that allows the user to make some choice
+    has_custom_behaviour = False    
 
     def __init__(self, context, request):
         self.context = context
@@ -372,7 +377,7 @@ class CreateVersionAjax(object):
         
         view = getMultiAdapter((self.context, self.request), 
                                 name="createVersion")
-        if view.has_custom_template:
+        if getattr(view, 'has_custom_behaviour', False):
             return "SEEURL: %s/@@createVersion" % self.context.absolute_url()
         else:
             view()

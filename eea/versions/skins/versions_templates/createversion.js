@@ -34,7 +34,12 @@ function startCreationOfNewVersion(){
         jQuery.ajax({
             url     : context_url+"/@@createVersionAjax",
             success : function(data) {
-              checkLatestVersion(true);
+              if (data.indexOf("SEEURL")===0){
+                  var url = data.replace("SEEURL:", ""); 
+                  window.location.href = url;
+              } else {
+                  checkLatestVersion(true);
+              }
             },
             error   : function(xhr, ajaxOptions, thrownError){
               if (xhr.status == 504){
