@@ -15,7 +15,7 @@ from persistent.dict import PersistentDict
 from zope.annotation.interfaces import IAnnotations
 from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
-from zope.component import queryMultiAdapter
+from zope.component import queryMultiAdapter, getMultiAdapter
 from zope.event import notify
 from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
 from zope.interface import implements, providedBy
@@ -373,7 +373,7 @@ class CreateVersionAjax(object):
         view = getMultiAdapter((self.context, self.request), 
                                 name="createVersion")
         if view.has_custom_template:
-            return self.context.absolute_url() + "/@@createVersion"
+            return "SEEURL: %s/@@createVersion" % self.context.absolute_url()
         else:
             view()
             return "OK"

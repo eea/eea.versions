@@ -33,7 +33,7 @@ function startCreationOfNewVersion(){
         );
         jQuery.ajax({
             url     : context_url+"/@@createVersionAjax",
-            success : function() {
+            success : function(data) {
               checkLatestVersion(true);
             },
             error   : function(xhr, ajaxOptions, thrownError){
