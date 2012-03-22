@@ -65,3 +65,14 @@ class IGetContextInterfaces(Interface):
 
     def has_any_of(ifaces):
         """ Returns True if any specified interface is provided by context"""
+
+
+class ICreateVersionView(Interface):
+    """ A view that can create a new version
+    """
+
+    def __call__():
+        """ Calls create() and redirects to new version """
+
+    def create():
+        """ This creates a new version """

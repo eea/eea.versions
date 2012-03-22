@@ -9,6 +9,7 @@ from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
 from Products.Five import BrowserView
 from eea.versions.events import VersionCreatedEvent
+from eea.versions.interfaces import ICreateVersionView
 from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from persistent.dict import PersistentDict
@@ -346,6 +347,7 @@ class IsVersionEnhanced(object):
 class CreateVersion(object):
     """ This view, when called, will create a new version of an object
     """
+    implements(ICreateVersionView)
     
     # usable by ajax view to decide if it should load this view instead 
     # of just executing it. The use case is to have a @@createVersion
