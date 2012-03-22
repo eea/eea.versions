@@ -357,8 +357,11 @@ class CreateVersion(object):
         self.request = request
 
     def __call__(self):
-        ver = create_version(self.context)
+        ver = self.create()
         return self.request.RESPONSE.redirect(ver.absolute_url())
+
+    def create(self):
+        return create_version(self.context)
 
 
 class CreateVersionAjax(object):
@@ -380,7 +383,7 @@ class CreateVersionAjax(object):
         if getattr(view, 'has_custom_behaviour', False):
             return "SEEURL: %s/@@createVersion" % self.context.absolute_url()
         else:
-            view()
+            view.create()
             return "OK"
 
 
