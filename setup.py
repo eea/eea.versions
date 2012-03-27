@@ -31,6 +31,7 @@ setup(name=name,
       install_requires=[
           'setuptools',
           #'p4a.common',
+          'collective.indexing',
       ],
       entry_points="""
       # -*- Entry points: -*-

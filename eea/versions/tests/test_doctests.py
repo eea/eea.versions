@@ -16,9 +16,11 @@ OPTIONFLAGS = (doctest.REPORT_ONLY_FIRST_FAILURE |
 
 
 class OptimizationTest(PloneTestCase):
+    """ Optimization test case"""
 
     def _make_tree(self, container):
-        make_id = lambda: "o" + str(random.randint(0,10000000000))
+        """create a tree of content"""
+        make_id = lambda: "o" + str(random.randint(0, 10000000000))
 
         toplevel = container[container.invokeFactory("Folder", make_id())]
         #print "Created top level"
@@ -47,13 +49,15 @@ class OptimizationTest(PloneTestCase):
         return toplevel
 
     def make_versions(self):
+        """make a tree and version of it"""
         #print "Start tree creation"
         tree = self._make_tree(self.portal)
         #print "Finished created tree"
-        version = tree.unrestrictedTraverse("@@createVersion")()
+        tree.unrestrictedTraverse("@@createVersion")()
         #print "Finished versioning"
 
     def test_indexing(self):
+        """ test"""
         self.loginAsPortalOwner()
         
         timer = timeit.Timer(self.make_versions)
