@@ -9,6 +9,8 @@ Changelog
  * Bug fix: moved createVersionAjax to its own class; use @@createVersion
    view to do the versioning. This allows packages to override version
    creation [tiberich #5020]
+ * Feature: added test to see if using collective.indexing is faster [tiberich
+   #5033]
 
 4.3 - (2012-02-15)
 ------------------

@@ -21,37 +21,37 @@ class OptimizationTest(PloneTestCase):
         make_id = lambda: "o" + str(random.randint(0,10000000000))
 
         toplevel = container[container.invokeFactory("Folder", make_id())]
-        print "Created top level"
+        #print "Created top level"
 
         #add 5 folders to the top level container
         for id in (make_id() for i in range(5)):
             branch = toplevel[toplevel.invokeFactory("Folder", id)]
-            print "Created branch"
+            #print "Created branch"
 
             #add another 3 folders inside, each with 5 docs
             for id in (make_id() for i in range(3)):
                 twig = branch[branch.invokeFactory("Folder", id)]
-                print "Created twig"
+                #print "Created twig"
 
                 for id in (make_id() for i in range(5)):
                     leaf = twig[twig.invokeFactory("Sample Data", id)]
-                    print "Created sample data"
+                    #print "Created sample data"
                     form = {
                       'title': 'Dataset'+id,
                       'description': 'Organisation description',
                       'somedata':'Some Data',
                     }
                     leaf.processForm(values=form, data=1, metadata=1)
-                    print "Edited sample data"
+                    #print "Edited sample data"
 
         return toplevel
 
     def make_versions(self):
-        print "Start tree creation"
+        #print "Start tree creation"
         tree = self._make_tree(self.portal)
-        print "Finished created tree"
+        #print "Finished created tree"
         version = tree.unrestrictedTraverse("@@createVersion")()
-        print "Finished versioning"
+        #print "Finished versioning"
 
     def test_indexing(self):
         self.loginAsPortalOwner()
@@ -59,17 +59,20 @@ class OptimizationTest(PloneTestCase):
         timer = timeit.Timer(self.make_versions)
 
         #default indexing
-        print "Starting creation of objects with regular indexing"
-        v1 = timer.repeat(2, number=3)
+        #print "Starting creation of objects with regular indexing"
+        self.portal.portal_catalog.manage_catalogClear()
+        v1 = timer.repeat(2, number=2)
 
         #collective.indexing based
+        self.portal.portal_catalog.manage_catalogClear()
         load_config('configure.zcml', collective.indexing)
+        collective.indexing.initialize(None)
         timer = timeit.Timer(self.make_versions)
-        print "Starting creation of objects with collective indexing"
-        v2 = timer.repeat(2, number=3)
+        #print "Starting creation of objects with collective indexing"
+        v2 = timer.repeat(2, number=2)
 
-        print v1
-        print v2
+        #print v1
+        #print v2
 
         assert(sum(v1) > sum(v2))
 
