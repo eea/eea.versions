@@ -26,20 +26,20 @@ class OptimizationTest(PloneTestCase):
         #print "Created top level"
 
         #add 5 folders to the top level container
-        for id in (make_id() for i in range(5)):
-            branch = toplevel[toplevel.invokeFactory("Folder", id)]
+        for iid in (make_id() for i in range(5)):
+            branch = toplevel[toplevel.invokeFactory("Folder", iid)]
             #print "Created branch"
 
             #add another 3 folders inside, each with 5 docs
-            for id in (make_id() for i in range(3)):
-                twig = branch[branch.invokeFactory("Folder", id)]
+            for iid in (make_id() for i in range(3)):
+                twig = branch[branch.invokeFactory("Folder", iid)]
                 #print "Created twig"
 
-                for id in (make_id() for i in range(5)):
-                    leaf = twig[twig.invokeFactory("Sample Data", id)]
+                for iid in (make_id() for i in range(5)):
+                    leaf = twig[twig.invokeFactory("Sample Data", iid)]
                     #print "Created sample data"
                     form = {
-                      'title': 'Dataset'+id,
+                      'title': 'Dataset'+iid,
                       'description': 'Organisation description',
                       'somedata':'Some Data',
                     }
