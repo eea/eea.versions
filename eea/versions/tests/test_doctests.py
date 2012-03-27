@@ -75,8 +75,8 @@ class OptimizationTest(PloneTestCase):
         #print "Starting creation of objects with collective indexing"
         v2 = timer.repeat(2, number=2)
 
-        #print v1
-        #print v2
+        print "Without collective.indexing: ", sum(v1)
+        print "With collective.indexing: ", sum(v2)
 
         assert(sum(v1) > sum(v2))
 
