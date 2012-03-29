@@ -50,30 +50,31 @@ class OptimizationTest(PloneTestCase):
 
     def make_versions(self):
         """make a tree and version of it"""
-        #print "Start tree creation"
-        tree = self._make_tree(self.portal)
-        #print "Finished created tree"
-        tree.unrestrictedTraverse("@@createVersion")()
+        self.tree.unrestrictedTraverse("@@createVersion")()
         #print "Finished versioning"
 
     def test_indexing(self):
         """ test"""
         self.loginAsPortalOwner()
+
+        print "Start tree creation"
+        self.tree = self._make_tree(self.portal)
+        print "Finished created tree"
         
         timer = timeit.Timer(self.make_versions)
 
         #default indexing
-        #print "Starting creation of objects with regular indexing"
+        print "Starting creation of objects with regular indexing"
         self.portal.portal_catalog.manage_catalogClear()
-        v1 = timer.repeat(2, number=2)
+        v1 = timer.repeat(5, number=10)
 
         #collective.indexing based
         self.portal.portal_catalog.manage_catalogClear()
         load_config('configure.zcml', collective.indexing)
         collective.indexing.initialize(None)
         timer = timeit.Timer(self.make_versions)
-        #print "Starting creation of objects with collective indexing"
-        v2 = timer.repeat(2, number=2)
+        print "Starting creation of objects with collective indexing"
+        v2 = timer.repeat(5, number=10)
 
         print "Without collective.indexing: ", sum(v1)
         print "With collective.indexing: ", sum(v2)
@@ -89,5 +90,5 @@ def test_suite():
                   optionflags=OPTIONFLAGS,
                   package='eea.versions',
                   test_class=VersionsFunctionalTestCase) ,
-              unittest.makeSuite(OptimizationTest),
+              #unittest.makeSuite(OptimizationTest),
               ))
