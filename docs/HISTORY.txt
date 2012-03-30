@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.4-dev - (unreleased)
-----------------------
+4.4 - (2012-03-30)
+------------------
  * Bug fix: check if ver.talkback is None to avoid crash [tiberich #5020]
  * Bug fix: don't start an uncontrolled number of timeouts in javascript
    versions popup [tiberich #5020]
