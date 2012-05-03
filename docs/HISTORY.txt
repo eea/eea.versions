@@ -3,6 +3,7 @@ Changelog
 
 4.6-dev - (unreleased)
 ----------------------
+ * Bug fix: fix pylint warnings [tiberich #5111]
 
 4.5 - (2012-05-03)
 ------------------

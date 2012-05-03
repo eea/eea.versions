@@ -13,7 +13,6 @@ OPTIONFLAGS = (doctest.REPORT_ONLY_FIRST_FAILURE |
                doctest.ELLIPSIS |
                doctest.NORMALIZE_WHITESPACE)
 
-#import collective.indexing
 
 class OptimizationTest(PloneTestCase):
     """ Optimization test case"""
@@ -70,6 +69,7 @@ class OptimizationTest(PloneTestCase):
 
         #collective.indexing based
         self.portal.portal_catalog.manage_catalogClear()
+        import collective.indexing
         load_config('configure.zcml', collective.indexing)
         collective.indexing.initialize(None)
         timer = timeit.Timer(self.make_versions)
