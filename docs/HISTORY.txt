@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.5-dev - (unreleased)
-----------------------
+4.5 - (2012-05-03)
+------------------
  * Bug fix: no longer depend on collective.indexing [tiberich #5111]
 
 4.4 - (2012-03-30)
