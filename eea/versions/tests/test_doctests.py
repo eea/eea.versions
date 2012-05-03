@@ -4,7 +4,6 @@ from Products.PloneTestCase.PloneTestCase import PloneTestCase
 from Testing.ZopeTestCase import FunctionalDocFileSuite as Suite
 from eea.versions.tests.base import VersionsFunctionalTestCase
 from Zope2.App.zcml import load_config
-import collective.indexing
 import doctest
 import timeit
 import unittest
@@ -14,6 +13,7 @@ OPTIONFLAGS = (doctest.REPORT_ONLY_FIRST_FAILURE |
                doctest.ELLIPSIS |
                doctest.NORMALIZE_WHITESPACE)
 
+#import collective.indexing
 
 class OptimizationTest(PloneTestCase):
     """ Optimization test case"""
