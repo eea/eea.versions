@@ -3,7 +3,6 @@
 
 from Acquisition import aq_base
 from DateTime import DateTime
-from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
