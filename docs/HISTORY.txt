@@ -3,6 +3,7 @@ Changelog
 
 4.6-dev - (unreleased)
 ----------------------
+ * Feature: updated for plone.app.discussion 2.0.10 [szabozo0 #5189]
  * Bug fix: fix pylint warnings [tiberich #5111]
 
 4.5 - (2012-05-03)
