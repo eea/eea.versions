@@ -1,7 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
   lang="en"
   metal:use-macro="here/main_template/macros/master"
-  i18n:domain="plone">
+  i18n:domain="eea">
   <body>
     <div metal:fill-slot="main">
       <h1 i18n:translate="">Assign version</h1>
@@ -15,7 +15,8 @@
           Fill the new Version ID to be assigned
         </label><br />
         <input type="text" name="new-version" id="new-version" alt="Fill the new Version ID" />
-        <input class="context" type="submit" name="assign" value="Assign version" />
+        <input class="context" type="submit" name="assign" value="Assign version"
+               i18n:attributes="value" />
       </form>
     </div>
   </body>
