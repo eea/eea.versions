@@ -13,7 +13,7 @@
         <div class="portalMessage warningMessage"
              tal:condition="python:isVersionEnhanced and newest">
           <tal:messages define="title_state python:newest[0]['title_state']">
-            <strong tal:condition="anon" i18n:translate="new_version_available">
+            <strong tal:condition="anon" i18n:translate="new_version_available_single">
               Note: new version is available!
             </strong>
             <strong tal:condition="not:anon">
