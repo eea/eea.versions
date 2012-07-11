@@ -17,7 +17,7 @@
               Note: new version is available!
             </strong>
             <strong tal:condition="not:anon">
-              <span i18n:translate="" />
+             <span i18n:translate="">Note: there is a new version available with state:</span> <span tal:replace="title_state" /> 
             </strong>
           </tal:messages>
           <ul>
