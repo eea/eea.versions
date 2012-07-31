@@ -11,6 +11,7 @@ from eea.versions.events import VersionCreatedEvent
 from eea.versions.interfaces import ICreateVersionView
 from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
+from Persistence import PersistentMapping
 from persistent.dict import PersistentDict
 from zope.annotation.interfaces import IAnnotations
 from zope.cachedescriptors.property import Lazy
