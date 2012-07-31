@@ -22,7 +22,11 @@ from zope.interface import implements, providedBy
 import logging
 import random
 
-from plone.app.discussion.interfaces import IConversation
+hasNewDiscussion = True
+try:
+    from plone.app.discussion.interfaces import IConversation
+except ImportError:
+    hasNewDiscussion = False
 
 logger = logging.getLogger('eea.versions.versions')
 
@@ -431,9 +435,17 @@ def create_version(context, reindex=True):
     ver.setExpirationDate(None)
 
     # Remove comments
-    conversation = IConversation(aq_base(ver))
-    while conversation.keys():
-        conversation.__delitem__(conversation.keys()[0])
+    if hasNewDiscussion:
+        conversation = IConversation(aq_base(ver))
+        while conversation.keys():
+            conversation.__delitem__(conversation.keys()[0])
+    else:
+        if hasattr(aq_base(ver), 'talkback'): 
+            tb = ver.talkback
+            if tb is not None:
+                for obj in tb.objectValues(): 
+                    obj.__of__(tb).unindexObject()  
+                tb._container = PersistentMapping() 
 
     notify(VersionCreatedEvent(ver, context))
 

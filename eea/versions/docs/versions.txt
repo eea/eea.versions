@@ -64,24 +64,40 @@ Talkbacks
 When versioning, the discussion items should be removed and unindexed:
 
     >>> from Products.CMFCore.utils import getToolByName
-    >>> from plone.app.discussion.interfaces import IConversation
-    >>> from zope.component import createObject
+    >>> hasNewDiscussion = True
+    >>> try:
+    ...     from plone.app.discussion.interfaces import IConversation
+    ...     from zope.component import createObject
+    ... except:
+    ...     hasNewDiscussion = False
     >>> catalog = getToolByName(data1, "portal_catalog")
     >>> dtool = getToolByName(data1, "portal_discussion")
     >>> data1.allow_discussion = True
-    >>> conversation = IConversation(data1)
-    >>> comment = createObject('plone.Comment')
-    >>> comment.title = 'title'
-    >>> comment.text = 'text'
-    >>> comment_id = conversation.addComment(comment)
-    >>> print len(catalog.searchResults(path="/".join(data1.getPhysicalPath()) + "/++conversation++default/"))
+    >>> if hasNewDiscussion:
+    ...     conversation = IConversation(data1)
+    ...     comment = createObject('plone.Comment')
+    ...     comment.title = 'title'
+    ...     comment.text = 'text'
+    ...     comment_id = conversation.addComment(comment)
+    ...     print len(catalog.searchResults(path="/".join(data1.getPhysicalPath()) + "/++conversation++default/"))
+    ... else:
+    ...     tb = dtool.getDiscussionFor(data1)
+    ...     id = tb.createReply('title', 'text')
+    ...     print len(catalog.searchResults(path="/".join(data1.getPhysicalPath()) + "/talkback/")) 
     1
     >>> createVersionView = data1.unrestrictedTraverse('@@createVersion')
     >>> vertmp = createVersionView()
     >>> id = vertmp[vertmp.rfind('/')+1:]
     >>> dataVer = sandbox._getOb(id)
-    >>> conversationVer = IConversation(dataVer)
-    >>> print conversationVer.total_comments
+    >>> if hasNewDiscussion:
+    ...     conversationVer = IConversation(dataVer)
+    ...     print conversationVer.total_comments
+    ... else:
+    ...     tb = dtool.getDiscussionFor(dataVer)
+    ...     print tb.replyCount(dataVer) 
     0
-    >>> print len(dataVer.portal_catalog.searchResults(path="/".join(dataVer.getPhysicalPath()) + "/++conversation++default/"))
+    >>> if hasNewDiscussion:
+    ...     print len(dataVer.portal_catalog.searchResults(path="/".join(dataVer.getPhysicalPath()) + "/++conversation++default/"))
+    ... else:
+    ...     print len(dataVer.portal_catalog.searchResults(path="/".join(dataVer.getPhysicalPath()) + "/talkback/"))
     0

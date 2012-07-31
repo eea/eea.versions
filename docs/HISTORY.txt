@@ -3,7 +3,8 @@ Changelog
 
 4.7-dev - (unreleased)
 ----------------------
-* 
+* Bugfix: made eea.versions compatible with plone 4.0
+  [szabozo0 refs #5387]
 
 4.6 - (2012-06-12)
 ------------------
