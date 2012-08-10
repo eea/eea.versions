@@ -1,8 +1,8 @@
 Changelog
 =========
 
-4.7-dev - (unreleased)
-----------------------
+4.7 - (2012-08-10)
+------------------
 * Bugfix: made eea.versions compatible with plone 4.0
   [szabozo0 refs #5387]
 
@@ -16,7 +16,6 @@ Changelog
   [tiberich #5111]
 * Bug Fix: Fixed duplicate key for translation in *.pt
   [prospchr refs #5162]
-  
 
 4.5 - (2012-05-03)
 ------------------
