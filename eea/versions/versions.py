@@ -80,7 +80,7 @@ class VersionControl(object):
         if ver is None:
             verData = {VERSION_ID: ''}
             annotations[VERSION_ID] = PersistentDict(verData)
-            _reindex(context)
+            #_reindex(context)
 
     def getVersionId(self):
         """ Get version id. """

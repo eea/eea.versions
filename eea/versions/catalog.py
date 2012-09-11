@@ -10,7 +10,7 @@ def getVersionIdForIndex(obj):
     """
     try:
         ver = IVersionControl(obj)
-        print "Version ID", ver.getVersionId()
+        #print "Version ID", ver.getVersionId()
         return ver.getVersionId()
     except (TypeError, ValueError): #ComponentLookupError,
         # The catalog expects AttributeErrors when a value can't be found

@@ -57,11 +57,12 @@ class GetMissingValuesForIndex(BrowserView):
             print >> out, brain.portal_type, brain.getURL()
             if fix:
                 obj = brain.getObject()
+                obj.reindexObject(); continue
                 ver = IVersionControl(obj)
                 if not IVersionEnhanced.providedBy(obj):
                     alsoProvides(obj, IVersionEnhanced)
                 ver.setVersionId(self.get_real_versionid(brain))
-                obj.reindexObject()
+                #obj.reindexObject()
 
         if fix:
             print >> out, "Fixed, try calling again this page to see if different"
