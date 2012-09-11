@@ -3,6 +3,8 @@ Changelog
 
 4.8-dev - (unreleased)
 ----------------------
+* Bug fix: always reindex objects when assigning a new versionId
+  [tiberich refs #5502]
 
 4.7 - (2012-08-10)
 ------------------

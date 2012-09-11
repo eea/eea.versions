@@ -101,4 +101,12 @@
         class=".versions.GetWorkflowStateTitle"
         />
 
+    <browser:page
+        name="missing_values_for_index"
+        for="zope.interface.Interface"
+        class=".debug.GetMissingValuesForIndex"
+        permission="cmf.ManagePortal"
+        />
+
+
 </configure>

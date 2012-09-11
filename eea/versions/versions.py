@@ -80,6 +80,7 @@ class VersionControl(object):
         if ver is None:
             verData = {VERSION_ID: ''}
             annotations[VERSION_ID] = PersistentDict(verData)
+            _reindex(context)
 
     def getVersionId(self):
         """ Get version id. """
@@ -484,7 +485,7 @@ class AssignVersion(object):
 
     def __call__(self):
         pu = getToolByName(self.context, 'plone_utils')
-        new_version = self.request.form.get('new-version', '')
+        new_version = self.request.form.get('new-version', '').strip()
         nextURL = self.request.form.get('nextURL', self.context.absolute_url())
 
         if new_version:
