@@ -1,8 +1,11 @@
+"""Debug views and upgrade utilities
+"""
+
 from BTrees.IIBTree import IISet, difference
 from Products.Five import BrowserView
 from Products.ZCatalog.Lazy import LazyMap
 from StringIO import StringIO
-from eea.versions.interfaces import IVersionControl, IVersionEnhanced
+from eea.versions.interfaces import IVersionEnhanced
 from eea.versions.versions import VERSION_ID
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides

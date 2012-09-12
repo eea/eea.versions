@@ -64,7 +64,7 @@ def _get_random(context, size=0):
 class VersionControl(object):
     """ Version adapter
 
-    TODO: creating an adapter instance of an object has the side-effect of making
+    ZZZ: creating an adapter instance of an object has the side-effect of making
     that object versioned. This is not very intuitive
     """
     implements(IVersionControl)
@@ -98,7 +98,7 @@ class VersionControl(object):
 
     def getVersionNumber(self):
         """ Return version number """
-        #TODO: to be implemented
+        #ZZZ: to be implemented
         pass
 
 
@@ -112,7 +112,7 @@ class GetVersions(object):
         self.context = context
         self.request = request
     
-    #TODO: replace Lazy with @memoize from plone
+    #ZZZ: replace Lazy with @memoize from plone
     @Lazy
     def versions(self):
         """ Returns versions objects"""
@@ -155,7 +155,7 @@ class GetVersions(object):
         else:
             title_state = 'Unknown'
 
-        field = version.getField('lastUpload') #TODO: specific to dataservice
+        field = version.getField('lastUpload') #ZZZ: specific to dataservice
         if not field:
             value = version.getEffectiveDate()
             if not value:
@@ -201,7 +201,7 @@ class GetVersions(object):
             return []
         return res
 
-    #TODO: add first_version method
+    #ZZZ: add first_version method
     def latest_version(self):
         """Returns the latest version of an object"""
 
@@ -249,7 +249,7 @@ class GetVersions(object):
 def get_versions_api(context):
     """returns version api class
     """
-    #TODO: at this moment the code sits in views, which makes it 
+    #ZZZ: at this moment the code sits in views, which makes it 
     #awkward to reuse this API in python code and tests. There are 
     #the get_..._api() functions
     #Treat those views as API classes. This can and should be refactored
@@ -332,7 +332,7 @@ def get_version_id_api(context):
 
 def isVersionEnhanced(context):
     """returns bool if context can be version enhanced"""
-    #TODO: this doesn't guarantee that there are versions
+    #ZZZ: this doesn't guarantee that there are versions
     #a better name for this would be "is_versionenhanced"
     if IVersionEnhanced.providedBy(context):
         return True
@@ -370,6 +370,8 @@ class CreateVersion(object):
         return self.request.RESPONSE.redirect(ver.absolute_url())
 
     def create(self):
+        """create a version
+        """
         return create_version(self.context)
 
 
@@ -424,7 +426,7 @@ def create_version(context, reindex=True):
     ver = getattr(parent, new_id)
 
     # Fixes the generated id: remove copy_of from ID
-    #TODO: add -vX sufix to the ids
+    #ZZZ: add -vX sufix to the ids
     vid = ver.getId()
     new_id = vid.replace('copy_of_', '')
     new_id = generateNewId(parent, new_id, ver.UID())
@@ -561,7 +563,7 @@ def versionIdHandler(obj, event):
         verId = _get_random(obj, 10)
         anno = IAnnotations(obj)
         ver = anno.get(VERSION_ID)
-        #TODO: tests fails with ver = None when adding an EEAFigure,
+        #ZZZ: tests fails with ver = None when adding an EEAFigure,
         #      remove "if ver:" after fix
         if ver:
             if not ver.values()[0]:
