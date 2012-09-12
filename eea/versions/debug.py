@@ -36,10 +36,12 @@ class GetMissingValuesForIndex(BrowserView):
         return LazyMap(catalog._catalog.__getitem__, rs.keys(), length)
 
     def get_real_versionid(self, brain):
+        """get version id recorded in annotation
+        """
         obj = brain.getObject()
         annot = IAnnotations(obj)
-        versionid = annot.get(VERSION_ID, None)
-        return versionid
+        versionid = annot.get(VERSION_ID, "")
+        return bool(versionid.strip())
 
     def __call__(self):
         catalog = self.context.portal_catalog
@@ -49,23 +51,21 @@ class GetMissingValuesForIndex(BrowserView):
 
         results = self.not_indexed_results(catalog, index)
         out = StringIO()
-        results = filter(lambda z: z.portal_type == portal_type and 
-                                    self.get_real_versionid(z), results)
+        results = [z for z in results if 
+                (z.portal_type == portal_type) and self.get_real_versionid(z)]
 
         print >> out, "Got %s results" % len(results)
         for brain in results:
             print >> out, brain.portal_type, brain.getURL()
             if fix:
                 obj = brain.getObject()
-                obj.reindexObject(); continue
-                ver = IVersionControl(obj)
                 if not IVersionEnhanced.providedBy(obj):
                     alsoProvides(obj, IVersionEnhanced)
-                ver.setVersionId(self.get_real_versionid(brain))
-                #obj.reindexObject()
+                obj.reindexObject()
 
         if fix:
-            print >> out, "Fixed, try calling again this page to see if different"
+            print >> out, "Fixed, try calling again this page "\
+                          "to see if different"
 
         out.seek(0)
             

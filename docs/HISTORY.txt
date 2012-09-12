@@ -3,7 +3,12 @@ Changelog
 
 4.8-dev - (unreleased)
 ----------------------
-* Bug fix: always reindex objects when assigning a new versionId
+* Bug fix: added a page to detect and fix objects that have a recorded
+  versionId but they don't publish this to the catalog
+  [tiberich refs #5502]
+* Upgrade step: go to
+  /www/@@missing_values_for_index?portal_type=Specification&index=getVersionId&fix=true
+  Visit it two times. Note the output should be empty the second time.
   [tiberich refs #5502]
 
 4.7 - (2012-08-10)
