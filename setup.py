@@ -1,12 +1,11 @@
 """setup
 """
 import os
-from os.path import join
 from setuptools import setup, find_packages
 
 name = 'eea.versions'
 path = name.split('.') + ['version.txt']
-version = open(join(*path)).read().strip()
+version = open(os.path.join(*path)).read().strip()
 
 setup(name=name,
       version=version,
@@ -14,15 +13,26 @@ setup(name=name,
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       classifiers=[
-        "Framework :: Plone",
-        "Programming Language :: Python",
-        "Topic :: Software Development :: Libraries :: Python Modules",
+          "Framework :: Zope2",
+          "Framework :: Zope3",
+          "Framework :: Plone",
+          "Framework :: Plone :: 4.0",
+          "Framework :: Plone :: 4.1",
+          "Framework :: Plone :: 4.2",
+          "Programming Language :: Zope",
+          "Programming Language :: Python",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+          "License :: OSI Approved :: GNU General Public License (GPL)",
+          "License :: OSI Approved :: Mozilla Public License 1.0 (MPL)",
         ],
-      keywords='eea, dataservice, data, service',
-      author='Alec Ghica (Eaudeweb), Tiberiu Ichim (Eaudeweb), '
-             'Antonio De Marinis (EEA), European Environment Agency',
-      author_email='webadmin@eea.europa.eu',
-      url='http://svn.eionet.europa.eu/projects/Zope',
+      keywords='eea versions',
+      author='European Environment Agency',
+      author_email="webadmin@eea.europa.eu",
+      maintainer='Tiberiu Ichim (Eau de Web)',
+      maintainer_email='tiberiu.ichim@eaudeweb.ro',
+      bugtrack_url="https://github.com/eea/eea.versions/issues",
+      download_url="http://pypi.python.org/pypi/eea.versions",
+      url='https://eea.github.com/docs/eea.versions',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['eea'],
@@ -33,6 +43,11 @@ setup(name=name,
           #'p4a.common',
           #'collective.indexing',
       ],
+      extras_require={
+          'test': [
+              'plone.app.testing',
+          ]
+      },
       entry_points="""
       # -*- Entry points: -*-
       """,
