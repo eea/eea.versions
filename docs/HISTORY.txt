@@ -27,7 +27,7 @@ Changelog
   [szabozo0 #5189]
 * Bug fix: fix pylint warnings
   [tiberich #5111]
-* Bug Fix: Fixed duplicate key for translation in *.pt
+* Bug Fix: Fixed duplicate key for translation in .pt files
   [prospchr refs #5162]
 
 4.5 - (2012-05-03)
