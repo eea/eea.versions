@@ -1,6 +1,11 @@
 ============
 EEA Versions
 ============
+.. image:: http://ci.eionet.europa.eu/job/eea.versions-www/badge/icon
+  :target: http://ci.eionet.europa.eu/job/eea.versions-www/lastBuild
+.. image:: http://ci.eionet.europa.eu/job/eea.versions-plone4/badge/icon
+  :target: http://ci.eionet.europa.eu/job/eea.versions-plone4/lastBuild
+
 EEA Versions is a versioning system based on a version ID to group certains
 objects and EffectiveDate to determine version number.
 
