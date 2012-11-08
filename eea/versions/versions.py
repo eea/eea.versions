@@ -568,7 +568,11 @@ def versionIdHandler(obj, event):
         if ver:
             if not ver.values()[0]:
                 ver[VERSION_ID] = verId
-                _reindex(obj)
+                try:
+                    _reindex(obj)
+                except AttributeError:
+                    logger.debug("Error reindexing in versionIdHandler "
+                                 "for %s" % obj)
 
 
 class GetContextInterfaces(object):

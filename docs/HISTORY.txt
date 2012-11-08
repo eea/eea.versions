@@ -3,6 +3,9 @@ Changelog
 
 5.1-dev - (unreleased)
 ----------------------
+* Bug fix: don't fail if reindex fails for children of copied (versioned)
+  objects. They will be reindexed anyway in a later step
+  [tiberich #9946]
 
 5.0 - (2012-10-08)
 ------------------
