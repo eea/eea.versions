@@ -1,0 +1,84 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2012-11-09 13:24+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: eea\n"
+
+#: ../../versions/assign_version.pt:7
+#: ../../versions/profiles/default/actions.xml
+msgid "Assign version"
+msgstr ""
+
+#: ../../versions/profiles/default/actions.xml
+msgid "Create new version"
+msgstr ""
+
+#: ../../versions/assign_version.pt:9
+msgid "Current Version ID:"
+msgstr ""
+
+#: ../../versions/assign_version.pt:14
+msgid "Fill the new Version ID to be assigned"
+msgstr ""
+
+#: ../../versions/skins/versions_templates/portlet_versions.pt:16
+msgid "Note: new version is available!"
+msgstr ""
+
+#: ../../versions/skins/versions_templates/portlet_versions.pt:20
+msgid "Note: there is a new version available with state:"
+msgstr ""
+
+#: ../../versions/skins/versions_templates/portlet_versions.pt:58
+msgid "Older versions"
+msgstr ""
+
+#: ../../versions/skins/versions_templates/versions_macros.pt:12
+msgid "Permalink to latest version"
+msgstr ""
+
+#: ../../versions/skins/versions_templates/versions_macros.pt:5
+msgid "Permalink to this version"
+msgstr ""
+
+#: ../../versions/versions.py:497
+msgid "Please specify a valid Version ID."
+msgstr ""
+
+#: ../../versions/profiles/default/actions.xml
+msgid "Revoke version"
+msgstr ""
+
+#: ../../versions/skins/versions_templates/portlet_versions.pt:49
+msgid "See older versions."
+msgstr ""
+
+#: ../../versions/skins/versions_templates/portlet_versions.pt:39
+msgid "This is the latest published version."
+msgstr ""
+
+#: ../../versions/skins/versions_templates/portlet_versions.pt:42
+msgid "This is the latest version with state:"
+msgstr ""
+
+#: ../../versions/versions.py:495
+msgid "Version ID changed."
+msgstr ""
+
+#: ../../versions/versions.py:523
+msgid "Version revoked."
+msgstr ""
+
