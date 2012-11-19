@@ -19,7 +19,7 @@
       <property name="permissions">
         <element value="Modify portal content"/>
       </property>
-      <property name="visible">True</property>
+      <property name="visible">False</property>
     </object>
     <object name="assign_version" meta_type="CMF Action" i18n:domain="eea">
       <property name="title" i18n:translate="">Assign version</property>
