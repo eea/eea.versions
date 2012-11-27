@@ -1,6 +1,9 @@
 Changelog
 =========
 
+5.4-dev - (unreleased)
+----------------------
+
 5.3 - (2012-11-27)
 ------------------
 * Bug fix: fix migration code for #9847
