@@ -41,10 +41,19 @@ class GetMissingValuesForIndex(BrowserView):
     def get_real_versionid(self, brain):
         """get version id recorded in annotation
         """
-        obj = brain.getObject()
+        try:
+            obj = brain.getObject()
+        except AttributeError:  #some objects have entries in the catalog
+                                #but they have been deleted from ZMI
+                                #so the catalog is out of date
+            return False
         annot = IAnnotations(obj)
         versionid = annot.get(VERSION_ID, "")
-        return bool(versionid.strip())
+
+        if hasattr(versionid, 'keys'):
+            return bool(versionid.get('versionId'))
+        elif versionid:
+            return bool(versionid.strip())
 
     def __call__(self):
         catalog = self.context.portal_catalog
@@ -53,6 +62,7 @@ class GetMissingValuesForIndex(BrowserView):
         fix = self.request.form.get("fix")
 
         results = self.not_indexed_results(catalog, index)
+
         out = StringIO()
         results = [z for z in results if 
                 (z.portal_type == portal_type) and self.get_real_versionid(z)]
