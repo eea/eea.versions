@@ -46,7 +46,7 @@
               <br />
             </tal:non-anonymous>
           </tal:messages>
-          <a href="#previous-versions" i18n:translate=""
+          <a tal:attributes="href string:${context/absolute_url}#previous-versions" i18n:translate=""
              tal:condition="python:isVersionEnhanced and oldest">See older versions.</a>
         </div>
       </tal:new>
