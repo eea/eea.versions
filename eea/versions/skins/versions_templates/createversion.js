@@ -57,3 +57,15 @@ function startCreationOfNewVersion(){
       }
   });
 }
+
+jQuery(document).ready(function($){
+    var $show_older_versions = $(".showOlderVersions"),
+        $previous_versions = $("#previous-versions");
+
+    $previous_versions.css('display', 'none');
+
+    $show_older_versions.click( function( e ) {
+        $previous_versions.slideToggle();
+        e.preventDefault();
+    });
+});

@@ -3,6 +3,12 @@ Changelog
 
 5.4-dev - (unreleased)
 ----------------------
+* Change: hide older version listing by default, listing can be seen by  
+  clicking on older versions link
+  [ichimdav #10182]
+* Change: moved older versions listing to the portalMessage div containing 
+  new and old versions
+  [ichimdav #10182]
 * Bug fix: avoid page reload when clicking on previous version
   [ichimdav #10182]
 
