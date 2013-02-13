@@ -440,7 +440,7 @@ def create_version(context, reindex=True):
 
     # Remove comments
     if hasNewDiscussion:
-        conversation = IConversation(aq_base(ver))
+        conversation = IConversation(ver)
         while conversation.keys():
             conversation.__delitem__(conversation.keys()[0])
     else:
