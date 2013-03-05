@@ -6,6 +6,8 @@ Changelog
 
 5.5 - (2013-02-25)
 ------------------
+* Feature: added information for contributors
+  [ciobabog refs #13892]
 * Bug fix: don't strip obj of aquisition context when deleting conversation,
   avoids possible reindexing errors
   [tiberich #13836]
