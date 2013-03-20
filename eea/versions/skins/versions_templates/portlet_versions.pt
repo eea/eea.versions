@@ -36,16 +36,20 @@
                      tal:define="oldest python:versions.oldest()"
                      tal:condition="python:isVersionEnhanced and (not newest) and oldest">
                     <tal:messages define="wftool python:here.portal_workflow">
-                        <span i18n:translate="">This is the latest published version. </span>
+
+                        <tal:non-anonymous tal:condition="anon">
+                            <span i18n:translate="">This is the latest published version.</span>
+                        </tal:non-anonymous>
 
                         <tal:non-anonymous tal:condition="not:anon">
-                            <span i18n:translate="">This is the latest version with state: </span>
+                            <span i18n:translate="">This is the latest version with state: 
                             <span tal:define="GetWorkflowStateTitle nocall:context/@@getWorkflowStateTitle;
-                                title_state python:GetWorkflowStateTitle(obj=context)"
-                                  tal:content="title_state" />
-                            <br />
-                        </tal:non-anonymous>
+                                title_state python:GetWorkflowStateTitle(obj=context)" i18n:name="state"
+                                tal:content="title_state" />
+                            </span>
+                        </tal:non-anonymous>. 
                     </tal:messages>
+                    <br />
                     <a tal:attributes="href string:${request/URL0}#previous-versions" i18n:translate=""
                        tal:condition="python:isVersionEnhanced and oldest"
                        class="showOlderVersions">See
