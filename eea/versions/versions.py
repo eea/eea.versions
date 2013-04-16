@@ -3,6 +3,7 @@
 
 from Acquisition import aq_base
 from DateTime import DateTime
+from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
@@ -11,10 +12,9 @@ from eea.versions.events import VersionCreatedEvent
 from eea.versions.interfaces import ICreateVersionView
 from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
-from Persistence import PersistentMapping
 from persistent.dict import PersistentDict
+from plone.memoize.instance import memoize
 from zope.annotation.interfaces import IAnnotations
-from zope.cachedescriptors.property import Lazy
 from zope.component import adapts
 from zope.component import queryMultiAdapter, getMultiAdapter
 from zope.event import notify
@@ -22,6 +22,8 @@ from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
 from zope.interface import implements, providedBy
 import logging
 import random
+
+#from zope.cachedescriptors.property import Lazy
 
 hasNewDiscussion = True
 try:
@@ -33,15 +35,16 @@ logger = logging.getLogger('eea.versions.versions')
 
 VERSION_ID = 'versionId'
 
-def _reindex(obj):
+def _reindex(obj, catalog_tool=None):
     """ Reindex document
     """
-    ctool = getToolByName(obj, 'portal_catalog')
-    ctool.reindexObject(obj)
+    if not catalog_tool:
+        catalog_tool = getToolByName(obj, 'portal_catalog')
+    catalog_tool.reindexObject(obj)
 
 
-def _get_random(context, size=0):
-    """returns a random id, usable as version id
+def _random_id(context, size=10):
+    """returns a random arbitrary sized string, usable as version id
     """
     try:
         catalog = getToolByName(context, "portal_catalog")
@@ -62,65 +65,42 @@ def _get_random(context, size=0):
 
 
 class VersionControl(object):
-    """ Version adapter
+    """ Version adapter """
 
-    ZZZ: creating an adapter instance of an object has the side-effect of making
-    that object versioned. This is not very intuitive
-    """
     implements(IVersionControl)
     adapts(IVersionEnhanced)
 
     def __init__(self, context):
         """ Initialize adapter. """
         self.context = context
-        annotations = IAnnotations(context)
-
-        #Version ID
-        ver = annotations.get(VERSION_ID)
-        if ver is None:
-            verData = {VERSION_ID: ''}
-            annotations[VERSION_ID] = PersistentDict(verData)
-            #_reindex(context)
+        self.annot = IAnnotations(context)
 
     def getVersionId(self):
         """ Get version id. """
-        anno = IAnnotations(self.context)
-        ver = anno.get(VERSION_ID)
-        return ver[VERSION_ID]
+        return self.annot.get(VERSION_ID)
 
     def setVersionId(self, value):
         """ Set version id. """
-        anno = IAnnotations(self.context)
-        ver = anno.get(VERSION_ID)
-        ver[VERSION_ID] = value
+        self.annot[VERSION_ID] = value
 
     versionId = property(getVersionId, setVersionId)
-
-    def getVersionNumber(self):
-        """ Return version number """
-        #ZZZ: to be implemented
-        pass
 
 
 class GetVersions(object):
     """ Get all versions
+
+    The versions are always reordered "on the fly" based on their 
+    effectiveDate or creationDate. This may create unexpected behaviour!
     """
     implements(IGetVersions)
+    _versions = None
 
-    def __init__(self, context, request):
+    def __init__(self, context):    #, request
         """constructor"""
         self.context = context
-        self.request = request
+        #self.request = request
     
-    #ZZZ: replace Lazy with @memoize from plone
-    @Lazy
-    def versions(self):
-        """ Returns versions objects"""
-        ver = IVersionControl(self.context)
-        verId = ver.getVersionId()
-
-        if not verId:
-            return {}
+        verId = IVersionControl(self.context).versionId
 
         cat = getToolByName(self.context, 'portal_catalog')
         query = {'getVersionId' : verId}
@@ -131,132 +111,116 @@ class GetVersions(object):
         brains = cat(**query)
         objects = [b.getObject() for b in brains]
 
+        #make sure to document that it reorders objects
+
         # Some objects don't have EffectiveDate so we have to sort 
         # them using CreationDate
-        sortedObjects = sorted(objects, 
+        self._versions = sorted(objects, 
                 key=lambda o: o.effective_date or o.creation_date)
 
-        versions = {}
-        for index, ob in enumerate(sortedObjects):
-            versions[index+1] = ob
-        return versions
+    @memoize
+    def wftool(self):
+        return getToolByName(self.context, 'portal_workflow')
 
-    def extract(self, version):
-        """ Extract needed properties
-        """
-        wftool = getToolByName(version, 'portal_workflow')
-        review_state = wftool.getInfoFor(version, 'review_state', '(Unknown)')
-
-        # Get title of the workflow state
-        getWorkflowStateTitle = queryMultiAdapter((self.context, self.request),
-                name=u'getWorkflowStateTitle')
-        if getWorkflowStateTitle:
-            title_state = getWorkflowStateTitle(obj=version)
+    @memoize
+    def state_title_getter(self):
+        adapter = queryMultiAdapter((self.context, None),   #self.request
+                                    name=u'getWorkflowStateTitle')
+        if adapter:
+            return adapter
         else:
-            title_state = 'Unknown'
+            return lambda obj: "Unknown"
 
-        field = version.getField('lastUpload') #ZZZ: specific to dataservice
-        if not field:
-            value = version.getEffectiveDate()
-            if not value:
-                value = version.creation_date
-        else:
-            value = field.getAccessor(version)()
+    @memoize
+    def enumerate_versions(self): #rename from versions
+        """ Returns a mapping of version_number:object"""
 
-        if not isinstance(value, DateTime):
-            value = None
-
-        return {
-            'title': version.title_or_id(),
-            'url': version.absolute_url(),
-            'date': value,
-            'review_state': review_state,
-            'title_state': title_state,
-        }
+        return dict(enumerate(self._versions, start=1))
 
     def version_number(self):
         """ Return the current version number
         """
-        for k, v in self.versions.items():
-            if v == self.context:
-                return k
-        return 0
+        return self._versions.index(self.context)
 
-    def newest(self):
+    def later_versions(self):
         """ Return info on new versions
         """
-        versions = self.versions.items()
-        versions.sort(reverse=True)
-
         res = []
-        found = False
-        uid = self.context.UID()
-        for _key, version in versions:
-            if version.UID() == uid:
-                found = True
+        for version in reversed(self._versions):
+            if version is self.context:
                 break
-            res.append(self.extract(version))
+            res.append(self._obj_info(version))
 
-        if not found:
-            return []
         return res
 
-    #ZZZ: add first_version method
     def latest_version(self):
-        """Returns the latest version of an object"""
+        """Returns the latest version of an object
+        """
+        return self._versions[-1]
 
-        if not self.versions:
-            return self.context
-
-        latest = sorted(self.versions.keys())[-1]
-        return self.versions[latest]
+    def first_version(self):
+        """ Returns the first version of an object """
+        return self._versions[0]
     
     def isLatest(self):
         """ return true if this object is latest version
         """
-        return self.context == self.latest_version()
+        return (self.context is self._versions[-1])
 
-    def oldest(self):
-        """ Return old versions
+    def earlier_versions(self):   
+        """ Return older versions
         """
-        versions = self.versions.items()
-        versions.sort()
-
         res = []
-        found = False
-        uid = self.context.UID()
-        for _key, version in versions:
-            self.extract(version)
-            if version.UID() == uid:
-                found = True
+        for version in self._versions:
+            if version is self.context:
                 break
-            res.append(self.extract(version))
+            res.append(self._obj_info(version))
 
-        if not found:
-            return []
-
-        res.reverse()
+        res.reverse()   #is this needed?
         return res
 
-    def __call__(self):
-        return self.versions
-
     def getLatestVersionUrl(self):
-        """returns the url of the latest version"""
+        """returns the url of the latest version
+        """
         return self.latest_version().absolute_url()
 
+    def __call__(self):
+        return self.enumerate_versions
 
-def get_versions_api(context):
-    """returns version api class
+    def _obj_info(self, obj):
+        """ Extract needed properties
+        """
+        state_id = self.wftool.getInfoFor(obj, 'review_state', '(Unknown)')
+        state = self.state_title_getter(obj)
+
+        date = None
+        field = obj.getField('lastUpload') #Note: specific to dataservice
+        if field:
+            date = field.getAccessor(obj)()
+        else:
+            date = obj.getEffectiveDate() or obj.creation_date
+        if not isinstance(date, DateTime):
+            date = None
+
+        return {
+            'title': obj.title_or_id(),
+            'url': obj.absolute_url(),
+            'date': date,
+            'review_state': state_id,
+            'title_state': state,
+        }
+
+
+class GetVersionsView(BrowserView, GetVersions):
+    """ The @@getVersions view
     """
-    #ZZZ: at this moment the code sits in views, which makes it 
-    #awkward to reuse this API in python code and tests. There are 
-    #the get_..._api() functions
-    #Treat those views as API classes. This can and should be refactored
-    return GetVersions(context, request=None)
+    
+    def __init__(self, context, request):
+        super(GetVersionsView, self).__init__(context, request)
+        GetVersions.__init__(self, context)
 
 
-def get_latest_version_link(context):
+def get_latest_version_link(context):   #rename, this actually returns the identifier, not a URL
     """method
     """
     IVersionControl(context) #ctrl = 
@@ -306,7 +270,7 @@ class GetVersionId(object):
         return get_version_id(self.context)
 
 
-class GetWorkflowStateTitle(BrowserView):
+class GetWorkflowStateTitle(BrowserView):   #what is this used for?
     """ Returns the title of the workflow state of the given object
     """
 
@@ -339,7 +303,7 @@ def isVersionEnhanced(context):
     return False
 
 
-class IsVersionEnhanced(object):
+class IsVersionEnhanced(object):    #dubious, should be removed?
     """ Check if object is marked as version enhanced
     """
 
@@ -410,15 +374,13 @@ def create_version(context, reindex=True):
         alsoProvides(context, IVersionEnhanced)
     verparent = IVersionControl(context)
     verId = verparent.getVersionId()
-    if not verId:
-        verId = _get_random(context, 10)
+    if not verId:   #should remove, no longer the case
+        verId = _random_id(context)
         verparent.setVersionId(verId)
-        _reindex(context)
+        #_reindex(context)  #is reindexed later anyway
 
     # Create version object
     clipb = parent.manage_copyObjects(ids=[obj_id])
-    #tibi test
-    #res = pasteObjects(parent, clipb)
     res = parent.manage_pasteObjects(clipb)
 
     new_id = res[0]['new_id']
@@ -500,7 +462,7 @@ class AssignVersion(object):
         return self.request.RESPONSE.redirect(nextURL)
 
 
-def revoke_version(context):
+def revoke_version(context):    #this should not exist ???
     """Revokes the context from being a version
     """
     obj = context
@@ -560,7 +522,7 @@ def versionIdHandler(obj, event):
         to last version
     """
     if not isVersionEnhanced(obj):
-        verId = _get_random(obj, 10)
+        verId = _random_id(obj)
         anno = IAnnotations(obj)
         ver = anno.get(VERSION_ID)
         #ZZZ: tests fails with ver = None when adding an EEAFigure,
@@ -590,78 +552,4 @@ class GetContextInterfaces(object):
         ifaces = set(['.'.join((iface.__module__, iface.__name__)) 
                         for iface in ifaces])
         return bool(ifaces.intersection(iface_names))
-
-
-#old code that explored if it's possible to speed up versioning by 
-#not triggering events when objects are copied
-#unfortunately it caused problems because of those missing events
-#living here, maybe this code is needed in the future
-
-
-#from App.Dialogs import MessageDialog
-#from OFS import Moniker
-#from OFS.CopySupport import CopyError, _cb_decode, eInvalid, eNotFound
-#from OFS.CopySupport import eNotSupported
-#from ZODB.POSException import ConflictError
-#from cgi import escape
-#import sys
-#def pasteObjects(context, cp):
-    #"""a paste implementation which avoids throwing too many events
-    #"""
-    #try:
-        #op, mdatas = _cb_decode(cp)
-    #except Exception:
-        #raise CopyError, eInvalid
-
-    #oblist = []
-    #app = context.getPhysicalRoot()
-    #for mdata in mdatas:
-        #m = Moniker.loadMoniker(mdata)
-        #try:
-            #ob = m.bind(app)
-        #except ConflictError:
-            #raise
-        #except:
-            #raise CopyError, eNotFound
-        #context._verifyObjectPaste(ob, validate_src=op+1)
-        #oblist.append(ob)
-
-    #result = []
-    #for ob in oblist:
-        #orig_id = ob.getId()
-        #if not ob.cb_isCopyable():
-            #raise CopyError, eNotSupported % escape(orig_id)
-
-        #try:
-            #ob._notifyOfCopyTo(context, op=0)
-        #except ConflictError:
-            #raise
-        #except Exception:
-            #raise CopyError, MessageDialog(
-                #title="Copy Error",
-                #message=sys.exc_info()[1],
-                #action='manage_main')
-
-        #cid = context._get_id(orig_id)
-        #result.append({'id': orig_id, 'new_id': cid})
-
-        ##orig_ob = ob
-        #ob = ob._getCopy(context)
-        #ob._setId(cid)
-        ##notify(ObjectCopiedEvent(ob, orig_ob))
-
-        #context._setObject(cid, ob)
-        #ob = context._getOb(cid)
-        #ob.wl_clearLocks()
-
-        #ob._postCopy(context, op=0)
-
-        ##OFS.subscribers.compatibilityCall('manage_afterClone', ob, ob)
-
-        ##notify(ObjectClonedEvent(ob))
-
-        ##if REQUEST is not None:
-            ##return self.manage_main(self, REQUEST, update_menu=1,
-                                    ##cb_dataValid=1)
-    #return result
 

@@ -15,4 +15,16 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+    source="*"
+    destination="5.6"
+    profile="eea.versions:default">
+
+    <genericsetup:upgradeStep
+      title="Simplify storage of versionId internal info"
+      handler="eea.versions.upgrades.evolve1.evolve"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

@@ -6,7 +6,13 @@ from zope.component.interfaces import IObjectEvent
 
 
 class IVersionEnhanced(Interface):
-    """ Objects which have versions.  """
+    """ Objects which have versions.  
+    
+    These objects have an annotation with key 'versionId'
+    This annotation is a PersistentMapping and has a key 
+    'versionId' where it stores a string which is the 
+    'versionId' group to which this belongs.
+    """
 
 
 class IVersionControl(Interface):
@@ -29,13 +35,16 @@ class IGetVersions(Interface):
 
     def newest():
         """ Return newer versions
+        !!not clear
         """
 
     def oldest():
         """ Return oldest versions
+        !!not clear
         """
 
     def latest_version():
+        #!!not clear - what state?
         """ Return the object that is the latest version """
 
     def version_number():

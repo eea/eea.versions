@@ -7,12 +7,22 @@
     <include file="skins.zcml" />
     <include package=".upgrades" />
 
+    <subscriber
+             for="eea.versions.interfaces.IVersionEnhanced                  
+                  zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+             handler="eea.versions.versions.versionIdHandler" />
+
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 
     <adapter for="*"
         provides=".interfaces.IVersionControl"
         factory=".versions.VersionControl"
         />
+
+    <adapter 
+        for="eea.versions.interfaces.IVersionEnhanced" 
+        provides="eea.versions.interfaces.IGetVersions" 
+        factory="eea.versions.versions.GetVersions" />
 
     <browser:page
         for="*"
@@ -26,7 +36,7 @@
         for="*"
         name="getVersions"
         permission="zope2.View"
-        class=".versions.GetVersions"
+        class=".versions.GetVersionsView"
         allowed_interface=".interfaces.IGetVersions"
         />
 
