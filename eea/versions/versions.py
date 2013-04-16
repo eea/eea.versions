@@ -100,10 +100,10 @@ class GetVersions(object):
         self.context = context
         #self.request = request
     
-        verId = IVersionControl(self.context).versionId
+        self.versionId = IVersionControl(self.context).versionId
 
         cat = getToolByName(self.context, 'portal_catalog')
-        query = {'getVersionId' : verId}
+        query = {'getVersionId' : self.versionId}
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.isAnonymousUser():
             query['review_state'] = 'published'
@@ -220,56 +220,6 @@ class GetVersionsView(BrowserView, GetVersions):
         GetVersions.__init__(self, context)
 
 
-def get_latest_version_link(context):   #rename, this actually returns the identifier, not a URL
-    """method
-    """
-    IVersionControl(context) #ctrl = 
-    anno = IAnnotations(context)
-    ver = anno.get(VERSION_ID)
-    return ver[VERSION_ID]
-
-
-class GetLatestVersionLink(object):
-    """ Get latest version link
-    """
-
-    def __init__(self, context, request):
-        """constructor"""
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        """view implementation"""
-        return get_latest_version_link(self.context)
-
-
-def get_version_id(context):
-    """method
-    """
-    res = None
-    try:
-        ver = IVersionControl(context)
-        res = ver.getVersionId()
-    except (TypeError, ValueError): #ComponentLookupError, 
-        res = None
-
-    return res
-
-
-class GetVersionId(object):
-    """ Get version ID
-    """
-
-    def __init__(self, context, request):
-        """constructor"""
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        """view implementation"""
-        return get_version_id(self.context)
-
-
 class GetWorkflowStateTitle(BrowserView):   #what is this used for?
     """ Returns the title of the workflow state of the given object
     """
@@ -289,15 +239,9 @@ class GetWorkflowStateTitle(BrowserView):   #what is this used for?
         return title_state
 
 
-def get_version_id_api(context):
-    """returns versionid api"""
-    return GetVersionId(context, request=None)
-
-
 def isVersionEnhanced(context):
     """returns bool if context can be version enhanced"""
     #ZZZ: this doesn't guarantee that there are versions
-    #a better name for this would be "is_versionenhanced"
     if IVersionEnhanced.providedBy(context):
         return True
     return False

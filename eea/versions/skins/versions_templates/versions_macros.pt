@@ -1,22 +1,21 @@
 <html xmlns:metal="http://xml.zope.org/namespaces/metal"
   i18n:domain="eea">
-  <dl metal:define-macro="permalinks" tal:define="lastVersion context/@@getLatestVersionLink;">
+  <dl metal:define-macro="permalinks" 
+      tal:define="versions_view nocall:context/@@getVersions; 
+                  versionId versions_view/versionId; 
+                  uid context/UID">
     <!-- GID (persistent link)  -->
     <dt i18n:translate="">Permalink to this version</dt>
-    <dd tal:define="uid context/UID">
+    <dd>
       <a tal:attributes="href string:${context/aq_parent/absolute_url}/ds_resolveuid/${uid};
-        title uid"
-        tal:content="uid" />
+        title uid" tal:content="uid" />
     </dd>
     <!-- permalink to latest version -->
     <dt i18n:translate="">Permalink to latest version</dt>
     <dd>
       <a tal:define="start string:${context/aq_parent/absolute_url}/ds_resolveuid/;
-                     uid context/UID;
-                     version python:lastVersion if len(lastVersion) else uid;
-                     "
-        tal:attributes="href string:${start}${version};
-        title version"
+                     version python:versionId or uid; "
+        tal:attributes="href string:${start}${version}; title version"
         tal:content="version" />
     </dd>
   </dl>
