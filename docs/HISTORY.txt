@@ -1,8 +1,8 @@
 Changelog
 =========
 
-5.6-dev - (unreleased)
-----------------------
+5.6 - (2013-04-17)
+------------------
 * Bug fix: improve message show in portlet versions about the latest version
   [tiberich #14050]
 
