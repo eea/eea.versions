@@ -12,6 +12,10 @@ class IVersionEnhanced(Interface):
     This annotation is a PersistentMapping and has a key 
     'versionId' where it stores a string which is the 
     'versionId' group to which this belongs.
+
+    Any arbitrary object can be made an IVersionEnhanced object, 
+    through the @@asignVersion action which alsoProvides that
+    interface on the object.
     """
 
 

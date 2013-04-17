@@ -35,34 +35,6 @@ logger = logging.getLogger('eea.versions.versions')
 
 VERSION_ID = 'versionId'
 
-def _reindex(obj, catalog_tool=None):
-    """ Reindex document
-    """
-    if not catalog_tool:
-        catalog_tool = getToolByName(obj, 'portal_catalog')
-    catalog_tool.reindexObject(obj)
-
-
-def _random_id(context, size=10):
-    """returns a random arbitrary sized string, usable as version id
-    """
-    try:
-        catalog = getToolByName(context, "portal_catalog")
-    except AttributeError:
-        catalog = None  #can happen in tests
-    chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ023456789"
-
-    while True:
-        res = ''
-        for _k in range(size):
-            res += random.choice(chars)
-        if catalog and not catalog.searchResults(getVersionId=res):
-            break
-        if not catalog:
-            break
-
-    return res
-
 
 class VersionControl(object):
     """ Version adapter """
@@ -111,25 +83,30 @@ class GetVersions(object):
         brains = cat(**query)
         objects = [b.getObject() for b in brains]
 
-        #make sure to document that it reorders objects
-
         # Some objects don't have EffectiveDate so we have to sort 
-        # them using CreationDate
+        # them using CreationDate. This has the side effect that
+        # in certain conditions the list of versions is reordered
+        # For the anonymous users this is never a problem because
+        # they only see published (and with effective_date) objects
+
+        # Store versions as ordered list, with the oldest item first
         self._versions = sorted(objects, 
                 key=lambda o: o.effective_date or o.creation_date)
 
     @memoize
     def wftool(self):
+        """Memoized portal_workflow
+        """
         return getToolByName(self.context, 'portal_workflow')
 
     @memoize
     def state_title_getter(self):
+        """ Optimized method that returns the workflow state title
+        for an object
+        """
         adapter = queryMultiAdapter((self.context, None),   #self.request
                                     name=u'getWorkflowStateTitle')
-        if adapter:
-            return adapter
-        else:
-            return lambda obj: "Unknown"
+        return adapter or lambda obj: "Unknown"
 
     @memoize
     def enumerate_versions(self): #rename from versions
@@ -143,7 +120,7 @@ class GetVersions(object):
         return self._versions.index(self.context)
 
     def later_versions(self):
-        """ Return info on new versions
+        """ Return a list of newer versions, newest object first
         """
         res = []
         for version in reversed(self._versions):
@@ -151,6 +128,18 @@ class GetVersions(object):
                 break
             res.append(self._obj_info(version))
 
+        return res
+
+    def earlier_versions(self):   
+        """ Return a list of older versions, oldest object first
+        """
+        res = []
+        for version in self._versions:
+            if version is self.context:
+                break
+            res.append(self._obj_info(version))
+
+        res.reverse()   #is this needed?
         return res
 
     def latest_version(self):
@@ -167,18 +156,6 @@ class GetVersions(object):
         """
         return (self.context is self._versions[-1])
 
-    def earlier_versions(self):   
-        """ Return older versions
-        """
-        res = []
-        for version in self._versions:
-            if version is self.context:
-                break
-            res.append(self._obj_info(version))
-
-        res.reverse()   #is this needed?
-        return res
-
     def getLatestVersionUrl(self):
         """returns the url of the latest version
         """
@@ -188,7 +165,7 @@ class GetVersions(object):
         return self.enumerate_versions
 
     def _obj_info(self, obj):
-        """ Extract needed properties
+        """ Extract needed properties for a given persistent object
         """
         state_id = self.wftool.getInfoFor(obj, 'review_state', '(Unknown)')
         state = self.state_title_getter(obj)
@@ -240,15 +217,13 @@ class GetWorkflowStateTitle(BrowserView):   #what is this used for?
 
 
 def isVersionEnhanced(context):
-    """returns bool if context can be version enhanced"""
-    #ZZZ: this doesn't guarantee that there are versions
-    if IVersionEnhanced.providedBy(context):
-        return True
-    return False
+    """ Returns bool if context implements IVersionEnhanced """
+
+    return bool(IVersionEnhanced.providedBy(context))
 
 
-class IsVersionEnhanced(object):    #dubious, should be removed?
-    """ Check if object is marked as version enhanced
+class IsVersionEnhanced(object):
+    """ Check if object is implements IVersionEnhanced
     """
 
     def __init__(self, context, request):
@@ -307,21 +282,23 @@ class CreateVersionAjax(object):
 
 
 def create_version(context, reindex=True):
-    """Create a new version of an object"""
+    """Create a new version of an object
+    
+    This is done by copy&pasting the object, then assigning, as
+    versionId, the one from the original object.
 
-    #pu = getToolByName(context, 'plone_utils')
+    Additionally, we rename the object using a number based scheme and
+    then clean it up to avoid various problems.
+    """
+
     obj_id = context.getId()
     parent = utils.parent(context)
 
     # Adapt version parent (if case)
     if not IVersionEnhanced.providedBy(context):
         alsoProvides(context, IVersionEnhanced)
-    verparent = IVersionControl(context)
-    verId = verparent.getVersionId()
-    if not verId:   #should remove, no longer the case
-        verId = _random_id(context)
-        verparent.setVersionId(verId)
-        #_reindex(context)  #is reindexed later anyway
+
+    verId = IVersionControl(context).getVersionId()
 
     # Create version object
     clipb = parent.manage_copyObjects(ids=[obj_id])
@@ -432,34 +409,6 @@ class RevokeVersion(object):
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
 
-def generateNewId(context, gid, uid):
-    """generate a new id based on existing id"""
-    tmp = gid.split('-')[-1]
-    try:
-        int(tmp)
-        gid = '-'.join(gid.split('-')[:-1])
-    except ValueError, err:
-        logger.info(err)
-
-    if gid in context.objectIds():
-        tmp_ob = getattr(context, gid)
-        if tmp_ob.UID() != uid:
-            idx = 1
-            while idx <= 100:
-                new_id = "%s-%d" % (gid, idx)
-                new_ob = getattr(context, new_id, None)
-                if new_ob:
-                    if new_ob.UID() != uid:
-                        idx += 1
-                    else:
-                        gid = new_id
-                        break
-                else:
-                    gid = new_id
-                    break
-    return gid
-
-
 def versionIdHandler(obj, event):
     """ Set a versionId as annotation without setting the
         version marker interface just to have a perma link
@@ -497,3 +446,48 @@ class GetContextInterfaces(object):
                         for iface in ifaces])
         return bool(ifaces.intersection(iface_names))
 
+
+def generateNewId(context, gid, uid):
+    """generate a new id in a series, based on existing id"""
+
+    if "-" in gid:  #remove a possible sufix -number from the id
+        if gid.split('-')[-1].isdigit():
+            gid = '-'.join(gid.split('-')[:-1])
+
+    context_ids = context.objectIds()
+    new_id      = gid
+    i           = 1
+    while True:     #now we try to generate a unique id
+        if new_id not in context_ids:
+            break
+        new_id = "%s-%s" % (gid, i)
+        i += 1
+
+    return new_id
+
+
+def _random_id(context, size=10):
+    """returns a random arbitrary sized string, usable as version id
+    """
+    try:
+        catalog = getToolByName(context, "portal_catalog")
+    except AttributeError:
+        catalog = None  #can happen in tests
+    chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ0123456789"
+
+    while True:
+        res = "".join(random.sample(chars, size))
+        if not catalog:
+            break
+        if not catalog.searchResults(getVersionId=res):
+            break
+
+    return res
+
+
+def _reindex(obj, catalog_tool=None):
+    """ Reindex document
+    """
+    if not catalog_tool:
+        catalog_tool = getToolByName(obj, 'portal_catalog')
+    catalog_tool.reindexObject(obj)

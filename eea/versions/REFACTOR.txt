@@ -25,6 +25,8 @@
 * refactored versions_macros; it used getLatestVersionLink like it was
   special; it's not, it just returns the current versionId, as ds_resolveuid
   always returns the real latest version 
+* simplified code in generateNewid and _random_id; no longer use UID() to test
+  for object identity, as it's not really necessary
 
 
 TODO
@@ -37,11 +39,12 @@ TODO
   easy to refactor with an on-error or something
 * refactor based on changes in eea.indicators and eea.dataservice
 * revokeVersion reassigns a new random versionId
-* refactor generateNewId, as it used UID() unnecessarily, when object identity
-  comparison can be used
 * rename versionIdHandler
 * get rid of GetContextInterfaces, plone has a builtin utility view for that
+    * item_interfaces context/@@plone_interface_info; is_video python:item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
 * move ds_resolveuid in this package, from eea.dataservice
+* fix tests (there's a TODO)
+* write test for generateNewId
 
 
 old storage of versionId:
