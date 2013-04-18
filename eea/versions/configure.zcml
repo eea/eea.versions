@@ -48,6 +48,7 @@
         attribute="getLatestVersionUrl"
         />
 
+<!-- refactor
     <browser:page
         for="*"
         name="getVersionId"
@@ -61,6 +62,7 @@
         permission="zope2.View"
         class=".versions.GetLatestVersionLink"
         />
+        -->
 
     <browser:page
         for="*"

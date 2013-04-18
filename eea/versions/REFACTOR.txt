@@ -27,10 +27,14 @@
   always returns the real latest version 
 * simplified code in generateNewid and _random_id; no longer use UID() to test
   for object identity, as it's not really necessary
+* removed pages getVersionId, getLatestVersionLink
+* added GetVersions.versions(), which returns just a list of version objects
+* refactor IndicatorMixing to use uids, it's more natural
 
 
 TODO
 ====
+* add getVersionId to IGetVersions
 * declare attribute versionId and the rest of methods in interface
   IGetVersions; add security assertions
 * see if versions_macro is displayed for objects which are not IVersionEnhanced
