@@ -6,19 +6,50 @@ objects and effectiveDate to determine version number.
 
 Lets use the sandbox.
 
-    >>> self.loginAsPortalOwner()
-    >>> _ = self.portal.invokeFactory('Folder', 'sandbox')
+    >>> portal = layer['portal']
+    >>> _ = portal.invokeFactory('Folder', 'sandbox')
     >>> sandbox = portal._getOb('sandbox')
+
+    >>> from plone.app.testing import TEST_USER_ID
+    >>> from plone.app.testing import setRoles
+    >>> setRoles(portal, TEST_USER_ID, ['Manager'])
 
 Lets add a Sample Data.
 
-    >>> _ = sandbox.invokeFactory('Sample Data', 'data1')
+    >>> #import pdb; pdb.set_trace()
+    >>> _ = sandbox.invokeFactory('SampleData', 'data1')
     >>> data1 = sandbox.data1
     >>> form = {
     ...   'title': 'Dataset',
     ...   'description': 'Organisation description 1',
     ...	  'somedata':'Some Data 1',
     ... }
+
+How to get the versionId
+------------------------
+
+All versionable (IVersionEnhanced) objects have a versionId by default. This is 
+stored in an annotation, and by default is a random string of 10 characters.
+
+    >>> from eea.versions.versions import VERSION_ID
+    >>> vid = data1.__annotations__[VERSION_ID]
+    >>> len(vid) == 10
+    True
+
+The recommended way to get the versionId is using the IGetVersions adapter:
+
+    >>> from eea.versions.interfaces import IGetVersions
+    >>> IGetVersions(data1).versionId == vid
+    True
+
+There's also a view that can be used:
+
+    >>> view = data1.unrestrictedTraverse('@@getVersions')
+    >>> view.versionId == vid
+    True
+
+Versions keep the original data
+-------------------------------
     >>> data1.processForm(values=form, data=1, metadata=1)
 
 Now lets create a new version of the above dataset.
@@ -35,7 +66,8 @@ Verify if properties were copyed on the new version.
     >>> dataVer.getSomedata() == data1.getSomedata()
     True
 
-Effective dates of both objects should be set to None (according to ticket $4000)
+
+Effective dates of both objects should be set to None (according to ticket #4000)
 
     >>> dataVer.getEffectiveDate() == data1.getEffectiveDate() == None
     True
@@ -50,13 +82,13 @@ To check if "link to latest version" works, we will create a new dataset and ver
 
     >>> _ = sandbox.invokeFactory('Sample Data', 'data2')
     >>> data2 = sandbox.data2
-    >>> getLatestVersionLink = data2.unrestrictedTraverse('@@getLatestVersionLink')
-    >>> verId = getLatestVersionLink()
+    >>> versions_view = data2.unrestrictedTraverse('@@getVersions')
+    >>> verId = versions_view.versionId
 
 TODO: The below test should be fixed, as len(verId) > 0 should return True
 
     >>> len(verId) > 0
-    False
+    True
 
 
 Talkbacks

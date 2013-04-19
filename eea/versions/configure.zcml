@@ -7,10 +7,10 @@
     <include file="skins.zcml" />
     <include package=".upgrades" />
 
-<!--    <subscriber
+    <subscriber
              for="eea.versions.interfaces.IVersionEnhanced                  
-                  zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-             handler="eea.versions.versions.versionIdHandler" /> -->
+                  zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+             handler="eea.versions.versions.versionIdHandler" />
 
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 
