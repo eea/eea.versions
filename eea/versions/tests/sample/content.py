@@ -5,6 +5,7 @@ from Products.ATContentTypes.content import base
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from eea.versions.tests.sample.interfaces import ISampleData
+from eea.versions.interfaces import IVersionEnhanced
 from zope.interface import implements
 
 
@@ -31,7 +32,7 @@ schemata.finalizeATCTSchema(SampleDataSchema, moveDiscussion=False)
 class SampleData(base.ATCTContent):
     """Description of the Example Type"""
 
-    implements(ISampleData)
+    implements(ISampleData, IVersionEnhanced)
 
     meta_type = "Sample Data"
     schema = SampleDataSchema

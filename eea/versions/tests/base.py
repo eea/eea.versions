@@ -1,53 +1,45 @@
 """Base tests configuration
 """
-from Products.Five import fiveconfigure
-from Products.Five import zcml
-from Testing import ZopeTestCase as ztc
 
-
-# Import PloneTestCase - this registers more products with Zope as a side effect
-from Products.PloneTestCase.PloneTestCase import PloneTestCase
-from Products.PloneTestCase.PloneTestCase import FunctionalTestCase
-from Products.PloneTestCase.PloneTestCase import setupPloneSite
-from Products.PloneTestCase.layer import onsetup
-
+from  plone.app.testing import FunctionalTesting
+from  plone.app.testing import PLONE_FIXTURE
+from  plone.app.testing import PloneSandboxLayer
+from  plone.app.testing import applyProfile
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import setRoles
+from plone.testing import z2
+from zope.configuration import xmlconfig
 import eea.versions
 import eea.versions.tests.sample
 
-import logging
-logger = logging.getLogger('eea.version.tests.base')
 
-@onsetup
-def setup_test():
-    """Set up the additional products required for the Dataservice Content.
-
-    The @onsetup decorator causes the execution of this body to be deferred
-    until the setup of the Plone site testing layer.
+class EEAFixture(PloneSandboxLayer):
+    """ Custom fixture
     """
-    # Load the ZCML configuration for the eea.versions package.
-    # This includes the other products below as well.
+    defaultBases = (PLONE_FIXTURE,)
 
-    fiveconfigure.debug_mode = True
-    zcml.load_config('configure.zcml', eea.versions)
-    zcml.load_config('configure.zcml', eea.versions.tests.sample)
-    fiveconfigure.debug_mode = False
+    def setUpZope(self, app, configurationContext):
+        """ Setup Zope
+        """
 
-    ztc.installPackage('eea.versions')
-    ztc.installPackage('eea.versions.tests.sample')
+        xmlconfig.file('configure.zcml',
+                       eea.versions,
+                       context=configurationContext
+                       )
+        xmlconfig.file('configure.zcml',
+                       eea.versions.tests.sample,
+                       context=configurationContext
+                       )
 
-setup_test()
+        z2.installProduct(app, 'eea.versions.tests.sample')
 
-setupPloneSite(
-        products=[],
-        extension_profiles=('eea.versions:default',
-                            'eea.versions.tests.sample:default',
-            ))
+    def setUpPloneSite(self, portal):
+        """ Setup Plone
+        """
+        applyProfile(portal, 'eea.versions:default')
+        applyProfile(portal, 'eea.versions.tests.sample:default')
+        setRoles(portal, TEST_USER_ID, ['Member', 'Manager'])
 
-
-class VersionsTestCase(PloneTestCase):
-    """Base class for integration tests for the 'eea.versions' product.
-    """
-
-class VersionsFunctionalTestCase(FunctionalTestCase, VersionsTestCase):
-    """Base class for functional integration tests for 'eea.versions' product.
-    """
+EEAFIXTURE = EEAFixture()
+FUNCTIONAL_TESTING = FunctionalTesting(bases=(EEAFIXTURE,),
+                                       name='eea.versions:Functional')

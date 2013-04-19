@@ -17,7 +17,7 @@ Lets use the sandbox.
 Lets add a Sample Data.
 
     >>> #import pdb; pdb.set_trace()
-    >>> _ = sandbox.invokeFactory('SampleData', 'data1')
+    >>> _ = sandbox.invokeFactory('Sample Data', 'data1')
     >>> data1 = sandbox.data1
     >>> form = {
     ...   'title': 'Dataset',

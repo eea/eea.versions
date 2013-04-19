@@ -421,20 +421,21 @@ def versionIdHandler(obj, event):
         version marker interface just to have a perma link
         to last version
     """
-    if not isVersionEnhanced(obj):
-        verId = _random_id(obj)
-        anno = IAnnotations(obj)
-        ver = anno.get(VERSION_ID)
-        #ZZZ: tests fails with ver = None when adding an EEAFigure,
-        #      remove "if ver:" after fix
-        if ver:
-            if not ver.values()[0]:
-                ver[VERSION_ID] = verId
-                try:
-                    _reindex(obj)
-                except AttributeError:
-                    logger.debug("Error reindexing in versionIdHandler "
-                                 "for %s" % obj)
+    IAnnotations(obj)[VERSION_ID] = _random_id(obj)
+
+#       verId = _random_id(obj)
+#       anno = IAnnotations(obj)
+#       ver = anno.get(VERSION_ID)
+#       #ZZZ: tests fails with ver = None when adding an EEAFigure,
+#       #      remove "if ver:" after fix
+#       if ver:
+#           if not ver.values()[0]:
+#               ver[VERSION_ID] = verId
+#               try:
+#                   _reindex(obj)
+#               except AttributeError:
+#                   logger.debug("Error reindexing in versionIdHandler "
+#                                "for %s" % obj)
 
 
 class GetContextInterfaces(object):
