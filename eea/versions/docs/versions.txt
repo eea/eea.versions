@@ -1,8 +1,11 @@
 Overview
 ========
 
+    >>> import datetime
+
 Datasets provide a versioning system based on a version ID to group certains
-objects and effectiveDate to determine version number.
+objects and sort them based on the effectiveDate (and creationDate, if first
+is None) to determine their version number.
 
 Lets use the sandbox.
 
@@ -17,16 +20,28 @@ Lets use the sandbox.
 Lets add a Sample Data.
 
     >>> _ = sandbox.invokeFactory('Sample Data', 'data1')
-    >>> data1 = sandbox.data1
+    >>> data1 = sandbox._getOb('data1')
     >>> form = {
     ...   'title': 'Dataset',
     ...   'description': 'Organisation description 1',
     ...	  'somedata':'Some Data 1',
     ... }
+    >>> data1.setEffectiveDate(datetime.datetime.now())
+    >>> _ = data1.invokeFactory("Document", 'c1')
+    >>> data1['c1'].setTitle("Child")
+    >>> print list(data1.objectIds())
+    ['c1']
+
+We'll also test relatedItems relationships, so let's add a helper content
+object.
+
+    >>> _ = sandbox.invokeFactory("Document", 'r1')
+    >>> data1.setRelatedItems([sandbox['r1']])
+    >>> print data1.getRelatedItems()
+    [<ATDocument at /plone/sandbox/r1>]
 
 How to get the versionId
 ------------------------
-
 All versionable (IVersionEnhanced) objects have a versionId by default. This is 
 stored in an annotation, and by default is a random string of 10 characters.
 
@@ -58,6 +73,11 @@ Now lets create a new version of the above dataset.
     >>> id = vertmp[vertmp.rfind('/')+1:]
     >>> dataVer = sandbox._getOb(id)
 
+The id of the dataVer is based on the old id, but with a number suffix:
+
+    >>> dataVer.id == 'data1-1'
+    True
+
 Verify if properties were copyed on the new version.
 
     >>> dataVer.Title() == data1.Title()
@@ -65,10 +85,12 @@ Verify if properties were copyed on the new version.
     >>> dataVer.getSomedata() == data1.getSomedata()
     True
 
+Effective date of the new version should be set to None, while the original
+keeps its effective date:
 
-Effective dates of both objects should be set to None (according to ticket #4000)
-
-    >>> dataVer.getEffectiveDate() == data1.getEffectiveDate() == None
+    >>> dataVer.getEffectiveDate() == None
+    True
+    >>> data1.getEffectiveDate() != None
     True
 
 Both objects should have the same version ID.
@@ -77,6 +99,16 @@ Both objects should have the same version ID.
     >>> IVersionControl(dataVer).getVersionId() == IVersionControl(data1).getVersionId()
     True
 
+Children objects which where present in the original are also copied:
+
+    >>> print dataVer['c1'].absolute_url()
+    http://nohost/plone/sandbox/data1-1/c1
+
+Relationships are also copied:
+
+    >>> print dataVer.getRelatedItems()
+    [<ATDocument at /plone/sandbox/r1>]
+
 To check if "link to latest version" works, we will create a new dataset and verify the versionId.
 
     >>> _ = sandbox.invokeFactory('Sample Data', 'data2')
@@ -84,9 +116,9 @@ To check if "link to latest version" works, we will create a new dataset and ver
     >>> versions_view = data2.unrestrictedTraverse('@@getVersions')
     >>> verId = versions_view.versionId
 
-TODO: The below test should be fixed, as len(verId) > 0 should return True
+By default, all versionIds are 10 random characters:
 
-    >>> len(verId) > 0
+    >>> len(verId) == 10
     True
 
 

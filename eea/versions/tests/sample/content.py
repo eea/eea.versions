@@ -25,11 +25,12 @@ SampleDataSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
 
 ))
 
+SampleDataSchema['relatedItems'].keepReferencesOnCopy = True
 
 schemata.finalizeATCTSchema(SampleDataSchema, moveDiscussion=False)
 
 
-class SampleData(base.ATCTContent):
+class SampleData(base.ATCTBTreeFolder):
     """Description of the Example Type"""
 
     implements(ISampleData, IVersionEnhanced)

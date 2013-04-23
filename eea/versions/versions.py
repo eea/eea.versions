@@ -95,21 +95,15 @@ class GetVersions(object):
         self._versions = sorted(objects, 
                 key=lambda o: o.effective_date or o.creation_date)
 
+        failsafe = lambda obj: "Unknown"
+        self.state_title_getter = queryMultiAdapter((self.context, None), 
+                             name=u'getWorkflowStateTitle') or failsafe
+
     @memoize
     def wftool(self):
         """Memoized portal_workflow
         """
         return getToolByName(self.context, 'portal_workflow')
-
-    @memoize
-    def state_title_getter(self):
-        """ Optimized method that returns the workflow state title
-        for an object
-        """
-        adapter = queryMultiAdapter((self.context, None),   #self.request
-                                    name=u'getWorkflowStateTitle')
-        failsafe = lambda obj: "Unknown"
-        return adapter or failsafe
 
     @memoize
     def versions(self):
@@ -174,7 +168,7 @@ class GetVersions(object):
     def _obj_info(self, obj):
         """ Extract needed properties for a given persistent object
         """
-        state_id = self.wftool.getInfoFor(obj, 'review_state', '(Unknown)')
+        state_id = self.wftool().getInfoFor(obj, 'review_state', '(Unknown)')
         state = self.state_title_getter(obj)
 
         date = None
