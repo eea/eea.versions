@@ -154,8 +154,6 @@ class GetVersions(object):
 
     def first_version(self):
         """ Returns the first version of an object """
-        if not self._versions:
-            import pdb; pdb.set_trace()
         return self._versions[0]
     
     def isLatest(self):
