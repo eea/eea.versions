@@ -95,6 +95,10 @@ class GetVersions(object):
         self._versions = sorted(objects, 
                 key=lambda o: o.effective_date or o.creation_date)
 
+        #during creation self.context has not been indexed
+        if not self.context in self._versions:
+            self._versions.append(self.context)
+
         failsafe = lambda obj: "Unknown"
         self.state_title_getter = queryMultiAdapter((self.context, None), 
                              name=u'getWorkflowStateTitle') or failsafe
@@ -150,6 +154,8 @@ class GetVersions(object):
 
     def first_version(self):
         """ Returns the first version of an object """
+        if not self._versions:
+            import pdb; pdb.set_trace()
         return self._versions[0]
     
     def isLatest(self):

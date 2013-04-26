@@ -3,6 +3,8 @@ Changelog
 
 5.7-dev - (unreleased)
 ----------------------
+* Change: refactor the versioning to simplify code and make it easier to use
+  [tiberich #14008]
 
 5.6 - (2013-04-17)
 ------------------
