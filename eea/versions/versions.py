@@ -389,12 +389,14 @@ class AssignVersion(object):
 
 
 def revoke_version(context):    #this should not exist ???
-    """Revokes the context from being a version
+    """Assigns a new random id to context, make it split from it version group
     """
-    obj = context
-    verparent = IVersionControl(obj)
-    verparent.setVersionId('')
-    directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
+    IVersionControl(context).setVersionId(_random_id(context))
+
+#   obj = context
+#   verparent = IVersionControl(obj)
+#   verparent.setVersionId('')
+#   directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
 
 
 class RevokeVersion(object):
