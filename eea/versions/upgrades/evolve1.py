@@ -6,6 +6,7 @@ from eea.versions.interfaces import IVersionEnhanced
 from eea.versions.versions import _random_id
 from pkg_resources import DistributionNotFound
 from pkg_resources import get_distribution
+from zope.interface import alsoProvides
 import logging
 import transaction
 
