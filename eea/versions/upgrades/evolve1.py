@@ -39,7 +39,7 @@ def get_object(catalog, rid):
         request = getRequest()
         if request is not None:
             # path should be absolute, starting at the physical root
-            parent = self.getPhysicalRoot()
+            parent = catalog.getPhysicalRoot()
             request_container = RequestContainer(REQUEST=request)
             parent = aq_base(parent).__of__(request_container)
     if len(path) > 1:
