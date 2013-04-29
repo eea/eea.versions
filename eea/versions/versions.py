@@ -100,7 +100,8 @@ class GetVersions(object):
             self._versions.append(self.context)
 
         failsafe = lambda obj: "Unknown"
-        self.state_title_getter = queryMultiAdapter((self.context, None), 
+        self.state_title_getter = queryMultiAdapter(
+                                (self.context, self.context.REQUEST), 
                              name=u'getWorkflowStateTitle') or failsafe
 
     @memoize
@@ -128,8 +129,9 @@ class GetVersions(object):
         """ Return a list of newer versions, newest object first
         """
         res = []
+        uid = self.context.UID()
         for version in reversed(self._versions):
-            if version is self.context:
+            if version.UID() == uid:
                 break
             res.append(self._obj_info(version))
 
@@ -139,8 +141,9 @@ class GetVersions(object):
         """ Return a list of older versions, oldest object first
         """
         res = []
+        uid = self.context.UID()
         for version in self._versions:
-            if version is self.context:
+            if version.UID() == uid:
                 break
             res.append(self._obj_info(version))
 
@@ -159,7 +162,7 @@ class GetVersions(object):
     def isLatest(self):
         """ return true if this object is latest version
         """
-        return (self.context is self._versions[-1])
+        return (self.context.UID() == self._versions[-1].UID())
 
     def getLatestVersionUrl(self):
         """returns the url of the latest version
