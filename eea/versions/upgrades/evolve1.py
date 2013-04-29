@@ -71,7 +71,7 @@ def migrate_versionId_storage(obj):
     #all versioned objects should provide IVersionEnhanced
     if versionId and not IVersionEnhanced.providedBy(obj):
         logger.info("versionId assigned without IVersionEnhanced "
-                    "provided %s" % obj)
+                    "provided %s" % obj.absolute_url())
         alsoProvides(obj, IVersionEnhanced)
 
     #doesn't have a good versionId (could be empty string),
@@ -79,7 +79,8 @@ def migrate_versionId_storage(obj):
     if not versionId and IVersionEnhanced.providedBy(obj):
         obj.__annotations__['versionId'] = _random_id(obj)
 
-    msg = "Migrated versionId storage for %s (%s)" % (obj, versionId)
+    msg = "Migrated versionId storage for %s (%s)" % \
+            (obj.absolute_url(), versionId)
     logger.info(msg)
 
 
@@ -90,7 +91,6 @@ def evolve(context):
     #for all objects indexed in getVersionId index, migrate the storage
     cat = context.portal_catalog
     index = cat._catalog.getIndex('getVersionId')
-#   import pdb; pdb.set_trace()
     i = 0
     for versionId, rids in index.items():
         for rid in rids:
@@ -101,6 +101,7 @@ def evolve(context):
             transaction.savepoint()
 
     transaction.commit()
+    logger.info("Finished migration of eea.versions storage")
 
 #   index.values()
 #   cat._catalog.getpath(599010767)
