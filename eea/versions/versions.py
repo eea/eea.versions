@@ -12,17 +12,16 @@ from eea.versions.events import VersionCreatedEvent
 from eea.versions.interfaces import ICreateVersionView
 from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
-from persistent.dict import PersistentDict
 from plone.memoize.instance import memoize
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import queryMultiAdapter, getMultiAdapter
 from zope.event import notify
-from zope.interface import alsoProvides, directlyProvides, directlyProvidedBy
-from zope.interface import implements, providedBy
+from zope.interface import alsoProvides, implements, providedBy
 import logging
 import random
 
+#from persistent.dict import PersistentDict
 #from zope.cachedescriptors.property import Lazy
 
 hasNewDiscussion = True
@@ -306,7 +305,7 @@ def create_version(context, reindex=True):
     if not IVersionEnhanced.providedBy(context):
         alsoProvides(context, IVersionEnhanced)
 
-    verId = IVersionControl(context).getVersionId()
+    #_ = IVersionControl(context).getVersionId()
 
     # Create version object
     clipb = parent.manage_copyObjects(ids=[obj_id])
