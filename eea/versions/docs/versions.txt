@@ -109,18 +109,45 @@ Relationships are also copied:
     >>> print dataVer.getRelatedItems()
     [<ATDocument at /plone/sandbox/r1>]
 
-To check if "link to latest version" works, we will create a new dataset and verify the versionId.
+The IGetVersions API
+--------------------
 
-    >>> _ = sandbox.invokeFactory('Sample Data', 'data2')
-    >>> data2 = sandbox.data2
-    >>> versions_view = data2.unrestrictedTraverse('@@getVersions')
-    >>> verId = versions_view.versionId
+    >>> from eea.versions.interfaces import IGetVersions
+    >>> from eea.versions.versions import create_version
+    >>> dataVer1 = create_version(dataVer)
+    >>> adapter = IGetVersions(dataVer)
 
-By default, all versionIds are 10 random characters:
+Calling the adapter returns the enumerated versions, to mimic the old API:
 
-    >>> len(verId) == 10
+    >>> print adapter()
+    {1: <SampleData at /plone/sandbox/data1>, 2: <SampleData at /plone/sandbox/data1-1>, 3: <SampleData at /plone/sandbox/data1-2>}
+    >>> print adapter.enumerate_versions()
+    {1: <SampleData at /plone/sandbox/data1>, 2: <SampleData at /plone/sandbox/data1-1>, 3: <SampleData at /plone/sandbox/data1-2>}
+
+The adapter is bound to the middle of the three versions:
+
+    >>> print adapter.earlier_versions()
+    [{'url': 'http://nohost/plone/sandbox/data1', 'date': DateTime('...'), 'review_state': 'visible', 'title_state': 'Public draft', 'title': 'Dataset'}]
+    >>> print adapter.later_versions()
+    [{'url': 'http://nohost/plone/sandbox/data1-2', 'date': DateTime('...'), 'review_state': 'visible', 'title_state': 'Public draft', 'title': 'Dataset'}]
+    >>> print adapter.isLatest()
+    False
+    >>> print adapter.first_version()
+    <SampleData at data1>
+    >>> print adapter.latest_version()
+    <SampleData at data1-2>
+    >>> print adapter.version_number()
+    2
+    >>> print adapter.versions()
+    [<SampleData at /plone/sandbox/data1>, <SampleData at /plone/sandbox/data1-1>, <SampleData at /plone/sandbox/data1-2>]
+    >>> print adapter.getLatestVersionUrl()
+    http://nohost/plone/sandbox/data1-2
+
+The last created version is indeed the latest version:
+
+    >>> adapter = IGetVersions(dataVer1)
+    >>> adapter.isLatest()
     True
-
 
 Talkbacks
 ---------

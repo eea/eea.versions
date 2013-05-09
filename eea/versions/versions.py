@@ -95,7 +95,7 @@ class GetVersions(object):
                 key=lambda o: o.effective_date or o.creation_date)
 
         #during creation self.context has not been indexed
-        if not self.context in self._versions:
+        if not self.context.UID() in [o.UID() for o in self._versions]:
             self._versions.append(self.context)
 
         failsafe = lambda obj: "Unknown"
@@ -122,7 +122,7 @@ class GetVersions(object):
     def version_number(self):
         """ Return the current version number
         """
-        return self._versions.index(self.context)
+        return self._versions.index(self.context) + 1
 
     def later_versions(self):
         """ Return a list of newer versions, newest object first
@@ -169,7 +169,7 @@ class GetVersions(object):
         return self.latest_version().absolute_url()
 
     def __call__(self):
-        return self.enumerate_versions
+        return self.enumerate_versions()
 
     def _obj_info(self, obj):
         """ Extract needed properties for a given persistent object
