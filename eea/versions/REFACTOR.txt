@@ -13,7 +13,6 @@ Done
 * refactored version_number
 * renamed 'newest' to later_versions
 * simplified latest_version
-* renamed isLatest to is_latest
 * renamed oldest to earlier_versions
 * get rid of get_versions_api, should use IGetVersions(context) and
   context/@@getVersions
@@ -32,10 +31,10 @@ Done
   for object identity, as it's not really necessary
 * removed pages getVersionId, getLatestVersionLink
 * added GetVersions.versions(), which returns just a list of version objects
-* refactor IndicatorMixing to use uids, it's more natural
+* refactor eea.indicator's IndicatorMixin to use uids, it's more natural
 * redone the interfaces according to classes
 * see if versions_macro is displayed for objects which are not IVersionEnhanced
-* rename versionIdHandler to assign_new_version_id
+* renamed versionIdHandler to assign_new_version_id
 * fixed and extended tests
 * refactored portlet_versions to use isVersionEnhanced checks to skip
   rendering if not needed
@@ -50,6 +49,7 @@ TODO
 * get rid of GetContextInterfaces, plone has a builtin utility view for that
     * item_interfaces context/@@plone_interface_info; is_video python:item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
 * write test for generateNewId
+* rename isLatest to is_latest
 
 Discussable
 ------------
