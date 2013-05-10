@@ -62,6 +62,13 @@ There's also a view that can be used:
     >>> view.versionId == vid
     True
 
+You can manually assign a new version using IVersionControl:
+
+    >>> from eea.versions.interfaces import IVersionControl
+    >>> IVersionControl(data1).setVersionId("1234567890")
+    >>> print IGetVersions(data1).versionId
+    1234567890
+
 Versions keep the original data
 -------------------------------
     >>> data1.processForm(values=form, data=1, metadata=1)

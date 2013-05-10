@@ -418,10 +418,8 @@ class RevokeVersion(object):
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
 
-def versionIdHandler(obj, event):
-    """ Set a versionId as annotation without setting the
-        version marker interface just to have a perma link
-        to last version
+def assign_new_version_id(obj, event):
+    """Assigns a version id to newly created objects
     """
     versionId = IAnnotations(obj).get(VERSION_ID)
     if not versionId:
@@ -429,7 +427,13 @@ def versionIdHandler(obj, event):
 
 
 class GetContextInterfaces(object):
-    """Utility view that returns a list of FQ dotted interface names"""
+    """Utility view that returns a list of FQ dotted interface names
+    
+    ZZZ: should remove, replace with
+
+    is_video python:context.restrictedTraverse('@@plone_interfaces_info').\
+             item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
+    """
     implements(IGetContextInterfaces)
 
     def __call__(self):

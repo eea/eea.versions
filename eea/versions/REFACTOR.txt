@@ -1,3 +1,6 @@
+Done
+=====
+
 * simplify storage of versionId attribute
 * all IVersionEnhanced objects have a versionId, by default
 * versioned objects implement IVersionEnhanced by default
@@ -30,26 +33,29 @@
 * removed pages getVersionId, getLatestVersionLink
 * added GetVersions.versions(), which returns just a list of version objects
 * refactor IndicatorMixing to use uids, it's more natural
+* redone the interfaces according to classes
+* see if versions_macro is displayed for objects which are not IVersionEnhanced
+* rename versionIdHandler to assign_new_version_id
+* fixed and extended tests
+* refactored portlet_versions to use isVersionEnhanced checks to skip
+  rendering if not needed
 
 
 TODO
 ====
-* add getVersionId to IGetVersions
-* declare attribute versionId and the rest of methods in interface
-  IGetVersions; add security assertions
-* see if versions_macro is displayed for objects which are not IVersionEnhanced
-* refactor portlet_versions, it's redoing extract(); also isVersionEnhanced
+* refactor portlet_versions, it's redoing extract()
   The portlet doesn't show anything if not isVersionEnhanced, so it should be
   easy to refactor with an on-error or something
-* refactor based on changes in eea.indicators and eea.dataservice
 * revokeVersion reassigns a new random versionId
-* rename versionIdHandler
 * get rid of GetContextInterfaces, plone has a builtin utility view for that
     * item_interfaces context/@@plone_interface_info; is_video python:item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
-* move ds_resolveuid in this package, from eea.dataservice
-* fix tests (there's a TODO)
 * write test for generateNewId
 
+Discussable
+------------
+* add getVersionId to IGetVersions -not needed, available as versionId
+* add security assertions based on interfaces
+* move ds_resolveuid in this package, from eea.dataservice
 
 old storage of versionId:
 =========================

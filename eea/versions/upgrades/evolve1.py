@@ -99,6 +99,14 @@ def evolve(context):
         i += 1
         if (i % 100) == 0:
             transaction.savepoint()
+    
+    #somehow not all objects are migrated
+    for _type in ['Assessment', 'Specification', 'IndicatorFactSheet',
+                    'EEAFigure', 'Data']:
+        brains = cat.searchResults(portal_type=_type)
+        for brain in brains:
+            obj = brain.getObject()
+            migrate_versionId_storage(obj)
 
     transaction.commit()
     logger.info("Finished migration of eea.versions storage")
