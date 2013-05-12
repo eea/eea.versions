@@ -95,7 +95,7 @@ class GetVersions(object):
                 key=lambda o: o.effective_date or o.creation_date)
 
         #during creation self.context has not been indexed
-        if not self.context in self._versions:
+        if not self.context.UID() in [o.UID() for o in self._versions]:
             self._versions.append(self.context)
 
         failsafe = lambda obj: "Unknown"
@@ -122,7 +122,7 @@ class GetVersions(object):
     def version_number(self):
         """ Return the current version number
         """
-        return self._versions.index(self.context)
+        return self._versions.index(self.context) + 1
 
     def later_versions(self):
         """ Return a list of newer versions, newest object first
@@ -169,7 +169,7 @@ class GetVersions(object):
         return self.latest_version().absolute_url()
 
     def __call__(self):
-        return self.enumerate_versions
+        return self.enumerate_versions()
 
     def _obj_info(self, obj):
         """ Extract needed properties for a given persistent object
@@ -418,10 +418,8 @@ class RevokeVersion(object):
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
 
-def versionIdHandler(obj, event):
-    """ Set a versionId as annotation without setting the
-        version marker interface just to have a perma link
-        to last version
+def assign_new_version_id(obj, event):
+    """Assigns a version id to newly created objects
     """
     versionId = IAnnotations(obj).get(VERSION_ID)
     if not versionId:
@@ -429,7 +427,13 @@ def versionIdHandler(obj, event):
 
 
 class GetContextInterfaces(object):
-    """Utility view that returns a list of FQ dotted interface names"""
+    """Utility view that returns a list of FQ dotted interface names
+    
+    ZZZ: should remove, replace with
+
+    is_video python:context.restrictedTraverse('@@plone_interfaces_info').\
+             item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
+    """
     implements(IGetContextInterfaces)
 
     def __call__(self):

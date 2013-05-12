@@ -10,7 +10,7 @@
     <subscriber
              for="eea.versions.interfaces.IVersionEnhanced                  
                   zope.lifecycleevent.interfaces.IObjectCreatedEvent"
-             handler="eea.versions.versions.versionIdHandler" />
+             handler="eea.versions.versions.assign_new_version_id" />
 
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 
@@ -48,21 +48,6 @@
         attribute="getLatestVersionUrl"
         />
 
-<!-- refactor
-    <browser:page
-        for="*"
-        name="getVersionId"
-        permission="zope2.View"
-        class=".versions.GetVersionId"
-        />
-
-    <browser:page
-        for="*"
-        name="getLatestVersionLink"
-        permission="zope2.View"
-        class=".versions.GetLatestVersionLink"
-        />
-        -->
 
     <browser:page
         for="*"

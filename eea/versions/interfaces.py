@@ -24,9 +24,6 @@ class IVersionControl(Interface):
 
     versionId = Attribute("Version ID")
 
-    def getVersionNumber():
-        """ Return version number. """
-
     def getVersionId():
         """returns version id """
 
@@ -37,26 +34,61 @@ class IVersionControl(Interface):
 class IGetVersions(Interface):
     """ Get container versions """
 
-    def newest():
-        """ Return newer versions
-        !!not clear
+    versionId = Attribute(u"""The version ID string of the context""")
+
+    def versions():
+        """Returns all objects that are in the version group
+
+        The objects are sorted based on their effective date,
+        falling back on creation date if object is not published.
+
+        Anonymous users will only get published objects.
         """
 
-    def oldest():
-        """ Return oldest versions
-        !!not clear
+    def enumerate_versions():
+        """Returns a mapping of version_number:object
+
+        Number 1 is the oldest object.
+        """
+
+    def version_number():
+        """Returns the number of the version.
+
+        First version gets number 1, and so on.
+        """
+
+    def later_versions():
+        """Returns a list of objects that are created/published
+        later then the current object.
+        """
+
+    def earlier_versions():
+        """Returns a list of objects that are created/published
+        earlier then the current object.
         """
 
     def latest_version():
-        #!!not clear - what state?
-        """ Return the object that is the latest version """
+        """Returns the last created (or published) object in this version
+        group
+        """
 
-    def version_number():
-        """ Return the current version number """
+    def first_version():
+        """Returns the oldest created/published object in this version group
+        """
+
+    def isLatest():
+        """Returns True if current object is the last object in version group,
+        otherwise returns False
+        """
+
+    def getLatestVersionUrl():
+        """Returns the absolute url of the last object in version group
+        """
 
     def __call__():
-        """ Get all versions
+        """ Same as enumerate_versions()
         """
+
 
 class IVersionCreatedEvent(IObjectEvent):
     """An event triggered after a new version of an object is created"""
