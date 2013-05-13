@@ -40,6 +40,7 @@ object.
     >>> print data1.getRelatedItems()
     [<ATDocument at /plone/sandbox/r1>]
 
+
 How to get the versionId
 ------------------------
 All versionable (IVersionEnhanced) objects have a versionId by default. This is 
@@ -68,6 +69,7 @@ You can manually assign a new version using IVersionControl:
     >>> IVersionControl(data1).setVersionId("1234567890")
     >>> print IGetVersions(data1).versionId
     1234567890
+
 
 Versions keep the original data
 -------------------------------
@@ -116,9 +118,9 @@ Relationships are also copied:
     >>> print dataVer.getRelatedItems()
     [<ATDocument at /plone/sandbox/r1>]
 
+
 The IGetVersions API
 --------------------
-
     >>> from eea.versions.interfaces import IGetVersions
     >>> from eea.versions.versions import create_version
     >>> dataVer1 = create_version(dataVer)
@@ -155,6 +157,27 @@ The last created version is indeed the latest version:
     >>> adapter = IGetVersions(dataVer1)
     >>> adapter.isLatest()
     True
+
+
+How new ids are calculated
+--------------------------
+We use a custom naming scheme to calculate new ids when versioning:
+
+    >>> from eea.versions.versions import generateNewId
+    >>> print sorted(sandbox.objectIds())
+    ['data1', 'data1-1', 'data1-2', 'r1']
+
+Names will be generated in numeric sequences, taking into consideration
+what names are available in the given location:
+
+    >>> print generateNewId(sandbox, 'data1')
+    data1-3
+    >>> print generateNewId(sandbox, 'data2')
+    data2
+    >>> del sandbox['data1-2']
+    >>> print generateNewId(sandbox, 'data1')
+    data1-2
+
 
 Talkbacks
 ---------

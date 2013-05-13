@@ -319,7 +319,7 @@ def create_version(context, reindex=True):
     #ZZZ: add -vX sufix to the ids
     vid = ver.getId()
     new_id = vid.replace('copy_of_', '')
-    new_id = generateNewId(parent, new_id, ver.UID())
+    new_id = generateNewId(parent, new_id)
     parent.manage_renameObject(id=vid, new_id=new_id)
     ver = parent[new_id]
 
@@ -449,14 +449,14 @@ class GetContextInterfaces(object):
         return bool(ifaces.intersection(iface_names))
 
 
-def generateNewId(context, gid, uid):
+def generateNewId(location, gid):
     """generate a new id in a series, based on existing id"""
 
     if "-" in gid:  #remove a possible sufix -number from the id
         if gid.split('-')[-1].isdigit():
             gid = '-'.join(gid.split('-')[:-1])
 
-    context_ids = context.objectIds()
+    context_ids = location.objectIds()
     new_id      = gid
     i           = 1
     while True:     #now we try to generate a unique id

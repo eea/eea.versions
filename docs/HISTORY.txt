@@ -3,7 +3,8 @@ Changelog
 
 5.7-dev - (unreleased)
 ----------------------
-* Change: refactor the versioning to simplify code and make it easier to use
+* Change: refactor the versioning to simplify code and make it easier to use.
+  Added and improved tests.
   [tiberich #14008]
 * Pre-upgrade step: run as first step! 
   Go to portal_setup, Upgrades, choose eea.versions:default, execute upgrade step 

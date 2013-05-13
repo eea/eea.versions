@@ -38,6 +38,7 @@ Done
 * fixed and extended tests
 * refactored portlet_versions to use isVersionEnhanced checks to skip
   rendering if not needed
+* wrote test for generateNewId
 
 
 TODO
@@ -45,10 +46,9 @@ TODO
 * refactor portlet_versions, it's redoing extract()
   The portlet doesn't show anything if not isVersionEnhanced, so it should be
   easy to refactor with an on-error or something
-* revokeVersion reassigns a new random versionId
+* revokeVersion should reassign a new random versionId
 * get rid of GetContextInterfaces, plone has a builtin utility view for that
     * item_interfaces context/@@plone_interface_info; is_video python:item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
-* write test for generateNewId
 * rename isLatest to is_latest
 
 Discussable
