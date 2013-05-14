@@ -26,6 +26,13 @@
 
     <browser:page
         for="*"
+        name="can_version"
+        permission="cmf.ModifyPortalContent"
+        class=".versions.CanCreateNewVersion"
+        />
+
+    <browser:page
+        for="*"
         name="get_interfaces"
         permission="zope2.View"
         class=".versions.GetContextInterfaces"

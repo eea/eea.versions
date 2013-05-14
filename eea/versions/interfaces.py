@@ -30,6 +30,9 @@ class IVersionControl(Interface):
     def setVersionId(numbers):
         """sets version id """
 
+    def can_create_new_version():
+        """ Returns True if new versions are allowed """
+
 
 class IGetVersions(Interface):
     """ Get container versions """

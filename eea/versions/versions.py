@@ -56,6 +56,20 @@ class VersionControl(object):
 
     versionId = property(getVersionId, setVersionId)
 
+    def can_version(self):
+        """ can new versions be created? """
+        return True #adapt, subclass and override if needed
+
+
+class CanCreateNewVersion():
+    """ @@can_create_new_version view
+    """
+
+    def __call__(self):
+        if not IVersionEnhanced.providedBy(self.context):
+            return False
+        return IVersionControl(self.context).can_version()
+
 
 class GetVersions(object):
     """ Get all versions

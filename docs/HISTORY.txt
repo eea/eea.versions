@@ -3,6 +3,9 @@ Changelog
 
 5.7-dev - (unreleased)
 ----------------------
+* Feature: added IVersionControl.can_create_new_version and
+  @@can_create_new_version view as the basis of a mechanism to disable creation of 
+  new versions
 * Change: refactor the versioning to simplify code and make it easier to use.
   Added and improved tests.
   [tiberich #14008]
