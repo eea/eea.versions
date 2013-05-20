@@ -3,6 +3,8 @@ Changelog
 
 5.8-dev - (unreleased)
 ----------------------
+* Bug fix: bump version in metadata.xml to ensure automatic upgrades
+  [tiberich #14008]
 
 5.7 - (2013-05-20)
 ------------------

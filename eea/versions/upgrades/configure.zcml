@@ -17,7 +17,7 @@
 
   <genericsetup:upgradeSteps
     source="*"
-    destination="5.6"
+    destination="5.8"
     profile="eea.versions:default">
 
     <genericsetup:upgradeStep
