@@ -1,6 +1,9 @@
 Changelog
 =========
 
+5.9-dev - (unreleased)
+----------------------
+
 5.8 - (2013-05-20)
 ------------------
 * Bug fix: bump version in metadata.xml to ensure automatic upgrades
