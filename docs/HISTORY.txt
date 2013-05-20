@@ -1,6 +1,9 @@
 Changelog
 =========
 
+5.8-dev - (unreleased)
+----------------------
+
 5.7 - (2013-05-20)
 ------------------
 * Feature: added IVersionControl.can_create_new_version and
