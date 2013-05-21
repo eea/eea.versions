@@ -1,8 +1,8 @@
 Changelog
 =========
 
-6.0-dev - (unreleased)
-----------------------
+6.0 - (2013-05-21)
+------------------
 * Bug fix: fix bug caused by missing proper security wrapper in init of a view
   [tiberich #14568]
 
