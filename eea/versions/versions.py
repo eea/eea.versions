@@ -7,7 +7,7 @@ from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
-from Products.Five import BrowserView
+from Products.Five.browser import BrowserView
 from eea.versions.events import VersionCreatedEvent
 from eea.versions.interfaces import ICreateVersionView
 from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
@@ -21,8 +21,6 @@ from zope.interface import alsoProvides, implements, providedBy
 import logging
 import random
 
-#from persistent.dict import PersistentDict
-#from zope.cachedescriptors.property import Lazy
 
 hasNewDiscussion = True
 try:
@@ -78,7 +76,6 @@ class GetVersions(object):
     effectiveDate or creationDate. This may create unexpected behaviour!
     """
     implements(IGetVersions)
-    _versions = None
 
     versionId = None
 
@@ -88,6 +85,17 @@ class GetVersions(object):
         #self.request = request
     
         self.versionId = IVersionControl(self.context).versionId
+
+
+        failsafe = lambda obj: "Unknown"
+        self.state_title_getter = queryMultiAdapter(
+                                        (self.context, self.context.REQUEST), 
+                                 name=u'getWorkflowStateTitle') or failsafe
+
+    @memoize
+    def _versions(self):
+        """return a list of sorted version objects
+        """
 
         cat = getToolByName(self.context, 'portal_catalog')
         query = {'getVersionId' : self.versionId}
@@ -105,17 +113,14 @@ class GetVersions(object):
         # they only see published (and with effective_date) objects
 
         # Store versions as ordered list, with the oldest item first
-        self._versions = sorted(objects, 
+        _versions = sorted(objects, 
                 key=lambda o: o.effective_date or o.creation_date)
 
         #during creation self.context has not been indexed
-        if not self.context.UID() in [o.UID() for o in self._versions]:
-            self._versions.append(self.context)
+        if not self.context.UID() in [o.UID() for o in _versions]:
+            _versions.append(self.context)
 
-        failsafe = lambda obj: "Unknown"
-        self.state_title_getter = queryMultiAdapter(
-                                (self.context, self.context.REQUEST), 
-                             name=u'getWorkflowStateTitle') or failsafe
+        return _versions
 
     @memoize
     def wftool(self):
@@ -125,25 +130,25 @@ class GetVersions(object):
 
     @memoize
     def versions(self):
-        return self._versions
+        return self._versions()
 
     @memoize
     def enumerate_versions(self): #rename from versions
         """ Returns a mapping of version_number:object"""
 
-        return dict(enumerate(self._versions, start=1))
+        return dict(enumerate(self._versions(), start=1))
 
     def version_number(self):
         """ Return the current version number
         """
-        return self._versions.index(self.context) + 1
+        return self._versions().index(self.context) + 1
 
     def later_versions(self):
         """ Return a list of newer versions, newest object first
         """
         res = []
         uid = self.context.UID()
-        for version in reversed(self._versions):
+        for version in reversed(self._versions()):
             if version.UID() == uid:
                 break
             res.append(self._obj_info(version))
@@ -155,7 +160,7 @@ class GetVersions(object):
         """
         res = []
         uid = self.context.UID()
-        for version in self._versions:
+        for version in self._versions():
             if version.UID() == uid:
                 break
             res.append(self._obj_info(version))
@@ -166,16 +171,16 @@ class GetVersions(object):
     def latest_version(self):
         """Returns the latest version of an object
         """
-        return self._versions[-1]
+        return self._versions()[-1]
 
     def first_version(self):
         """ Returns the first version of an object """
-        return self._versions[0]
+        return self._versions()[0]
     
     def isLatest(self):
         """ return true if this object is latest version
         """
-        return (self.context.UID() == self._versions[-1].UID())
+        return (self.context.UID() == self._versions()[-1].UID())
 
     def __call__(self):
         return self.enumerate_versions()
@@ -196,12 +201,18 @@ class GetVersions(object):
             date = None
 
         return {
-            'title': obj.title_or_id(),
-            'url': obj.absolute_url(),
-            'date': date,
-            'review_state': state_id,
-            'title_state': state,
+            'title'        : obj.title_or_id(),
+            'url'          : obj.absolute_url(),
+            'date'         : date,
+            'review_state' : state_id,
+            'title_state'  : state,
         }
+
+    def getLatestVersionUrl(self):
+        """returns the url of the latest version @@getLatestVersionUrl view
+        """
+
+        return self.latest_version().absolute_url()
 
 
 class GetVersionsView(BrowserView, GetVersions):
@@ -209,14 +220,8 @@ class GetVersionsView(BrowserView, GetVersions):
     """
     
     def __init__(self, context, request):
-        super(GetVersionsView, self).__init__(context, request)
+        BrowserView.__init__(self, context, request)
         GetVersions.__init__(self, context)
-
-    def getLatestVersionUrl(self, *args, **kwds):
-        """returns the url of the latest version
-        """
-
-        return self.latest_version().absolute_url()
 
 
 class GetWorkflowStateTitle(BrowserView):   #what is this used for?
@@ -249,6 +254,7 @@ class IsVersionEnhanced(object):
     """
 
     def __init__(self, context, request):
+
         self.context = context
         self.request = request
 
@@ -277,7 +283,9 @@ class CreateVersion(object):
     def create(self):
         """create a version
         """
-        return create_version(self.context)
+        ver = create_version(self.context)
+        import transaction; transaction.commit()
+        return ver
 
 
 class CreateVersionAjax(object):
@@ -312,6 +320,7 @@ def create_version(context, reindex=True):
     Additionally, we rename the object using a number based scheme and
     then clean it up to avoid various problems.
     """
+    logger.info("Started creating version of %s", context.absolute_url())
 
     obj_id = context.getId()
     parent = utils.parent(context)
@@ -362,6 +371,8 @@ def create_version(context, reindex=True):
         ver.reindexObject()
         #some catalogued values of the context may depend on versions
         _reindex(context)  
+
+    logger.info("Created version at %s", ver.absolute_url())
 
     return ver
 

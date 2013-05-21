@@ -2,7 +2,7 @@ var latestVersionUrl = "";
 
 function checkLatestVersion(repeat){
   jQuery.ajax({
-      url     : context_url+"/getLatestVersionUrl",
+      url     : context_url+"/@@getLatestVersionUrl",
       success : function(data){
         if (data == latestVersionUrl){
           if (repeat){ // don't start an uncontrolled number of timeouts
@@ -23,7 +23,7 @@ function checkLatestVersion(repeat){
 
 function startCreationOfNewVersion(){
   jQuery.ajax({ // get the latest version url, before new version
-      url     : context_url+"/getLatestVersionUrl",
+      url     : context_url+"/@@getLatestVersionUrl",
       success : function(data){
         latestVersionUrl = data;
         jQuery.fancybox('<div style="text-align:center;width:250px;"><span>'+

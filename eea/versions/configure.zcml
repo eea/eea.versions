@@ -55,7 +55,6 @@
         attribute="getLatestVersionUrl"
         />
 
-
     <browser:page
         for="*"
         name="isVersionEnhanced"
