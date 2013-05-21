@@ -1,8 +1,8 @@
 Changelog
 =========
 
-5.9-dev - (unreleased)
-----------------------
+5.9 - (2013-05-21)
+------------------
 * Bug fix: fix getLatestVersionUrl, it needs to be a separate view
   [tiberich #14568]
 
