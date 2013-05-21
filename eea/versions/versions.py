@@ -93,7 +93,7 @@ class GetVersions(object):
                                  name=u'getWorkflowStateTitle') or failsafe
 
     @memoize
-    def _versions(self):
+    def versions(self):
         """return a list of sorted version objects
         """
 
@@ -129,26 +129,22 @@ class GetVersions(object):
         return getToolByName(self.context, 'portal_workflow')
 
     @memoize
-    def versions(self):
-        return self._versions()
-
-    @memoize
     def enumerate_versions(self): #rename from versions
         """ Returns a mapping of version_number:object"""
 
-        return dict(enumerate(self._versions(), start=1))
+        return dict(enumerate(self.versions(), start=1))
 
     def version_number(self):
         """ Return the current version number
         """
-        return self._versions().index(self.context) + 1
+        return self.versions().index(self.context) + 1
 
     def later_versions(self):
         """ Return a list of newer versions, newest object first
         """
         res = []
         uid = self.context.UID()
-        for version in reversed(self._versions()):
+        for version in reversed(self.versions()):
             if version.UID() == uid:
                 break
             res.append(self._obj_info(version))
@@ -160,7 +156,7 @@ class GetVersions(object):
         """
         res = []
         uid = self.context.UID()
-        for version in self._versions():
+        for version in self.versions():
             if version.UID() == uid:
                 break
             res.append(self._obj_info(version))
@@ -171,16 +167,16 @@ class GetVersions(object):
     def latest_version(self):
         """Returns the latest version of an object
         """
-        return self._versions()[-1]
+        return self.versions()[-1]
 
     def first_version(self):
         """ Returns the first version of an object """
-        return self._versions()[0]
+        return self.versions()[0]
     
     def isLatest(self):
         """ return true if this object is latest version
         """
-        return (self.context.UID() == self._versions()[-1].UID())
+        return (self.context.UID() == self.versions()[-1].UID())
 
     def __call__(self):
         return self.enumerate_versions()
