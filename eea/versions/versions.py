@@ -177,11 +177,6 @@ class GetVersions(object):
         """
         return (self.context.UID() == self._versions[-1].UID())
 
-    def getLatestVersionUrl(self):
-        """returns the url of the latest version
-        """
-        return self.latest_version().absolute_url()
-
     def __call__(self):
         return self.enumerate_versions()
 
@@ -216,6 +211,12 @@ class GetVersionsView(BrowserView, GetVersions):
     def __init__(self, context, request):
         super(GetVersionsView, self).__init__(context, request)
         GetVersions.__init__(self, context)
+
+    def getLatestVersionUrl(self, *args, **kwds):
+        """returns the url of the latest version
+        """
+
+        return self.latest_version().absolute_url()
 
 
 class GetWorkflowStateTitle(BrowserView):   #what is this used for?

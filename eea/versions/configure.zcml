@@ -51,7 +51,7 @@
         for="*"
         name="getLatestVersionUrl"
         permission="zope2.View"
-        class=".versions.GetVersions"
+        class=".versions.GetVersionsView"
         attribute="getLatestVersionUrl"
         />
 
