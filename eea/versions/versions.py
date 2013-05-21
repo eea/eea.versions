@@ -283,9 +283,7 @@ class CreateVersion(object):
     def create(self):
         """create a version
         """
-        ver = create_version(self.context)
-        import transaction; transaction.commit()
-        return ver
+        return create_version(self.context)
 
 
 class CreateVersionAjax(object):
