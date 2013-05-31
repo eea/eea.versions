@@ -48,7 +48,7 @@
                                 title_state python:GetWorkflowStateTitle(obj=context)" i18n:name="state"
                                 tal:content="title_state" />
                             </span>
-                        </tal:non-anonymous>. 
+                        </tal:non-anonymous>
                         <div tal:condition="earlier_versions" >
                             <a tal:attributes="href string:${request/URL0}#previous-versions" 
                                 i18n:translate="" class="showOlderVersions">See older versions.</a>
