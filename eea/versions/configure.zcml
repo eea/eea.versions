@@ -3,12 +3,14 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="eea">
 
+    <include package="Products.CMFCore" />
+    <includeDependencies package="."/>
     <include file="profiles.zcml" />
     <include file="skins.zcml" />
     <include package=".upgrades" />
 
     <subscriber
-             for="eea.versions.interfaces.IVersionEnhanced                  
+             for="eea.versions.interfaces.IVersionEnhanced
                   zope.lifecycleevent.interfaces.IObjectCreatedEvent"
              handler="eea.versions.versions.assign_new_version_id" />
 
@@ -19,9 +21,9 @@
         factory=".versions.VersionControl"
         />
 
-    <adapter 
-        for="eea.versions.interfaces.IVersionEnhanced" 
-        provides="eea.versions.interfaces.IGetVersions" 
+    <adapter
+        for="eea.versions.interfaces.IVersionEnhanced"
+        provides="eea.versions.interfaces.IGetVersions"
         factory="eea.versions.versions.GetVersions" />
 
     <browser:page
