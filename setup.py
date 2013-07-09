@@ -39,7 +39,6 @@ setup(name=name,
       zip_safe=False,
       install_requires=[
           'setuptools',
-          #'p4a.common',
           #'collective.indexing',
       ],
       extras_require={
