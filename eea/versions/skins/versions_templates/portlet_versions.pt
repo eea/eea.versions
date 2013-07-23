@@ -9,6 +9,7 @@
                      toLocalizedTime nocall:context/@@plone/toLocalizedTime;
                      later_versions versions/later_versions;
                      earlier_versions versions/earlier_versions;
+                     latest_version versions/latest_version;
                      isLatest versions/isLatest;
                      ">
 
@@ -27,7 +28,12 @@
                                 </span> 
                             </strong>
                         </tal:messages>
-                        <ul>
+
+                        <div>
+                            <a tal:attributes="href latest_version/absolute_url" tal:content="latest_version/Title">Title</a>
+                        </div>
+
+                        <ul tal:replace="nothing">
                             <li tal:repeat="doc later_versions">
                                 <a tal:define="doc_url doc/url; doc_published doc/date; doc_title doc/title;"
                                        tal:attributes="href doc_url">
