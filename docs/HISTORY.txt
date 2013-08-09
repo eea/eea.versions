@@ -1,8 +1,8 @@
 Changelog
 =========
 
-6.1-dev - (unreleased)
-----------------------
+6.1 - (2013-08-09)
+------------------
 * Change: when a newer version is present, only show the latest version in the 
   portlet_versions, instead of showing a list of all newer versions
 
