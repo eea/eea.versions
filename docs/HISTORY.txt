@@ -6,7 +6,7 @@ Changelog
 
 6.1 - (2013-08-09)
 ------------------
-* Change: when a newer version is present, only show the latest version in the 
+* Change: when a newer version is present, only show the latest version in the
   portlet_versions, instead of showing a list of all newer versions
 
 6.0 - (2013-05-21)
@@ -27,13 +27,13 @@ Changelog
 5.7 - (2013-05-20)
 ------------------
 * Feature: added IVersionControl.can_create_new_version and
-  @@can_create_new_version view as the basis of a mechanism to disable creation of 
+  @@can_create_new_version view as the basis of a mechanism to disable creation of
   new versions
 * Change: refactor the versioning to simplify code and make it easier to use.
   Added and improved tests.
   [tiberich #14008]
-* Pre-upgrade step: run as first step! 
-  Go to portal_setup, Upgrades, choose eea.versions:default, execute upgrade step 
+* Pre-upgrade step: run as first step!
+  Go to portal_setup, Upgrades, choose eea.versions:default, execute upgrade step
   [tiberich #14361]
 
 5.6 - (2013-04-17)
@@ -51,10 +51,10 @@ Changelog
 
 5.4 - (2013-01-10)
 ------------------
-* Change: hide older version listing by default, listing can be seen by  
+* Change: hide older version listing by default, listing can be seen by
   clicking on older versions link
   [ichimdav #10182]
-* Change: moved older versions listing to the portalMessage div containing 
+* Change: moved older versions listing to the portalMessage div containing
   new and old versions
   [ichimdav #10182]
 * Bug fix: avoid page reload when clicking on previous version
