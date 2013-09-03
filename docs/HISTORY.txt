@@ -3,6 +3,8 @@ Changelog
 
 6.2-dev - (unreleased)
 ----------------------
+* Bug fix: use POST instead of GET when creating a new version
+  [tiberich #16641]
 
 6.1 - (2013-08-09)
 ------------------

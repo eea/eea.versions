@@ -33,6 +33,7 @@ function startCreationOfNewVersion(){
         );
         jQuery.ajax({
             url     : context_url+"/@@createVersionAjax",
+            type    : "POST",
             success : function(data) {
               if (data.indexOf("SEEURL")===0){
                   var url = data.replace("SEEURL:", ""); 
