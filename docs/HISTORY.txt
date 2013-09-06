@@ -1,6 +1,9 @@
 Changelog
 =========
 
+6.3-dev - (unreleased)
+----------------------
+
 6.2 - (2013-09-06)
 ------------------
 * Bug fix: use POST instead of GET when creating a new version
