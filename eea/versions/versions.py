@@ -72,7 +72,7 @@ class CanCreateNewVersion():
 class GetVersions(object):
     """ Get all versions
 
-    The versions are always reordered "on the fly" based on their 
+    The versions are always reordered "on the fly" based on their
     effectiveDate or creationDate. This may create unexpected behaviour!
     """
     implements(IGetVersions)
@@ -83,13 +83,13 @@ class GetVersions(object):
         """constructor"""
         self.context = context
         #self.request = request
-    
+
         self.versionId = IVersionControl(self.context).versionId
 
 
         failsafe = lambda obj: "Unknown"
         self.state_title_getter = queryMultiAdapter(
-                                        (self.context, self.context.REQUEST), 
+                                        (self.context, self.context.REQUEST),
                                  name=u'getWorkflowStateTitle') or failsafe
 
     @memoize
@@ -106,14 +106,14 @@ class GetVersions(object):
         brains = cat(**query)
         objects = [b.getObject() for b in brains]
 
-        # Some objects don't have EffectiveDate so we have to sort 
+        # Some objects don't have EffectiveDate so we have to sort
         # them using CreationDate. This has the side effect that
         # in certain conditions the list of versions is reordered
         # For the anonymous users this is never a problem because
         # they only see published (and with effective_date) objects
 
         # Store versions as ordered list, with the oldest item first
-        _versions = sorted(objects, 
+        _versions = sorted(objects,
                 key=lambda o: o.effective_date or o.creation_date)
 
         #during creation self.context has not been indexed
@@ -151,7 +151,7 @@ class GetVersions(object):
 
         return res
 
-    def earlier_versions(self):   
+    def earlier_versions(self):
         """ Return a list of older versions, oldest object first
         """
         res = []
@@ -172,7 +172,7 @@ class GetVersions(object):
     def first_version(self):
         """ Returns the first version of an object """
         return self.versions()[0]
-    
+
     def isLatest(self):
         """ return true if this object is latest version
         """
@@ -214,7 +214,7 @@ class GetVersions(object):
 class GetVersionsView(BrowserView, GetVersions):
     """ The @@getVersions view
     """
-    
+
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         GetVersions.__init__(self, context)
@@ -262,11 +262,11 @@ class CreateVersion(object):
     """ This view, when called, will create a new version of an object
     """
     implements(ICreateVersionView)
-    
-    # usable by ajax view to decide if it should load this view instead 
+
+    # usable by ajax view to decide if it should load this view instead
     # of just executing it. The use case is to have a @@createVersion
     # view with a template that allows the user to make some choice
-    has_custom_behaviour = False    
+    has_custom_behaviour = False
 
     def __init__(self, context, request):
         self.context = context
@@ -291,12 +291,12 @@ class CreateVersionAjax(object):
         self.request = request
 
     def __call__(self):
-        # We use the view instead of calling create_version to allow for 
+        # We use the view instead of calling create_version to allow for
         # packages to override how versions are created.
         # If view.has_custom_template is True, it means that the view wants
         # the user to make a decision. We treat this case in javascript
-        
-        view = getMultiAdapter((self.context, self.request), 
+
+        view = getMultiAdapter((self.context, self.request),
                                 name="createVersion")
         if getattr(view, 'has_custom_behaviour', False):
             return "SEEURL: %s/@@createVersion" % self.context.absolute_url()
@@ -307,7 +307,7 @@ class CreateVersionAjax(object):
 
 def create_version(context, reindex=True):
     """Create a new version of an object
-    
+
     This is done by copy&pasting the object, then assigning, as
     versionId, the one from the original object.
 
@@ -352,19 +352,19 @@ def create_version(context, reindex=True):
         while conversation.keys():
             conversation.__delitem__(conversation.keys()[0])
     else:
-        if hasattr(aq_base(ver), 'talkback'): 
+        if hasattr(aq_base(ver), 'talkback'):
             tb = ver.talkback
             if tb is not None:
-                for obj in tb.objectValues(): 
-                    obj.__of__(tb).unindexObject()  
-                tb._container = PersistentMapping() 
+                for obj in tb.objectValues():
+                    obj.__of__(tb).unindexObject()
+                tb._container = PersistentMapping()
 
     notify(VersionCreatedEvent(ver, context))
 
     if reindex:
         ver.reindexObject()
         #some catalogued values of the context may depend on versions
-        _reindex(context)  
+        _reindex(context)
 
     logger.info("Created version at %s", ver.absolute_url())
 
@@ -448,7 +448,7 @@ def assign_new_version_id(obj, event):
 
 class GetContextInterfaces(object):
     """Utility view that returns a list of FQ dotted interface names
-    
+
     ZZZ: should remove, replace with
 
     is_video python:context.restrictedTraverse('@@plone_interfaces_info').\
@@ -458,13 +458,13 @@ class GetContextInterfaces(object):
 
     def __call__(self):
         ifaces = providedBy(self.context)
-        return ['.'.join((iface.__module__, iface.__name__)) 
+        return ['.'.join((iface.__module__, iface.__name__))
                         for iface in ifaces]
 
     def has_any_of(self, iface_names):
         """Check if object implements any of given interfaces"""
         ifaces = providedBy(self.context)
-        ifaces = set(['.'.join((iface.__module__, iface.__name__)) 
+        ifaces = set(['.'.join((iface.__module__, iface.__name__))
                         for iface in ifaces])
         return bool(ifaces.intersection(iface_names))
 
@@ -496,13 +496,17 @@ def _random_id(context, size=10):
     except AttributeError:
         catalog = None  #can happen in tests
     chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ0123456789"
+    res = "".join(random.sample(chars, size))
 
-    while True:
-        res = "".join(random.sample(chars, size))
+    #while True
+    for x in range(0, 100000):
         if not catalog:
+            break
+        if not catalog.Indexes.get('getVersionId'):
             break
         if not catalog.searchResults(getVersionId=res):
             break
+        res = "".join(random.sample(chars, size))
 
     return res
 
