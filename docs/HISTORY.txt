@@ -3,6 +3,9 @@ Changelog
 
 6.3-dev - (unreleased)
 ----------------------
+* Bug fix: Fixed inconsistent information message regarding assessment state for
+  anonymous users.
+  [tiberich #14613]
 * Bug fix: Removed endless loop while generating random_id
   [voineali refs #16723]
 

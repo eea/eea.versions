@@ -44,8 +44,16 @@
                         </ul>
                     </div>
                     <div class="portalMessage informationMessage" tal:condition="isLatest">
-                        <tal:non-anonymous tal:condition="anon">
-                            <span i18n:translate="">This is the latest published version.</span>
+                        <tal:non-anonymous tal:condition="anon"
+                            tal:define="review_state context/@@plone_context_state/workflow_state">
+                            <span i18n:translate="" 
+                                tal:condition="python: review_state == 'published'">
+                                This is the latest published version.
+                            </span>
+                            <span i18n:translate=""
+                                tal:condition="python: review_state != 'published'">
+                                This is the latest version.
+                            </span>
                         </tal:non-anonymous>
 
                         <tal:non-anonymous tal:condition="not:anon">
