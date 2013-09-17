@@ -1,8 +1,8 @@
 Changelog
 =========
 
-6.3-dev - (unreleased)
-----------------------
+6.3 - (2013-09-17)
+------------------
 * Bug fix: Fixed inconsistent information message regarding assessment state for
   anonymous users.
   [tiberich #14613]
