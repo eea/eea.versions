@@ -29,6 +29,7 @@ def evolve(context):
     cat = context.portal_catalog
     brains = cat.searchResults(missing=True, Language="all")
 
+    i = 0
     for brain in brains:
         obj = brain.getObject()
         if not IVersionEnhanced.providedBy(obj):
@@ -51,7 +52,9 @@ def evolve(context):
             msg = "Migrated versionId storage (empty string) for %s (%s)" % \
                     (obj.absolute_url(), versionId)
             logger.info(msg)
-            transaction.savepoint()
+            if (i % 500) == 0:
+                transaction.commit()
+            i += 1
             continue
 
         if isinstance(versionId, basestring) and not versionId.strip():
@@ -61,7 +64,9 @@ def evolve(context):
             msg = "Migrated versionId storage (empty string) for %s (%s)" % \
                     (obj.absolute_url(), versionId)
             logger.info(msg)
-            transaction.savepoint()
+            if (i % 500) == 0:
+                transaction.commit()
+            i += 1
             continue
 
         if not brain.getVersionId:
@@ -70,7 +75,9 @@ def evolve(context):
             msg = "Migrated versionId storage (empty storage) for %s (%s)" % \
                     (obj.absolute_url(), versionId)
             logger.info(msg)
-            transaction.savepoint()
+            if (i % 500) == 0:
+                transaction.commit()
+            i += 1
             continue
 
         migrate_versionId_storage(obj)  #this is an old storage:
