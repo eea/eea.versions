@@ -34,6 +34,8 @@ def evolve(context):
 
     for brain in brains:
         obj = brain.getObject()
+        if not IVersionEnhanced.providedBy(obj):
+            continue
 
         # first, check the brain's versionId
         brain_version = brain.getVersionId
@@ -68,6 +70,9 @@ def evolve(context):
         if not brain.getVersionId:
             IAnnotations(obj)[VERSION_ID] = _random_id(obj)
             obj.reindexObject(idxs=['getVersionId'])
+            msg = "Migrated versionId storage (empty storage) for %s (%s)" % \
+                    (obj.absolute_url(), versionId)
+            logger.info(msg)
             transaction.savepoint()
             continue
 
