@@ -1,6 +1,9 @@
 Changelog
 =========
 
+6.5-dev - (unreleased)
+----------------------
+
 6.4 - (2013-09-17)
 ------------------
 * Bug fix: added a script to migrate old objects storage to new versions storage
