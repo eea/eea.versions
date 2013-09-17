@@ -1,7 +1,6 @@
 from eea.versions.interfaces import IVersionEnhanced, IGetVersions
 from eea.versions.versions import _random_id, VERSION_ID
 from zope.annotation.interfaces import IAnnotations
-from zope.interface import alsoProvides
 import logging
 import transaction
 
@@ -11,8 +10,6 @@ logger = logging.getLogger('eea.versions.migration')
 def migrate_versionId_storage(obj):
     """Migrate storage of versionId
     """
-
-    old_storage = obj.__annotations__.get('versionId')
 
     versionId = obj.__annotations__['versionId']['versionId'].strip()
 
@@ -46,6 +43,7 @@ def evolve(context):
         if brain.portal_type == "Discussion Item":
             continue    # skipping Discussion Items, they can't be reindexed
 
+        versionId = IGetVersions(obj).versionId
         if isinstance(brain_version, basestring) and not brain_version.strip():
             # an empty string, assigning new versionId
             IAnnotations(obj)[VERSION_ID] = _random_id(obj)
@@ -56,7 +54,6 @@ def evolve(context):
             transaction.savepoint()
             continue
 
-        versionId = IGetVersions(obj).versionId
         if isinstance(versionId, basestring) and not versionId.strip():
             # an empty string, assigning new versionId
             IAnnotations(obj)[VERSION_ID] = _random_id(obj)
