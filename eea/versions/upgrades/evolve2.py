@@ -1,6 +1,6 @@
 from eea.versions.interfaces import IVersionEnhanced
 from zope.annotation.interfaces import IAnnotations
-from zope.component import alsoProvides
+from zope.interface import alsoProvides
 import logging
 import transaction
 
