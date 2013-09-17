@@ -1,4 +1,5 @@
-from eea.versions.interfaces import IVersionEnhanced
+from eea.versions.interfaces import IVersionEnhanced, IGetVersions
+from eea.versions.versions import _random_id, VERSION_ID
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
 import logging
