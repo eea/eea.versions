@@ -33,6 +33,8 @@ def evolve(context):
 
     for brain in brains:
         obj = brain.getObject()
+        if not IVersionEnhanced.providedBy(obj):
+            continue
 
         # first, check the brain's versionId
         brain_version = brain.getVersionId
