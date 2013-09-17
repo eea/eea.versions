@@ -16,9 +16,9 @@
 
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 
-    <!-- <class class="Products.Archetypes.BaseObject.BaseObject"> -->
-    <!--     <implements interface=".interfaces.IVersionEnhanced" /> -->
-    <!-- </class> -->
+    <class class="Products.Archetypes.BaseObject.BaseObject">
+        <implements interface=".interfaces.IVersionEnhanced" />
+    </class>
 
     <adapter for="*"
         provides=".interfaces.IVersionControl"

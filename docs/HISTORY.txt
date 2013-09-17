@@ -3,6 +3,9 @@ Changelog
 
 6.4-dev - (unreleased)
 ----------------------
+* Bug fix: added a script to migrate old objects storage to new versions storage
+  for objects which were not IVersionEnhanced
+  [tiberich #14751]
 
 6.3 - (2013-09-17)
 ------------------

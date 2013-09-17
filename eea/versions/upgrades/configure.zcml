@@ -27,4 +27,16 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+    source="*"
+    destination="6.4"
+    profile="eea.versions:default">
+
+    <genericsetup:upgradeStep
+      title="Migrate old versionIds storage for all objects"
+      handler="eea.versions.upgrades.evolve2.evolve"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>
