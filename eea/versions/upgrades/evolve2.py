@@ -47,7 +47,7 @@ def evolve(context):
         if isinstance(brain_version, basestring) and not brain_version.strip():
             # an empty string, assigning new versionId
             IAnnotations(obj)[VERSION_ID] = _random_id(obj)
-            obj.reindexObject(idxs=['getVersionId'])
+            obj.reindexObject()
             msg = "Migrated versionId storage (empty string) for %s (%s)" % \
                     (obj.absolute_url(), versionId)
             logger.info(msg)
@@ -57,7 +57,7 @@ def evolve(context):
         if isinstance(versionId, basestring) and not versionId.strip():
             # an empty string, assigning new versionId
             IAnnotations(obj)[VERSION_ID] = _random_id(obj)
-            obj.reindexObject(idxs=['getVersionId'])
+            obj.reindexObject()
             msg = "Migrated versionId storage (empty string) for %s (%s)" % \
                     (obj.absolute_url(), versionId)
             logger.info(msg)
@@ -66,7 +66,7 @@ def evolve(context):
 
         if not brain.getVersionId:
             IAnnotations(obj)[VERSION_ID] = _random_id(obj)
-            obj.reindexObject(idxs=['getVersionId'])
+            obj.reindexObject()
             msg = "Migrated versionId storage (empty storage) for %s (%s)" % \
                     (obj.absolute_url(), versionId)
             logger.info(msg)
