@@ -96,6 +96,8 @@ class GetVersions(object):
     def versions(self):
         """return a list of sorted version objects
         """
+        if not (self.versionId and self.versionId.strip()):  # if versionId is missing, don't query for all objects
+            return [self.context]
 
         cat = getToolByName(self.context, 'portal_catalog')
         query = {'getVersionId' : self.versionId}
