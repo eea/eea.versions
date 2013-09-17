@@ -43,7 +43,7 @@ def evolve(context):
             # everything fine
             continue
 
-        if brain_version.portal_type == "Discussion Item":
+        if brain.portal_type == "Discussion Item":
             continue    # skipping Discussion Items, they can't be reindexed
 
         if isinstance(brain_version, basestring) and not brain_version.strip():
