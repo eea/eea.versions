@@ -505,15 +505,20 @@ def _random_id(context, size=10):
     chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ0123456789"
     res = "".join(random.sample(chars, size))
 
-    #while True
-    for x in range(0, 100000):
-        if not catalog:
-            break
-        if not catalog.Indexes.get('getVersionId'):
-            break
+    if not catalog:
+        return res
+
+    if not catalog.Indexes.get('getVersionId'):
+        return res
+
+    i = 0
+    while True:
         if not catalog.searchResults(getVersionId=res):
             break
         res = "".join(random.sample(chars, size))
+        if i > 100: #what are the odds of that?
+            break
+        i += 1
 
     return res
 

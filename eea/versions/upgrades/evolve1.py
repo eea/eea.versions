@@ -1,3 +1,5 @@
+""" Evolve script
+"""
 from Acquisition import aq_base
 from Acquisition import aq_get
 from Acquisition import aq_parent
@@ -71,7 +73,7 @@ def migrate_versionId_storage(obj):
     #all versioned objects should provide IVersionEnhanced
     if versionId and not IVersionEnhanced.providedBy(obj):
         logger.info("versionId assigned without IVersionEnhanced "
-                    "provided %s" % obj.absolute_url())
+                    "provided %s", obj.absolute_url())
         alsoProvides(obj, IVersionEnhanced)
 
     #doesn't have a good versionId (could be empty string),
@@ -92,7 +94,7 @@ def evolve(context):
     cat = context.portal_catalog
     index = cat._catalog.getIndex('getVersionId')
     i = 0
-    for versionId, rids in index.items():
+    for rids in index.values():
         for rid in rids:
             obj = get_object(cat, rid)
             migrate_versionId_storage(obj)

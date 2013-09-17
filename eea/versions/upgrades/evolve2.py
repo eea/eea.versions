@@ -1,3 +1,6 @@
+""" evolve script
+"""
+
 from eea.versions.interfaces import IVersionEnhanced, IGetVersions
 from eea.versions.versions import _random_id, VERSION_ID
 from zope.annotation.interfaces import IAnnotations
@@ -26,6 +29,8 @@ def migrate_versionId_storage(obj):
 
 
 def evolve(context):
+    """ Migrate versionIds for objects that don't have them set
+    """
     cat = context.portal_catalog
     brains = cat.searchResults(missing=True, Language="all")
 

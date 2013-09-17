@@ -3,6 +3,9 @@ Changelog
 
 6.5-dev - (unreleased)
 ----------------------
+* Bug fix: code cleanup; slightly refactor the way the random versionId is
+  calculated
+  [tiberich]
 
 6.4 - (2013-09-17)
 ------------------
