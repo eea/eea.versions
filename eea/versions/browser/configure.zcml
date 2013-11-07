@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="eea">
+
+    <browser:viewlet
+        name="eea.versions.status"
+        for="eea.versions.interfaces.IVersionEnhanced"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+        template="versioning_status.pt"
+        class=".viewlets.VersionStatusViewlet"
+        permission="zope.Public"
+        />
+
+</configure>

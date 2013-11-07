@@ -1,0 +1,1 @@
+<div metal:use-macro="context/portlet_versions/macros/versions" />
