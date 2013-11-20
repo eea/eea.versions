@@ -14,7 +14,9 @@ def migrate_versionId_storage(obj):
     """Migrate storage of versionId
     """
 
-    versionId = obj.__annotations__['versionId']['versionId'].strip()
+    raw_versionId = obj.__annotations__['versionId']['versionId']
+    logger.info('versionID: %s' % raw_versionId)
+    versionId = raw_versionId.strip()
 
     #doesn't have a good versionId (could be empty string),
     if not versionId and IVersionEnhanced.providedBy(obj):
