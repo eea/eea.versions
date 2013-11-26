@@ -3,8 +3,8 @@ Changelog
 
 6.6-dev - (unreleased)
 ----------------------
-* Feature: WIP: added a portlet_versions viewlet
-  [tiberich #17321]
+* Feature: added a portlet_versions viewlet
+  [tiberich refs #17321]
 
 6.5 - (2013-09-23)
 ------------------
