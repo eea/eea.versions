@@ -43,7 +43,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="portalMessage informationMessage" tal:condition="isLatest">
+                    <div class="portalMessage informationMessage" tal:condition="python:isLatest and earlier_versions">
                         <tal:non-anonymous tal:condition="anon"
                             tal:define="review_state context/@@plone_context_state/workflow_state">
                             <span i18n:translate="" 
@@ -63,26 +63,26 @@
                                 tal:content="title_state" />
                             </span>
                         </tal:non-anonymous>
-                        <div tal:condition="earlier_versions" >
-                            <a tal:attributes="href string:${request/URL0}#previous-versions" 
-                                i18n:translate="" class="showOlderVersions">See older versions.</a>
 
-                            <!-- Information about old versions -->
-                            <tal:old metal:define-slot="old">
-                                <dl id="previous-versions">
-                                    <dt class="portletItem" tal:repeat="doc earlier_versions">
-                                        <a tal:define="doc_url doc/url;
-                                                       doc_published doc/date;
-                                                       doc_title doc/title;
-                                                       doc_state doc/review_state;"
-                                           tal:attributes="href doc_url; class string:state-$doc_state">
-                                            <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
-                                            <tal:title replace="doc_title" />
-                                        </a>
-                                    </dt>
-                                </dl>
-                            </tal:old>
-                        </div>
+                        <a tal:attributes="href string:${request/URL0}#previous-versions"
+                            i18n:translate="" class="showOlderVersions">See older versions.</a>
+
+                        <!-- Information about old versions -->
+                        <tal:old metal:define-slot="old">
+                            <dl id="previous-versions">
+                                <dt class="portletItem" tal:repeat="doc earlier_versions">
+                                    <a tal:define="doc_url doc/url;
+                                                   doc_published doc/date;
+                                                   doc_title doc/title;
+                                                   doc_state doc/review_state;"
+                                       tal:attributes="href doc_url; class string:state-$doc_state">
+                                        <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
+                                        <tal:title replace="doc_title" />
+                                    </a>
+                                </dt>
+                            </dl>
+                        </tal:old>
+
                     </div>
                 </tal:cond>
             </tal:new>
