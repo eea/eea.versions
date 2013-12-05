@@ -1,6 +1,9 @@
 Changelog
 =========
 
+6.7-dev - (unreleased)
+----------------------
+
 6.6 - (2013-12-05)
 ------------------
 * Feature: added a portlet_versions viewlet
