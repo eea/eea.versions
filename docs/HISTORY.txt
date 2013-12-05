@@ -1,8 +1,8 @@
 Changelog
 =========
 
-6.6-dev - (unreleased)
-----------------------
+6.6 - (2013-12-05)
+------------------
 * Feature: added a portlet_versions viewlet
   [tiberich refs #17321]
 
