@@ -5,6 +5,7 @@
 
     <include package="Products.CMFCore" />
     <includeDependencies package="."/>
+    <include file="documentation.zcml" />
     <include file="profiles.zcml" />
     <include file="skins.zcml" />
     <include package=".upgrades" />
