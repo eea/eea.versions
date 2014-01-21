@@ -82,7 +82,7 @@ More details under docs/License.txt
 Funding
 =======
 
-  EEA_ - European Enviroment Agency (EU)
+EEA_ - European Enviroment Agency (EU)
 
 .. _EEA: http://www.eea.europa.eu/
 .. _`eea.sparql`: http://eea.github.com/docs/eea.sparql
