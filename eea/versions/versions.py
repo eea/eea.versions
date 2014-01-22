@@ -353,6 +353,21 @@ def create_version(context, reindex=True):
     ver.setEffectiveDate(None)
     ver.setExpirationDate(None)
 
+    mtool = getToolByName(context, 'portal_membership')
+    auth_user = mtool.getAuthenticatedMember()
+    auth_username = auth_user.getUserName()
+    auth_username_list = [auth_username]
+    current_creators = ver.Creators()
+    auth_username_list.extend(current_creators)
+    username_list = []
+    for name in auth_username_list:
+        if name == auth_username and name in username_list:
+            continue
+        else:
+            username_list.append(name)
+    new_creators = tuple(username_list)
+    ver.setCreators(new_creators)
+
     # Remove comments
     if hasNewDiscussion:
         conversation = IConversation(ver)
