@@ -3,6 +3,9 @@ Changelog
 
 6.8-dev - (unreleased)
 ----------------------
+* Change: creating a version now sets the currently logged in user as the
+  creator of the object while also preserving the previous creators
+  [ichim-david refs #18142]
 
 6.7 - (2014-01-22)
 ------------------
