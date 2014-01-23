@@ -3,6 +3,9 @@ Changelog
 
 6.8-dev - (unreleased)
 ----------------------
+* Feature: added test which documents the way versions are returned when
+  viewed by anonymous users
+  [ichim-david refs #18155]
 * Bug fix: archiving an object no longer messes the order of versions for
   anonymous users
   [ichim-david refs #18155]
