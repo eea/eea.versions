@@ -3,7 +3,7 @@ Overview
 
     >>> import datetime
 
-Datasets provide a versioning system based on a version ID to group certains
+Datasets provide a versioning system based on a version ID to group certain
 objects and sort them based on the effectiveDate (and creationDate, if first
 is None) to determine their version number.
 
@@ -87,7 +87,7 @@ The id of the dataVer is based on the old id, but with a number suffix:
     >>> dataVer.id == 'data1-1'
     True
 
-Verify if properties were copyed on the new version.
+Verify if properties were copied on the new version.
 
     >>> dataVer.Title() == data1.Title()
     True
@@ -156,6 +156,44 @@ The last created version is indeed the latest version:
 
     >>> adapter = IGetVersions(dataVer1)
     >>> adapter.isLatest()
+    True
+
+
+Anonymous users and the IGetVersions API
+----------------------------------------
+Anonymous users will only see as versions the objects that are published:
+
+    >>> wftool = adapter.wftool()
+    >>> wftool.doActionFor(dataVer, 'publish')
+    >>> from plone.app.testing import logout
+    >>> logout()
+
+Since the original object is not published dataVer will be marked as the first
+version number:
+
+    >>> adapter = IGetVersions(dataVer)
+    >>> print adapter.version_number()
+    1
+
+And calling earlier_versions will return no results:
+
+    >>> print adapter.earlier_versions()
+    []
+
+As such the first version will return the SampleData object that is referenced
+by our adapter:
+
+    >>> print adapter.first_version()
+    <SampleData at data1-1>
+
+And if dataVar1 is published it will be the latest version:
+
+    >>> from plone.app.testing import login
+    >>> from plone.app.testing import TEST_USER_NAME
+    >>> login(portal, TEST_USER_NAME)
+    >>> wftool.doActionFor(dataVer1, 'publish')
+    >>> adapter = IGetVersions(dataVer)
+    >>> print adapter.latest_version() == dataVer1
     True
 
 
