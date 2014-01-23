@@ -119,13 +119,14 @@ class GetVersions(object):
         # For the anonymous users this is never a problem because
         # they only see published (and with effective_date) objects
 
-        # Store versions as ordered list, with the oldest item first
-        _versions = sorted(objects,
-                key=lambda o: o.effective_date or o.creation_date)
 
         #during creation self.context has not been indexed
-        if not self.context.UID() in [o.UID() for o in _versions]:
-            _versions.append(self.context)
+        if not self.context.UID() in [o.UID() for o in objects]:
+            objects.append(self.context)
+
+        # Store versions as ordered list, with the oldest item first
+        _versions = sorted(objects,
+                           key=lambda o: o.effective_date or o.creation_date)
 
         return _versions
 
