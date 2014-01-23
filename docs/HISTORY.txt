@@ -1,8 +1,11 @@
 Changelog
 =========
 
-6.8-dev - (unreleased)
+6.9-dev - (unreleased)
 ----------------------
+
+6.8 - (2014-01-23)
+------------------
 * Feature: added test which documents the way versions are returned when
   viewed by anonymous users
   [ichim-david refs #18155]
