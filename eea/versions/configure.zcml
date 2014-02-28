@@ -61,6 +61,7 @@
         permission="zope2.View"
         class=".versions.GetVersionsView"
         attribute="getLatestVersionUrl"
+        allowed_attributes="getLatestVersionUrl"
         />
 
     <browser:page
