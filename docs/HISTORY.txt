@@ -1,8 +1,8 @@
 Changelog
 =========
 
-6.9-dev - (unreleased)
-----------------------
+6.9 - (2014-03-10)
+------------------
 * Change: getLatestVersionUrl can now be called from the getLatestVersionUrl
   browser page
   [ichimdav refs #18316]
