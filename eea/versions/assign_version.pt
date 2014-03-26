@@ -18,7 +18,7 @@
         <input class="context" type="submit" name="assign" value="Assign version"
                 i18n:attributes="value" />
 
-        <div class="field">
+        <div class="field" tal:condition="context/assign_version/can_archive">
             <input type="checkbox" id="archive_current" name="archive_current">
             <label for="archive_current">
                 Archive current object?

@@ -20,7 +20,13 @@ from zope.event import notify
 from zope.interface import alsoProvides, implements, providedBy
 import logging
 import random
-from eea.workflow.interfaces import IObjectArchivator
+
+HAS_EEA_WORKFLOW_INSTALLED = False
+try:
+    from eea.workflow.interfaces import IObjectArchivator
+    HAS_EEA_WORKFLOW_INSTALLED = True
+except ImportError:
+    pass
 
 
 hasNewDiscussion = True
@@ -431,13 +437,20 @@ class AssignVersion(object):
         else:
             message = _(u'Please specify a valid Version ID.')
 
-        if archive_current and new_version:
+        if self.can_archive() and archive_current and new_version:
             storage = queryAdapter(self.context, IObjectArchivator)
             storage.archive(self.context, initiator="Assign Form",
                     custom_message="Assign form option set to archive current",
                     reason="Other")
         pu.addPortalMessage(message, 'structure')
         return self.request.RESPONSE.redirect(nextURL)
+
+    @staticmethod
+    def can_archive():
+        """ boolean indicating whether eea.workflow is present
+            :return: bool
+        """
+        return HAS_EEA_WORKFLOW_INSTALLED
 
 
 def revoke_version(context):    #this should not exist ???
