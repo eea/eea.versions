@@ -24,13 +24,13 @@ class IVersionControl(Interface):
 
     versionId = Attribute("Version ID")
 
-    def getVersionId():
+    def getVersionId(self):
         """returns version id """
 
-    def setVersionId(numbers):
+    def setVersionId(self, value):
         """sets version id """
 
-    def can_create_new_version():
+    def can_create_new_version(self):
         """ Returns True if new versions are allowed """
 
 

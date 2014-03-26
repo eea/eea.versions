@@ -1,0 +1,2 @@
+""" eea.versions browser package
+"""
