@@ -14,12 +14,19 @@ from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from plone.memoize.instance import memoize
 from zope.annotation.interfaces import IAnnotations
-from zope.component import adapts
+from zope.component import adapts, queryAdapter
 from zope.component import queryMultiAdapter, getMultiAdapter
 from zope.event import notify
 from zope.interface import alsoProvides, implements, providedBy
 import logging
 import random
+
+HAS_EEA_WORKFLOW_INSTALLED = False
+try:
+    from eea.workflow.interfaces import IObjectArchivator
+    HAS_EEA_WORKFLOW_INSTALLED = True
+except ImportError:
+    pass
 
 
 hasNewDiscussion = True
@@ -421,6 +428,7 @@ class AssignVersion(object):
     def __call__(self):
         pu = getToolByName(self.context, 'plone_utils')
         new_version = self.request.form.get('new-version', '').strip()
+        archive_current = self.request.form.get('archive_current', '')
         nextURL = self.request.form.get('nextURL', self.context.absolute_url())
 
         if new_version:
@@ -429,8 +437,20 @@ class AssignVersion(object):
         else:
             message = _(u'Please specify a valid Version ID.')
 
+        if self.can_archive() and archive_current and new_version:
+            storage = queryAdapter(self.context, IObjectArchivator)
+            storage.archive(self.context, initiator="Assign Form",
+                    custom_message="Assign form option set to archive current",
+                    reason="Other")
         pu.addPortalMessage(message, 'structure')
         return self.request.RESPONSE.redirect(nextURL)
+
+    @staticmethod
+    def can_archive():
+        """ boolean indicating whether eea.workflow is present
+            :return: bool
+        """
+        return HAS_EEA_WORKFLOW_INSTALLED
 
 
 def revoke_version(context):    #this should not exist ???

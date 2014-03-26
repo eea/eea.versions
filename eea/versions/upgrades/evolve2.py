@@ -15,7 +15,7 @@ def migrate_versionId_storage(obj):
     """
 
     raw_versionId = obj.__annotations__['versionId']['versionId']
-    logger.info('versionID: %s' % raw_versionId)
+    logger.info('versionID: %s', raw_versionId)
     versionId = raw_versionId.strip()
 
     #doesn't have a good versionId (could be empty string),
