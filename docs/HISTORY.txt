@@ -3,6 +3,9 @@ Changelog
 
 7.0-dev - (unreleased)
 ----------------------
+* Feature: assignVersion browser view now allows the archiving of the current
+  object
+  [ichimdav refs #18316]
 
 6.9 - (2014-03-10)
 ------------------

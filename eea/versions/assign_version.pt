@@ -1,23 +1,30 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-  lang="en"
-  metal:use-macro="here/main_template/macros/master"
-  i18n:domain="eea">
-  <body>
-    <div metal:fill-slot="main">
-      <h1 i18n:translate="">Assign version</h1>
-      <p class="documentDescription">
+      lang="en"
+        metal:use-macro="here/main_template/macros/master"
+        i18n:domain="eea">
+<body>
+<div metal:fill-slot="main">
+    <h1 i18n:translate="">Assign version</h1>
+    <p class="documentDescription">
         <span i18n:translate="">Current Version ID:</span>
         <tal:versionId content="context/@@getVersions/versionId" />
-      </p>
-      <form name="frmAssignVersion" method="POST" id="assign-version"
-        tal:attributes="action string:${context/absolute_url}/@@assign_version">
+    </p>
+    <form name="frmAssignVersion" method="POST" id="assign-version"
+            tal:attributes="action string:${context/absolute_url}/@@assign_version">
         <label for="new-version" i18n:translate="">
-          Fill the new Version ID to be assigned
+            Fill the new Version ID to be assigned
         </label><br />
         <input type="text" name="new-version" id="new-version" alt="Fill the new Version ID" />
         <input class="context" type="submit" name="assign" value="Assign version"
-               i18n:attributes="value" />
-      </form>
-    </div>
-  </body>
+                i18n:attributes="value" />
+
+        <div class="field">
+            <input type="checkbox" id="archive_current" name="archive_current">
+            <label for="archive_current">
+                Archive current object?
+            </label>
+        </div>
+    </form>
+</div>
+</body>
 </html>
