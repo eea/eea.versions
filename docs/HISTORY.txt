@@ -5,9 +5,6 @@ Changelog
 ----------------------
 * Change: fixed pylint warnings
   [ichimdav refs #18316]
-* Feature: assignVersion browser view now allows the archiving of the current
-  object
-  [ichimdav refs #18316]
 
 6.9 - (2014-03-10)
 ------------------
