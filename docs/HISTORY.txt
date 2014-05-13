@@ -1,8 +1,11 @@
 Changelog
 =========
 
-7.0-dev - (unreleased)
+7.1-dev - (unreleased)
 ----------------------
+
+7.0 - (2014-05-13)
+------------------
 * Change: fixed pylint warnings
   [ichimdav refs #18316]
 
