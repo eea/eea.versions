@@ -25,7 +25,7 @@
                                 <span i18n:translate="msg_new_version_with_state">
                                     Note: there is a new version available with state:
                                     <span tal:replace="title_state" i18n:name="state" />
-                                </span> 
+                                </span>
                             </strong>
                         </tal:messages>
 
@@ -46,7 +46,7 @@
                     <div class="portalMessage informationMessage" tal:condition="python:isLatest and earlier_versions">
                         <tal:non-anonymous tal:condition="anon"
                             tal:define="review_state context/@@plone_context_state/workflow_state">
-                            <span i18n:translate="" 
+                            <span i18n:translate=""
                                 tal:condition="python: review_state == 'published'">
                                 This is the latest published version.
                             </span>
@@ -57,7 +57,7 @@
                         </tal:non-anonymous>
 
                         <tal:non-anonymous tal:condition="not:anon">
-                            <span i18n:translate="">This is the latest version with state: 
+                            <span i18n:translate="">This is the latest version with state:
                             <span tal:define="GetWorkflowStateTitle nocall:context/@@getWorkflowStateTitle;
                                 title_state python:GetWorkflowStateTitle(obj=context)" i18n:name="state"
                                 tal:content="title_state" />

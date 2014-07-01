@@ -3,6 +3,9 @@ Changelog
 
 7.1-dev - (unreleased)
 ----------------------
+* Bug fix: WIP fix create new version ajax method when the operation takes
+  too much time.
+  [ghicaale refs #20193]
 
 7.0 - (2014-05-13)
 ------------------
