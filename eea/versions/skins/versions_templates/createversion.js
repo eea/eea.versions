@@ -12,10 +12,10 @@ function checkLatestVersion(repeat){
           if (repeat){
           jQuery.fancybox(
             '<div style="text-align:center;width:250px;">'+
-            '<span>The operation will take some time. The new version will '+
-            'be created shortly. Please refresh this page after a few '+
-            'minutes and check for the new version notification '+
-            'message.</span><br/><br/></div>',
+            '<strong>The operation will take some time.</strong><br/><br/>'+
+            '<span>The new version will be created shortly. Please refresh '+
+            'this page after a few minutes and check for the new version '+
+            'notification message.</span><br/><br/></div>',
             {'modal':false}
           );
           }
