@@ -20,10 +20,10 @@ function checkLatestVersion(repeat) {
           );
           }
           else if (timeout_count == timeout_max) {
-            setTimeout(function(){ return checkLatestVersion(false) },
+            setTimeout(function(){ return checkLatestVersion(false); },
                        timeout_step);
           } else {
-            setTimeout(function(){ return checkLatestVersion(true) },
+            setTimeout(function(){ return checkLatestVersion(true); },
                        timeout_step);
           }
         } else {
