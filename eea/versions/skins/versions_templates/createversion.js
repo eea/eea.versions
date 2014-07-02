@@ -20,9 +20,11 @@ function checkLatestVersion(repeat) {
           );
           }
           else if (timeout_count == timeout_max) {
-            setTimeout("checkLatestVersion(false)", timeout_step);
+            setTimeout(function(){ return checkLatestVersion(false) },
+                       timeout_step);
           } else {
-            setTimeout("checkLatestVersion(true)", timeout_step);
+            setTimeout(function(){ return checkLatestVersion(true) },
+                       timeout_step);
           }
         } else {
           jQuery.fancybox(
