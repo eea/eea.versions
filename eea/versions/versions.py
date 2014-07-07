@@ -79,18 +79,16 @@ class GetVersions(object):
 
     versionId = None
 
-    def __init__(self, context):    #, request
+    def __init__(self, context):
         """constructor"""
         self.context = context
-        #self.request = request
 
         self.versionId = IVersionControl(self.context).versionId
 
-
         failsafe = lambda obj: "Unknown"
-        self.state_title_getter = queryMultiAdapter(
-                                        (self.context, self.context.REQUEST),
-                                 name=u'getWorkflowStateTitle') or failsafe
+        request = getattr(self.context, 'REQUEST', None)
+        self.state_title_getter = queryMultiAdapter((self.context, request),
+                                name=u'getWorkflowStateTitle') or failsafe
 
     @memoize
     def versions(self):
