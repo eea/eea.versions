@@ -226,16 +226,19 @@ class GetVersionsView(BrowserView, GetVersions):
         GetVersions.__init__(self, context)
 
 
-class GetWorkflowStateTitle(BrowserView):   #what is this used for?
+class GetWorkflowStateTitle(BrowserView):
     """ Returns the title of the workflow state of the given object
+        used on versions viewlet letting you know that there is
+        a new version with the review state Title
     """
 
     def __call__(self, obj=None):
         title_state = 'Unknown'
         if obj:
             wftool = getToolByName(self.context, 'portal_workflow')
-            review_state = wftool.getInfoFor(obj, 'review_state', '(Unknown)')
-
+            review_state = wftool.getInfoFor(obj, 'review_state', title_state)
+            if review_state == title_state:
+                return title_state
             try:
                 title_state = wftool.getWorkflowsFor(obj)[0].\
                         states[review_state].title
