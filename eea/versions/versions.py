@@ -79,18 +79,16 @@ class GetVersions(object):
 
     versionId = None
 
-    def __init__(self, context):    #, request
+    def __init__(self, context):
         """constructor"""
         self.context = context
-        #self.request = request
 
         self.versionId = IVersionControl(self.context).versionId
 
-
         failsafe = lambda obj: "Unknown"
-        self.state_title_getter = queryMultiAdapter(
-                                        (self.context, self.context.REQUEST),
-                                 name=u'getWorkflowStateTitle') or failsafe
+        request = getattr(self.context, 'REQUEST', None)
+        self.state_title_getter = queryMultiAdapter((self.context, request),
+                                name=u'getWorkflowStateTitle') or failsafe
 
     @memoize
     def versions(self):
@@ -228,16 +226,19 @@ class GetVersionsView(BrowserView, GetVersions):
         GetVersions.__init__(self, context)
 
 
-class GetWorkflowStateTitle(BrowserView):   #what is this used for?
+class GetWorkflowStateTitle(BrowserView):
     """ Returns the title of the workflow state of the given object
+        used on versions viewlet letting you know that there is
+        a new version with the review state Title
     """
 
     def __call__(self, obj=None):
         title_state = 'Unknown'
         if obj:
             wftool = getToolByName(self.context, 'portal_workflow')
-            review_state = wftool.getInfoFor(obj, 'review_state', '(Unknown)')
-
+            review_state = wftool.getInfoFor(obj, 'review_state', title_state)
+            if review_state == title_state:
+                return title_state
             try:
                 title_state = wftool.getWorkflowsFor(obj)[0].\
                         states[review_state].title
