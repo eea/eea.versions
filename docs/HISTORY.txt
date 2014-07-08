@@ -3,6 +3,9 @@ Changelog
 
 7.1-dev - (unreleased)
 ----------------------
+* Bug fix: fixed permission for @@can_version, it is now set to zope2.View
+  instead of wrong ModifyPortalContent one.
+  [ghicaale refs #20381]
 * Change: GetVersions class no longer requires a request which isn't found
   when class is called from plone.app.async
   [ichimdav refs #19859]
