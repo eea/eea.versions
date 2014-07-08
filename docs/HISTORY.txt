@@ -3,6 +3,9 @@ Changelog
 
 7.1-dev - (unreleased)
 ----------------------
+* Bug fix: fixed permission for @@can_version, it is now set to zope2.View
+  instead of wrong ModifyPortalContent one.
+  [ghicaale refs #20381]
 * Bug fix: fix create new version ajax method when the operation takes
   too much time.
   [ghicaale refs #20193]
