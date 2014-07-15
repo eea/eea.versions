@@ -1,8 +1,11 @@
 Changelog
 =========
 
-7.1-dev - (unreleased)
+7.2-dev - (unreleased)
 ----------------------
+
+7.1 - (2014-07-15)
+------------------
 * Bug fix: fixed permission for @@can_version, it is now set to zope2.View
   instead of wrong ModifyPortalContent one.
   [ghicaale refs #20381]
