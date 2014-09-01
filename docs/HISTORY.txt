@@ -3,6 +3,10 @@ Changelog
 
 7.2-dev - (unreleased)
 ----------------------
+* Bug fix: check if effective_date isn't smaller than that of the creation_date
+  when returning the versions of an object and if so sort by creation_date
+  since the order of the versions determine which is latest version
+  [ichimdav refs #20827]
 
 7.1 - (2014-07-15)
 ------------------

@@ -123,8 +123,12 @@ class GetVersions(object):
             objects.append(self.context)
 
         # Store versions as ordered list, with the oldest item first
+        # #20827 check if creation_date isn't bigger than the effective
+        # date of the object as there are situation where the effective_date
+        # is smaller such as for object without an workflow like FigureFile
         _versions = sorted(objects,
-                           key=lambda o: o.effective_date or o.creation_date)
+                           key=lambda o: o.effective_date if o.effective_date
+                                       > o.creation_date else o.creation_date)
 
         return _versions
 
