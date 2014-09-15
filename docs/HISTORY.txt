@@ -1,6 +1,9 @@
 Changelog
 =========
 
+7.3-dev - (unreleased)
+----------------------
+
 7.2 - (2014-09-15)
 ------------------
 * Bug fix: check if effective_date isn't smaller than that of the creation_date
