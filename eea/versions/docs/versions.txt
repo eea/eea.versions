@@ -43,7 +43,7 @@ object.
 
 How to get the versionId
 ------------------------
-All versionable (IVersionEnhanced) objects have a versionId by default. This is 
+All versionable (IVersionEnhanced) objects have a versionId by default. This is
 stored in an annotation, and by default is a random string of 10 characters.
 
     >>> from eea.versions.versions import VERSION_ID
@@ -241,7 +241,7 @@ When versioning, the discussion items should be removed and unindexed:
     ... else:
     ...     tb = dtool.getDiscussionFor(data1)
     ...     id = tb.createReply('title', 'text')
-    ...     print len(catalog.searchResults(path="/".join(data1.getPhysicalPath()) + "/talkback/")) 
+    ...     print len(catalog.searchResults(path="/".join(data1.getPhysicalPath()) + "/talkback/"))
     1
     >>> createVersionView = data1.unrestrictedTraverse('@@createVersion')
     >>> vertmp = createVersionView()
@@ -252,7 +252,7 @@ When versioning, the discussion items should be removed and unindexed:
     ...     print conversationVer.total_comments
     ... else:
     ...     tb = dtool.getDiscussionFor(dataVer)
-    ...     print tb.replyCount(dataVer) 
+    ...     print tb.replyCount(dataVer)
     0
     >>> if hasNewDiscussion:
     ...     print len(dataVer.portal_catalog.searchResults(path="/".join(dataVer.getPhysicalPath()) + "/++conversation++default/"))
