@@ -3,6 +3,11 @@ Changelog
 
 7.3-dev - (unreleased)
 ----------------------
+* Bug fix: user must be able to create a new version with Add Portal
+  Content permission. Semantically creating new versions means adding new 
+  content to the site. This way users can create new versions of published
+  content which it may be not editable anymore.
+  [demarant refs #21369]
 
 7.2 - (2014-09-15)
 ------------------

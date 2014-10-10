@@ -74,14 +74,14 @@
     <browser:page
         for="*"
         name="createVersion"
-        permission="cmf.ModifyPortalContent"
+        permission="cmf.AddPortalContent"
         class=".versions.CreateVersion"
         />
 
     <browser:page
         for="*"
         name="createVersionAjax"
-        permission="cmf.ModifyPortalContent"
+        permission="cmf.AddPortalContent"
         class=".versions.CreateVersionAjax"
         />
 
