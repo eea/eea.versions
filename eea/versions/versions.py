@@ -95,14 +95,16 @@ class GetVersions(object):
         """return a list of sorted version objects
         """
         # Avoid making a catalog call if versionId is empty
-
+        # import pdb; pdb.set_trace()
         if not self.versionId:
             return [self.context]
 
         if not isinstance(self.versionId, basestring):
             return [self.context]   # this is an old, unmigrated storage
-
-        cat = getToolByName(self.context, 'portal_catalog')
+        #
+        cat = getToolByName(self.context, 'portal_catalog', None)
+        # if not cat:
+        #     return []
         query = {'getVersionId' : self.versionId}
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.isAnonymousUser():
@@ -128,7 +130,7 @@ class GetVersions(object):
         # is smaller such as for object without an workflow like FigureFile
         _versions = sorted(objects,
                            key=lambda o: o.effective_date if o.effective_date
-                                       > o.creation_date else o.creation_date)
+                           else o.creation_date)
 
         return _versions
 

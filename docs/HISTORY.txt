@@ -8,6 +8,10 @@ Changelog
   content to the site. This way users can create new versions of published
   content which it may be not editable anymore.
   [demarant refs #21369]
+* Change: order of versions no longer takes into consideration that effective_date
+  needs to be older than the creation date, opting to sort by effective_date if
+  that is found on the object. This reverts the logic change done in ticket 20827
+  [ichim-david refs #21326]
 
 7.2 - (2014-09-15)
 ------------------
