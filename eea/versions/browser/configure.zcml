@@ -12,4 +12,11 @@
         permission="zope.Public"
         />
 
+    <browser:page
+        for="*"
+        name="updateCreationDate"
+        permission="cmf.ModifyPortalContent"
+        class=".view.UpdateCreationDate"
+        />
+
 </configure>
