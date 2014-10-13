@@ -3,6 +3,10 @@ Changelog
 
 7.2-dev - (unreleased)
 ----------------------
+* Change: order of versions no longer takes into consideration that effective_date
+  needs to be older than the creation date, opting to sort by effective_date if
+  that is found on the object. This reverts the logic change done in ticket 20827
+  [ichim-david refs #21326]
 * Bug fix: check if effective_date isn't smaller than that of the creation_date
   when returning the versions of an object and if so sort by creation_date
   since the order of the versions determine which is latest version
