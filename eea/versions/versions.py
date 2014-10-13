@@ -34,28 +34,33 @@ VERSION_ID = 'versionId'
 
 
 class VersionControl(object):
-    """ Version adapter """
+    """ Version adapter
+    """
 
     implements(IVersionControl)
     adapts(IVersionEnhanced)
 
     def __init__(self, context):
-        """ Initialize adapter. """
+        """ Initialize adapter
+        """
         self.context = context
         self.annot = IAnnotations(context)
 
     def getVersionId(self):
-        """ Get version id. """
+        """ Get version id
+        """
         return self.annot.get(VERSION_ID)
 
     def setVersionId(self, value):
-        """ Set version id. """
+        """ Set version id
+        """
         self.annot[VERSION_ID] = value
 
     versionId = property(getVersionId, setVersionId)
 
     def can_version(self):
-        """ can new versions be created? """
+        """ Can new versions be created?
+        """
         return True #adapt, subclass and override if needed
 
 
@@ -80,7 +85,8 @@ class GetVersions(object):
     versionId = None
 
     def __init__(self, context):
-        """constructor"""
+        """ Constructor
+        """
         self.context = context
 
         self.versionId = IVersionControl(self.context).versionId
@@ -92,7 +98,7 @@ class GetVersions(object):
 
     @memoize
     def versions(self):
-        """return a list of sorted version objects
+        """ Return a list of sorted version objects
         """
         # Avoid making a catalog call if versionId is empty
         # import pdb; pdb.set_trace()
@@ -136,13 +142,14 @@ class GetVersions(object):
 
     @memoize
     def wftool(self):
-        """Memoized portal_workflow
+        """ Memoized portal_workflow
         """
         return getToolByName(self.context, 'portal_workflow')
 
     @memoize
     def enumerate_versions(self): #rename from versions
-        """ Returns a mapping of version_number:object"""
+        """ Returns a mapping of version_number:object
+        """
 
         return dict(enumerate(self.versions(), start=1))
 
@@ -177,16 +184,17 @@ class GetVersions(object):
         return res
 
     def latest_version(self):
-        """Returns the latest version of an object
+        """ Returns the latest version of an object
         """
         return self.versions()[-1]
 
     def first_version(self):
-        """ Returns the first version of an object """
+        """ Returns the first version of an object
+        """
         return self.versions()[0]
 
     def isLatest(self):
-        """ return true if this object is latest version
+        """ Return true if this object is latest version
         """
         return (self.context.UID() == self.versions()[-1].UID())
 
@@ -217,7 +225,7 @@ class GetVersions(object):
         }
 
     def getLatestVersionUrl(self):
-        """returns the url of the latest version @@getLatestVersionUrl view
+        """ Returns the url of the latest version @@getLatestVersionUrl view
         """
 
         return self.latest_version().absolute_url()
@@ -255,7 +263,8 @@ class GetWorkflowStateTitle(BrowserView):
 
 
 def isVersionEnhanced(context):
-    """ Returns bool if context implements IVersionEnhanced """
+    """ Returns bool if context implements IVersionEnhanced
+    """
 
     return bool(IVersionEnhanced.providedBy(context))
 
@@ -292,7 +301,7 @@ class CreateVersion(object):
         return self.request.RESPONSE.redirect(ver.absolute_url())
 
     def create(self):
-        """create a version
+        """ Create a version
         """
         return create_version(self.context)
 
@@ -321,7 +330,7 @@ class CreateVersionAjax(object):
 
 
 def create_version(context, reindex=True):
-    """Create a new version of an object
+    """ Create a new version of an object
 
     This is done by copy&pasting the object, then assigning, as
     versionId, the one from the original object.
@@ -402,7 +411,8 @@ def create_version(context, reindex=True):
 
 
 def assign_version(context, new_version):
-    """Assign a specific version id to an object"""
+    """ Assign a specific version id to an object
+    """
 
     # Verify if there are more objects under this version
     cat = getToolByName(context, 'portal_catalog')
@@ -441,7 +451,7 @@ class AssignVersion(object):
 
 
 def revoke_version(context):    #this should not exist ???
-    """Assigns a new random id to context, make it split from it version group
+    """ Assigns a new random id to context, make it split from it version group
     """
     IVersionControl(context).setVersionId(_random_id(context))
 
@@ -477,7 +487,7 @@ def assign_new_version_id(obj, event):
 
 
 class GetContextInterfaces(object):
-    """Utility view that returns a list of FQ dotted interface names
+    """ Utility view that returns a list of FQ dotted interface names
 
     ZZZ: should remove, replace with
 
@@ -492,7 +502,8 @@ class GetContextInterfaces(object):
                         for iface in ifaces]
 
     def has_any_of(self, iface_names):
-        """Check if object implements any of given interfaces"""
+        """ Check if object implements any of given interfaces
+        """
         ifaces = providedBy(self.context)
         ifaces = set(['.'.join((iface.__module__, iface.__name__))
                         for iface in ifaces])
@@ -500,7 +511,8 @@ class GetContextInterfaces(object):
 
 
 def generateNewId(location, gid):
-    """generate a new id in a series, based on existing id"""
+    """ Generate a new id in a series, based on existing id
+    """
 
     if "-" in gid:  #remove a possible sufix -number from the id
         if gid.split('-')[-1].isdigit():
@@ -519,7 +531,7 @@ def generateNewId(location, gid):
 
 
 def _random_id(context, size=10):
-    """returns a random arbitrary sized string, usable as version id
+    """ Returns a random arbitrary sized string, usable as version id
     """
     try:
         catalog = getToolByName(context, "portal_catalog")
