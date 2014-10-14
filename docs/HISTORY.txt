@@ -3,6 +3,8 @@ Changelog
 
 7.3-dev - (unreleased)
 ----------------------
+* Upgrade step: run SITE/@@updateCreationDate
+  [ichim-david refs #21326]
 * Feature: added updateCreationDate BrowserView which will set the CreationDate
   to that of the EffectiveDate if the CreationDate is smaller than the
   EffectiveDate
