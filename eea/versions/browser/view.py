@@ -51,10 +51,10 @@ class UpdateCreationDate(BrowserView):
                 previous_creation_date = obj.created()
                 effective_date = obj.effective()
                 obj.setCreationDate(effective_date)
-                comment = "Fixed creation date > effective date, changed " \
-                          "creation date from " \
-                          "%s to --> %s." % (previous_creation_date,
-                                             effective_date)
+                comment = "Fixed creation_date < effective_date, set " \
+                          "effective_date on creation_date which changes from" \
+                          " %s to --> %s." % (previous_creation_date,
+                                              effective_date)
                 if not rt.isVersionable(obj):
                     objs_urls.append(brain.getURL(1))
                     history = obj.workflow_history # persistent mapping
