@@ -2,7 +2,7 @@
 """
 
 from Acquisition import aq_base
-from DateTime import DateTime
+from DateTime.DateTime import DateTime
 from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
@@ -61,10 +61,10 @@ class VersionControl(object):
     def can_version(self):
         """ Can new versions be created?
         """
-        return True #adapt, subclass and override if needed
+        return True  # adapt, subclass and override if needed
 
 
-class CanCreateNewVersion():
+class CanCreateNewVersion(object):
     """ @@can_create_new_version view
     """
 
@@ -94,24 +94,22 @@ class GetVersions(object):
         failsafe = lambda obj: "Unknown"
         request = getattr(self.context, 'REQUEST', None)
         self.state_title_getter = queryMultiAdapter((self.context, request),
-                                name=u'getWorkflowStateTitle') or failsafe
+                                    name=u'getWorkflowStateTitle') or failsafe
 
     @memoize
     def versions(self):
         """ Return a list of sorted version objects
         """
         # Avoid making a catalog call if versionId is empty
-        # import pdb; pdb.set_trace()
         if not self.versionId:
             return [self.context]
 
         if not isinstance(self.versionId, basestring):
-            return [self.context]   # this is an old, unmigrated storage
-        #
+            return [self.context]  # this is an old, unmigrated storage
         cat = getToolByName(self.context, 'portal_catalog', None)
-        # if not cat:
-        #     return []
-        query = {'getVersionId' : self.versionId}
+        if not cat:
+            return []
+        query = {'getVersionId': self.versionId}
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.isAnonymousUser():
             query['review_state'] = 'published'
@@ -125,8 +123,7 @@ class GetVersions(object):
         # For the anonymous users this is never a problem because
         # they only see published (and with effective_date) objects
 
-
-        #during creation self.context has not been indexed
+        # during creation self.context has not been indexed
         if not self.context.UID() in [o.UID() for o in objects]:
             objects.append(self.context)
 
@@ -135,8 +132,8 @@ class GetVersions(object):
         # date of the object as there are situation where the effective_date
         # is smaller such as for object without an workflow like FigureFile
         _versions = sorted(objects,
-                           key=lambda o: o.effective_date if o.effective_date
-                           else o.creation_date)
+                           key=lambda ob: ob.effective_date if ob.effective_date
+                           else ob.creation_date)
 
         return _versions
 
@@ -147,7 +144,7 @@ class GetVersions(object):
         return getToolByName(self.context, 'portal_workflow')
 
     @memoize
-    def enumerate_versions(self): #rename from versions
+    def enumerate_versions(self):  # rename from versions
         """ Returns a mapping of version_number:object
         """
 
@@ -180,7 +177,7 @@ class GetVersions(object):
                 break
             res.append(self._obj_info(version))
 
-        res.reverse()   #is this needed?
+        res.reverse()  # is this needed?
         return res
 
     def latest_version(self):
@@ -196,7 +193,7 @@ class GetVersions(object):
     def isLatest(self):
         """ Return true if this object is latest version
         """
-        return (self.context.UID() == self.versions()[-1].UID())
+        return self.context.UID() == self.versions()[-1].UID()
 
     def __call__(self):
         return self.enumerate_versions()
@@ -207,8 +204,7 @@ class GetVersions(object):
         state_id = self.wftool().getInfoFor(obj, 'review_state', '(Unknown)')
         state = self.state_title_getter(obj)
 
-        date = None
-        field = obj.getField('lastUpload') #Note: specific to dataservice
+        field = obj.getField('lastUpload')  # Note: specific to dataservice
         if field:
             date = field.getAccessor(obj)()
         else:
@@ -217,11 +213,11 @@ class GetVersions(object):
             date = None
 
         return {
-            'title'        : obj.title_or_id(),
-            'url'          : obj.absolute_url(),
-            'date'         : date,
-            'review_state' : state_id,
-            'title_state'  : state,
+            'title': obj.title_or_id(),
+            'url': obj.absolute_url(),
+            'date': date,
+            'review_state': state_id,
+            'title_state': state,
         }
 
     def getLatestVersionUrl(self):
@@ -254,8 +250,8 @@ class GetWorkflowStateTitle(BrowserView):
             if review_state == title_state:
                 return title_state
             try:
-                title_state = wftool.getWorkflowsFor(obj)[0].\
-                        states[review_state].title
+                title_state = wftool.getWorkflowsFor(obj)[0]. \
+                    states[review_state].title
             except Exception, err:
                 logger.info(err)
 
@@ -274,7 +270,6 @@ class IsVersionEnhanced(object):
     """
 
     def __init__(self, context, request):
-
         self.context = context
         self.request = request
 
@@ -321,7 +316,7 @@ class CreateVersionAjax(object):
         # the user to make a decision. We treat this case in javascript
 
         view = getMultiAdapter((self.context, self.request),
-                                name="createVersion")
+                               name="createVersion")
         if getattr(view, 'has_custom_behaviour', False):
             return "SEEURL: %s/@@createVersion" % self.context.absolute_url()
         else:
@@ -347,7 +342,7 @@ def create_version(context, reindex=True):
     if not IVersionEnhanced.providedBy(context):
         alsoProvides(context, IVersionEnhanced)
 
-    #_ = IVersionControl(context).getVersionId()
+    # _ = IVersionControl(context).getVersionId()
 
     # Create version object
     clipb = parent.manage_copyObjects(ids=[obj_id])
@@ -358,7 +353,7 @@ def create_version(context, reindex=True):
     ver = getattr(parent, new_id)
 
     # Fixes the generated id: remove copy_of from ID
-    #ZZZ: add -vX sufix to the ids
+    # ZZZ: add -vX sufix to the ids
     vid = ver.getId()
     new_id = vid.replace('copy_of_', '')
     new_id = generateNewId(parent, new_id)
@@ -402,7 +397,7 @@ def create_version(context, reindex=True):
 
     if reindex:
         ver.reindexObject()
-        #some catalogued values of the context may depend on versions
+        # some catalogued values of the context may depend on versions
         _reindex(context)
 
     logger.info("Created version at %s", ver.absolute_url())
@@ -416,7 +411,7 @@ def assign_version(context, new_version):
 
     # Verify if there are more objects under this version
     cat = getToolByName(context, 'portal_catalog')
-    brains = cat.searchResults({'getversionid' : new_version,
+    brains = cat.searchResults({'getversionid': new_version,
                                 'show_inactive': True})
     if brains and not IVersionEnhanced.providedBy(context):
         alsoProvides(context, IVersionEnhanced)
@@ -450,15 +445,14 @@ class AssignVersion(object):
         return self.request.RESPONSE.redirect(nextURL)
 
 
-def revoke_version(context):    #this should not exist ???
+def revoke_version(context):  # this should not exist ???
     """ Assigns a new random id to context, make it split from it version group
     """
     IVersionControl(context).setVersionId(_random_id(context))
-
-#   obj = context
-#   verparent = IVersionControl(obj)
-#   verparent.setVersionId('')
-#   directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
+    # obj = context
+    # verparent = IVersionControl(obj)
+    # verparent.setVersionId('')
+    # directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
 
 
 class RevokeVersion(object):
@@ -481,8 +475,8 @@ class RevokeVersion(object):
 def assign_new_version_id(obj, event):
     """Assigns a version id to newly created objects
     """
-    versionId = IAnnotations(obj).get(VERSION_ID)
-    if not versionId:
+    version_id = IAnnotations(obj).get(VERSION_ID)
+    if not version_id:
         IAnnotations(obj)[VERSION_ID] = _random_id(obj)
 
 
@@ -490,7 +484,6 @@ class GetContextInterfaces(object):
     """ Utility view that returns a list of FQ dotted interface names
 
     ZZZ: should remove, replace with
-
     is_video python:context.restrictedTraverse('@@plone_interfaces_info').\
              item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
     """
@@ -499,14 +492,14 @@ class GetContextInterfaces(object):
     def __call__(self):
         ifaces = providedBy(self.context)
         return ['.'.join((iface.__module__, iface.__name__))
-                        for iface in ifaces]
+                for iface in ifaces]
 
     def has_any_of(self, iface_names):
         """ Check if object implements any of given interfaces
         """
         ifaces = providedBy(self.context)
         ifaces = set(['.'.join((iface.__module__, iface.__name__))
-                        for iface in ifaces])
+                      for iface in ifaces])
         return bool(ifaces.intersection(iface_names))
 
 
@@ -514,14 +507,14 @@ def generateNewId(location, gid):
     """ Generate a new id in a series, based on existing id
     """
 
-    if "-" in gid:  #remove a possible sufix -number from the id
+    if "-" in gid:  # remove a possible sufix -number from the id
         if gid.split('-')[-1].isdigit():
             gid = '-'.join(gid.split('-')[:-1])
 
     context_ids = location.objectIds()
-    new_id      = gid
-    i           = 1
-    while True:     #now we try to generate a unique id
+    new_id = gid
+    i = 1
+    while True:  # now we try to generate a unique id
         if new_id not in context_ids:
             break
         new_id = "%s-%s" % (gid, i)
@@ -536,7 +529,7 @@ def _random_id(context, size=10):
     try:
         catalog = getToolByName(context, "portal_catalog")
     except AttributeError:
-        catalog = None  #can happen in tests
+        catalog = None  # can happen in tests
     chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ0123456789"
     res = "".join(random.sample(chars, size))
 
@@ -551,7 +544,7 @@ def _random_id(context, size=10):
         if not catalog.searchResults(getVersionId=res):
             break
         res = "".join(random.sample(chars, size))
-        if i > 100: #what are the odds of that?
+        if i > 100:  # what are the odds of that?
             break
         i += 1
 
