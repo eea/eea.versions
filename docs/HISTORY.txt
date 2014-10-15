@@ -1,8 +1,8 @@
 Changelog
 =========
 
-7.3-dev - (unreleased)
-----------------------
+7.3 - (2014-10-15)
+------------------
 * Upgrade step: run SITE/@@updateCreationDate
   [ichim-david refs #21326]
 * Feature: added updateCreationDate BrowserView which will set the CreationDate
