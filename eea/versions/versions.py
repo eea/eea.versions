@@ -113,6 +113,7 @@ class GetVersions(object):
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.isAnonymousUser():
             query['review_state'] = 'published'
+            query['show_inactive'] = True
 
         brains = cat(**query)
         objects = [b.getObject() for b in brains]
