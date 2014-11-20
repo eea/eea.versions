@@ -1,8 +1,8 @@
 Changelog
 =========
 
-7.4-dev - (unreleased)
-----------------------
+7.4 - (2014-11-20)
+------------------
 * Bug fix: Display also archived (expired) versions within versioning viewlet
   for anonymous users.
   [voineali refs #21515]
