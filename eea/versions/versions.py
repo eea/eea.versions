@@ -309,6 +309,7 @@ class CreateVersionAjax(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        self.annotations = self.context.__annotations__
 
     def __call__(self):
         # We use the view instead of calling create_version to allow for
@@ -318,11 +319,38 @@ class CreateVersionAjax(object):
 
         view = getMultiAdapter((self.context, self.request),
                                name="createVersion")
+        self.check_versioning_status()
         if getattr(view, 'has_custom_behaviour', False):
+            self.remove_versioning_status()
             return "SEEURL: %s/@@createVersion" % self.context.absolute_url()
         else:
+            self.set_versioning_status()
             view.create()
             return "OK"
+
+    def check_versioning_status(self):
+        """
+        :return:
+        :rtype:
+        """
+        if self.annotations.get('versioningInProgress'):
+            return "IN PROGRESS"
+        else:
+            return self.set_versioning_status()
+
+    def set_versioning_status(self):
+        """
+        :return:
+        :rtype:
+        """
+        self.annotations['versioningInProgress'] = True
+
+    def remove_versioning_status(self):
+        """
+        :return:
+        :rtype:
+        """
+        del(self.annotations['versioningInProgress'])
 
 
 def create_version(context, reindex=True):
