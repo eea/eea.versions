@@ -2,7 +2,7 @@
 """
 
 from Acquisition import aq_base
-from DateTime.DateTime import DateTime
+from DateTime.DateTime import DateTime, time
 from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
@@ -308,6 +308,7 @@ class CreateVersionAjax(object):
 
     def __init__(self, context, request):
         self.context = context
+        self.url = context.absolute_url()
         self.request = request
         self.annotations = self.context.__annotations__
 
@@ -319,38 +320,46 @@ class CreateVersionAjax(object):
 
         view = getMultiAdapter((self.context, self.request),
                                name="createVersion")
-        self.check_versioning_status()
+        version_status = self.check_versioning_status()
+        if version_status:
+            return version_status
         if getattr(view, 'has_custom_behaviour', False):
             self.remove_versioning_status()
-            return "SEEURL: %s/@@createVersion" % self.context.absolute_url()
+            return "SEEURL: %s/@@createVersion" % self.url
         else:
             self.set_versioning_status()
-            view.create()
+            try:
+                view.create()
+            finally:
+                # remove the in progress status from anno in case of an error
+                self.remove_versioning_status()
             return "OK"
 
     def check_versioning_status(self):
+        """ Check if versioning is present and didn't take longer than 15
+        minutes
         """
-        :return:
-        :rtype:
-        """
-        if self.annotations.get('versioningInProgress'):
+        in_progress = self.annotations.get('versioningInProgress')
+        # 22047 check if it took less than 15 minutes since last check
+        # if context still has the versioningInProgress annotation
+        # otherwise request a new version creation
+        # this is done to prevent situations were a new version was requested
+        # and annotation was set but afterwards there was an error or the server
+        # was restarted as such no removing of versioning status being produced
+        if in_progress and (time() - in_progress) < 15.0:
             return "IN PROGRESS"
-        else:
-            return self.set_versioning_status()
 
     def set_versioning_status(self):
+        """ Set time of versioning creation
         """
-        :return:
-        :rtype:
-        """
-        self.annotations['versioningInProgress'] = True
+        self.annotations['versioningInProgress'] = time()
+        logger.info("VersioningInProgress set for %s", self.url)
 
     def remove_versioning_status(self):
-        """
-        :return:
-        :rtype:
+        """ Remove versioning status from object annotations
         """
         del(self.annotations['versioningInProgress'])
+        logger.info("VersioningInProgress removed for %s", self.url)
 
 
 def create_version(context, reindex=True):
