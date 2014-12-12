@@ -323,15 +323,15 @@ class CreateVersionAjax(object):
         version_status = self.check_versioning_status()
         if version_status:
             return version_status
+        self.remove_versioning_status()
         if getattr(view, 'has_custom_behaviour', False):
-            self.remove_versioning_status()
             return "SEEURL: %s/@@createVersion" % self.url
         else:
-            self.set_versioning_status()
             try:
                 view.create()
             finally:
-                # remove the in progress status from anno in case of an error
+                # remove the in progress status from annotation
+                # on version creation or in case of an error
                 self.remove_versioning_status()
             return "OK"
 
@@ -358,7 +358,7 @@ class CreateVersionAjax(object):
     def remove_versioning_status(self):
         """ Remove versioning status from object annotations
         """
-        del(self.annotations['versioningInProgress'])
+        self.annotations['versioningInProgress'] = False
         logger.info("VersioningInProgress removed for %s", self.url)
 
 
