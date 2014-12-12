@@ -9,8 +9,7 @@ function checkLatestVersion(repeat) {
         url     : context_url + "/@@getLatestVersionUrl",
         success : function(data) {
             var msg = '<div style="text-align:center;width:250px;">';
-            var response = data.responseText;
-            if (response === latestVersionUrl) {
+            if (data === latestVersionUrl) {
                 timeout_count += timeout_step;
                 if (repeat) {
                     jQuery.fancybox(

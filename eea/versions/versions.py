@@ -317,12 +317,11 @@ class CreateVersionAjax(object):
         # packages to override how versions are created.
         # If view.has_custom_template is True, it means that the view wants
         # the user to make a decision. We treat this case in javascript
-
-        view = getMultiAdapter((self.context, self.request),
-                               name="createVersion")
         version_status = self.check_versioning_status()
         if version_status:
             return version_status
+        view = getMultiAdapter((self.context, self.request),
+                               name="createVersion")
         self.remove_versioning_status()
         if getattr(view, 'has_custom_behaviour', False):
             return "SEEURL: %s/@@createVersion" % self.url
