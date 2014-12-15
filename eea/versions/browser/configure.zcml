@@ -10,6 +10,7 @@
         template="versioning_status.pt"
         class=".viewlets.VersionStatusViewlet"
         permission="zope.Public"
+        layer="eea.versions.browser.interfaces.IEEAVersionsPublic"
         />
 
     <browser:page
