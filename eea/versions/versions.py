@@ -320,9 +320,9 @@ class CreateVersionAjax(object):
         version_status = self.check_versioning_status()
         if version_status:
             return version_status
+        self.set_versioning_status()
         view = getMultiAdapter((self.context, self.request),
                                name="createVersion")
-        self.remove_versioning_status()
         if getattr(view, 'has_custom_behaviour', False):
             return "SEEURL: %s/@@createVersion" % self.url
         else:
@@ -345,6 +345,8 @@ class CreateVersionAjax(object):
         # this is done to prevent situations were a new version was requested
         # and annotation was set but afterwards there was an error or the server
         # was restarted as such no removing of versioning status being produced
+        logger.info('SET with time %s and %s in_progress == %f', 
+                time(), in_progress, time() - in_progress)
         if in_progress and (time() - in_progress) < 15.0:
             return "IN PROGRESS"
 
