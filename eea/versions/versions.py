@@ -360,6 +360,7 @@ class CreateVersionAjax(object):
         self.url = context.absolute_url()
         self.request = request
 
+    def __call__(self):
         view = getMultiAdapter((self.context, self.request),
                                name="createVersion")
         if getattr(view, 'has_custom_behaviour', False):
