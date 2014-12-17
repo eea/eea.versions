@@ -52,40 +52,48 @@ function startCreationOfNewVersion() {
           'src="++resource++jqzoom/zoomloader.gif"/></div>',
           {'modal': true}
         );
-        jQuery.ajax({
-            url     : context_url + "/@@createVersionAjax",
-            type    : "POST",
-            success : function(data) {
-              if (data.indexOf("SEEURL") === 0) {
-                  var url = data.replace("SEEURL:", "");
-                  window.location.href = url;
-              } else if (data === "IN PROGRESS") {
-                  jQuery.fancybox(
-                      '<div style="text-align:center;width:250px;">' +
-                      '<strong>A new version creation is already in progress.</strong><br/><br/>' +
-                      '<span>Please refresh ' +
-                      'this page after a few minutes and check for the new version ' +
-                      'notification message.</span><br/><br/></div>',
-                      {'modal': false}
-                  );
-              } else {
-                  checkLatestVersion(true);
+          jQuery.ajax({
+              url     : context_url + "/@@checkVersionAjax",
+              success: function(data) {
+                  if (data === "IN PROGRESS") {
+                      jQuery.fancybox(
+                          '<div style="text-align:center;width:250px;">' +
+                          '<strong>A new version creation is already in progress.</strong><br/><br/>' +
+                          '<span>Please refresh ' +
+                          'this page after a few minutes and check for the new version ' +
+                          'notification message.</span><br/><br/></div>',
+                          {'modal': false}
+                      );
+                  }
+                  else {
+                      jQuery.ajax({
+                          url     : context_url + "/@@createVersionAjax",
+                          type    : "POST",
+                          success : function(data) {
+                              if (data.indexOf("SEEURL") === 0) {
+                                  var url = data.replace("SEEURL:", "");
+                                  window.location.href = url;
+                              } else {
+                                  checkLatestVersion(true);
+                              }
+                          },
+                          error   : function(xhr, ajaxOptions, thrownError) {
+                              if (jQuery.inArray(xhr.status, timeout_codes) !== -1) {
+                                  // timeout, check if the new versions was created
+                                  checkLatestVersion(true);
+                              }
+                              else {
+                                  jQuery.fancybox('<div style="text-align:center;width:250px;">' +
+                                      '<span>An internal error occured, please contact the administrator' +
+                                      '</span></div>',
+                                      {'modal': false}
+                                  );
+                              }
+                          }
+                      });
+                  }
               }
-            },
-            error   : function(xhr, ajaxOptions, thrownError) {
-              if (jQuery.inArray(xhr.status, timeout_codes) !== -1) {
-                // timeout, check if the new versions was created
-                checkLatestVersion(true);
-              }
-              else {
-                jQuery.fancybox('<div style="text-align:center;width:250px;">' +
-                  '<span>An internal error occured, please contact the administrator' +
-                  '</span></div>',
-                  {'modal': false}
-                );
-              }
-            }
-        });
+          });
       }
   });
 }

@@ -80,6 +80,13 @@
 
     <browser:page
         for="*"
+        name="checkVersionAjax"
+        permission="cmf.AddPortalContent"
+        class=".versions.CheckVersionAjax"
+        />
+
+    <browser:page
+        for="*"
         name="createVersionAjax"
         permission="cmf.AddPortalContent"
         class=".versions.CreateVersionAjax"

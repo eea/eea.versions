@@ -302,10 +302,9 @@ class CreateVersion(object):
         return create_version(self.context)
 
 
-class CreateVersionAjax(object):
-    """ Used by javascript to create a new version in a background thread
+class CheckVersionAjax(object):
+    """ Checks Ajax Versioning progress
     """
-
     def __init__(self, context, request):
         self.context = context
         self.url = context.absolute_url()
@@ -321,18 +320,7 @@ class CreateVersionAjax(object):
         if version_status:
             return version_status
         self.set_versioning_status()
-        view = getMultiAdapter((self.context, self.request),
-                               name="createVersion")
-        if getattr(view, 'has_custom_behaviour', False):
-            return "SEEURL: %s/@@createVersion" % self.url
-        else:
-            try:
-                view.create()
-            finally:
-                # remove the in progress status from annotation
-                # on version creation or in case of an error
-                self.remove_versioning_status()
-            return "OK"
+        return "OK"
 
     def check_versioning_status(self):
         """ Check if versioning is present and didn't take longer than 15
@@ -345,8 +333,8 @@ class CreateVersionAjax(object):
         # this is done to prevent situations were a new version was requested
         # and annotation was set but afterwards there was an error or the server
         # was restarted as such no removing of versioning status being produced
-        logger.info('SET with time %s and %s in_progress == %f', 
-                time(), in_progress, time() - in_progress)
+        logger.info('SET with time %s and %s in_progress == %f',
+                    time(), in_progress, time() - in_progress)
         if in_progress and (time() - in_progress) < 15.0:
             return "IN PROGRESS"
 
@@ -354,6 +342,7 @@ class CreateVersionAjax(object):
         """ Set time of versioning creation
         """
         self.annotations['versioningInProgress'] = time()
+        self.context.__annotations__._p_changed = True
         logger.info("VersioningInProgress set for %s", self.url)
 
     def remove_versioning_status(self):
@@ -361,6 +350,30 @@ class CreateVersionAjax(object):
         """
         self.annotations['versioningInProgress'] = False
         logger.info("VersioningInProgress removed for %s", self.url)
+
+
+class CreateVersionAjax(object):
+    """ Used by javascript to create a new version in a background thread
+    """
+    def __init__(self, context, request):
+        self.context = context
+        self.url = context.absolute_url()
+        self.request = request
+
+        view = getMultiAdapter((self.context, self.request),
+                               name="createVersion")
+        if getattr(view, 'has_custom_behaviour', False):
+            return "SEEURL: %s/@@createVersion" % self.url
+        else:
+            try:
+                view.create()
+            finally:
+                # remove the in progress status from annotation
+                # on version creation or in case of an error
+                view = getMultiAdapter((self.context, self.request),
+                                       name="checkVersionAjax")
+                view.remove_versioning_status()
+            return "OK"
 
 
 def create_version(context, reindex=True):
