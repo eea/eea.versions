@@ -335,7 +335,7 @@ class CheckVersionAjax(object):
         # was restarted as such no removing of versioning status being produced
         logger.info('SET with time %s and %s in_progress == %f',
                     time(), in_progress, time() - in_progress)
-        if in_progress and (time() - in_progress) < 15.0:
+        if in_progress and (time() - in_progress) < 900.0:
             return "IN PROGRESS"
 
     def set_versioning_status(self):
