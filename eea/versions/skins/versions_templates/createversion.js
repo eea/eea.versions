@@ -56,15 +56,16 @@ function startCreationOfNewVersion() {
               url     : context_url + "/@@checkVersionAjax",
               success: function(data) {
                   if (data === "IN PROGRESS") {
-                      jQuery.fancybox.close();
-                      jQuery.fancybox(
-                          '<div style="text-align:center;width:250px;">' +
-                          '<strong>A new version creation is already in progress.</strong><br/><br/>' +
-                          '<span>Please refresh ' +
-                          'this page after a few minutes and check for the new version ' +
-                          'notification message.</span><br/><br/></div>',
-                          {'modal': false}
-                      );
+                      window.setTimeout(function(){
+                          jQuery.fancybox(
+                              '<div style="text-align:center;width:250px;">' +
+                              '<strong>A new version creation is already in progress.</strong><br/><br/>' +
+                              '<span>Please refresh ' +
+                              'this page after a few minutes and check for the new version ' +
+                              'notification message.</span><br/><br/></div>',
+                              {'modal': false}
+                          );
+                      }, 2000);
                   }
                   else {
                       jQuery.ajax({

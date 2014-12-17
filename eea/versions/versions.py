@@ -342,7 +342,6 @@ class CheckVersionAjax(object):
         """ Set time of versioning creation
         """
         self.annotations['versioningInProgress'] = time()
-        self.context.__annotations__._p_changed = True
         logger.info("VersioningInProgress set for %s", self.url)
 
     def remove_versioning_status(self):
