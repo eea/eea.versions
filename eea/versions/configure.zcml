@@ -80,9 +80,9 @@
 
     <browser:page
         for="*"
-        name="checkVersionAjax"
+        name="checkAjaxVersioning"
         permission="cmf.AddPortalContent"
-        class=".versions.CheckVersionAjax"
+        class=".versions.CheckAjaxVersioning"
         />
 
     <browser:page

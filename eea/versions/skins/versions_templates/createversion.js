@@ -61,7 +61,7 @@ function startCreationOfNewVersion() {
           {'modal': true}
         );
           jQuery.ajax({
-              url     : context_url + "/@@checkVersionAjax",
+              url     : context_url + "/@@checkAjaxVersioning",
               success: function(data) {
                   if (data === "IN PROGRESS") {
                       window.setTimeout(function(){

@@ -3,6 +3,10 @@ Changelog
 
 7.5-dev - (unreleased)
 ----------------------
+* Feature: Ajax versioning is now checking if a version isn't already in
+  progress in which case no new versioning is attempted until previous version
+  call is terminated
+  [ichim-david refs #22047]
 
 7.4 - (2014-11-20)
 ------------------

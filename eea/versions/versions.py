@@ -302,7 +302,7 @@ class CreateVersion(object):
         return create_version(self.context)
 
 
-class CheckVersionAjax(object):
+class CheckAjaxVersioning(object):
     """ Checks Ajax Versioning progress
     """
     def __init__(self, context, request):
