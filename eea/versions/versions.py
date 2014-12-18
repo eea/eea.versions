@@ -372,7 +372,7 @@ class CreateVersionAjax(object):
                 # remove the in progress status from annotation
                 # on version creation or in case of an error
                 view = getMultiAdapter((self.context, self.request),
-                                       name="checkVersionAjax")
+                                       name="checkAjaxVersioning")
                 view.remove_versioning_status()
             return "OK"
 
