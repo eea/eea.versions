@@ -333,9 +333,10 @@ class CheckVersionAjax(object):
         # this is done to prevent situations were a new version was requested
         # and annotation was set but afterwards there was an error or the server
         # was restarted as such no removing of versioning status being produced
-        logger.info('SET with time %s and %s in_progress == %f',
-                    time(), in_progress, time() - in_progress)
         if in_progress and (time() - in_progress) < 900.0:
+            logger.info('VersioningInProgress in_progress at %s, now %s '
+                        ', time since last run == %f',
+                        in_progress, time(), time() - in_progress)
             return "IN PROGRESS"
 
     def set_versioning_status(self):

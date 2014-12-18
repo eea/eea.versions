@@ -41,11 +41,19 @@ function checkLatestVersion(repeat) {
     });
 }
 
+function showFancyboxError() {
+    jQuery.fancybox('<div style="text-align:center;width:250px;">' +
+        '<span>An internal error occured, please contact the administrator' +
+        '</span></div>',
+        {'modal': false}
+    );
+}
+
 function startCreationOfNewVersion() {
   var timeout_codes = [502, 503, 504];
   jQuery.ajax({ // get the latest version url, before new version
       url     : context_url + "/@@getLatestVersionUrl",
-      success : function(data) {
+       success : function(data) {
         latestVersionUrl = data;
         jQuery.fancybox('<div style="text-align:center;width:250px;"><span>' +
           'Please wait, a new version is being created.</span><br/><br/><img ' +
@@ -85,15 +93,14 @@ function startCreationOfNewVersion() {
                                   checkLatestVersion(true);
                               }
                               else {
-                                  jQuery.fancybox('<div style="text-align:center;width:250px;">' +
-                                      '<span>An internal error occured, please contact the administrator' +
-                                      '</span></div>',
-                                      {'modal': false}
-                                  );
+                                  showFancyboxError();
                               }
                           }
                       });
                   }
+              },
+              error: function() {
+                  showFancyboxError();
               }
           });
       }
