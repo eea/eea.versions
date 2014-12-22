@@ -1,5 +1,6 @@
 /* global document, context_url */
 var latestVersionUrl = "";
+var versionChecks = 0;
 
 function checkLatestVersion(repeat) {
     var timeout_count = 0,
@@ -55,8 +56,9 @@ function startCreationOfNewVersion() {
       url     : context_url + "/@@getLatestVersionUrl"
   }).done(function(data) {
         latestVersionUrl = data;
+        versionChecks += 1;
           jQuery.ajax({
-              url: context_url + "/@@ajaxVersion"
+              url: context_url + "/@@ajaxVersion?checkedTimes=" + versionChecks
           }).done(function(data) {
               if (data === "NO VERSION IN PROGRESS") {
                   jQuery.ajax({
