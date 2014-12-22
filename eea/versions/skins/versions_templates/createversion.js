@@ -55,18 +55,19 @@ function startCreationOfNewVersion() {
       url     : context_url + "/@@getLatestVersionUrl"
   }).done(function(data) {
         latestVersionUrl = data;
-        jQuery.fancybox('<div style="text-align:center;width:250px;"><span>' +
-          'Please wait, a new version is being created.</span><br/><br/><img ' +
-          'src="++resource++jqzoom/zoomloader.gif"/></div>',
-          {'modal': true}
-        );
           jQuery.ajax({
               url: context_url + "/@@ajaxVersion"
           }).done(function(data) {
               if (data === "NO VERSION IN PROGRESS") {
                   jQuery.ajax({
+                      type    : "POST",
                       url: context_url + "/@@ajaxVersion?startVersioning=True"
                   }).done(function() {
+                      jQuery.fancybox('<div style="text-align:center;width:250px;"><span>' +
+                          'Please wait, a new version is being created.</span><br/><br/><img ' +
+                          'src="++resource++jqzoom/zoomloader.gif"/></div>',
+                          {'modal': true}
+                      );
                           jQuery.ajax({
                               url     : context_url + "/@@createVersionAjax",
                               type    : "POST"
