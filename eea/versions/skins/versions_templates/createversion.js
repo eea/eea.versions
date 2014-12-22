@@ -52,8 +52,8 @@ function showFancyboxError() {
 function startCreationOfNewVersion() {
   var timeout_codes = [502, 503, 504];
   jQuery.ajax({ // get the latest version url, before new version
-      url     : context_url + "/@@getLatestVersionUrl",
-       success : function(data) {
+      url     : context_url + "/@@getLatestVersionUrl"
+  }).done(function(data) {
         latestVersionUrl = data;
         jQuery.fancybox('<div style="text-align:center;width:250px;"><span>' +
           'Please wait, a new version is being created.</span><br/><br/><img ' +
@@ -61,57 +61,50 @@ function startCreationOfNewVersion() {
           {'modal': true}
         );
           jQuery.ajax({
-              url     : context_url + "/@@ajaxVersion",
-              success: function(data) {
-                  if (data === "NO VERSION IN PROGRESS") {
-                      jQuery.ajax({
-                          url: context_url + "/@@ajaxVersion?startVersioning=True",
-                          success: function() {
-                              jQuery.ajax({
-                                  url     : context_url + "/@@createVersionAjax",
-                                  type    : "POST",
-                                  success : function(data) {
-                                      if (data.indexOf("SEEURL") === 0) {
-                                          var url = data.replace("SEEURL:", "");
-                                          window.location.href = url;
-                                      } else {
-                                          checkLatestVersion(true);
-                                      }
-                                  },
-                                  error   : function(xhr, ajaxOptions, thrownError) {
-                                      if (jQuery.inArray(xhr.status, timeout_codes) !== -1) {
-                                          // timeout, check if the new versions was created
-                                          checkLatestVersion(true);
-                                      }
-                                      else {
-                                          showFancyboxError();
-                                      }
-                                  }
-                              });
-                          },
-                          error: function() {
-                              showFancyboxError();
-                          }
+              url: context_url + "/@@ajaxVersion"
+          }).done(function(data) {
+              if (data === "NO VERSION IN PROGRESS") {
+                  jQuery.ajax({
+                      url: context_url + "/@@ajaxVersion?startVersioning=True"
+                  }).done(function() {
+                          jQuery.ajax({
+                              url     : context_url + "/@@createVersionAjax",
+                              type    : "POST"
+                          }).done(function(data) {
+                              if (data.indexOf("SEEURL") === 0) {
+                                  var url = data.replace("SEEURL:", "");
+                                  window.location.href = url;
+                              } else {
+                                  checkLatestVersion(true);
+                              }
+                          }).fail(function(xhr, ajaxOptions, thrownError) {
+                              if (jQuery.inArray(xhr.status, timeout_codes) !== -1) {
+                                  // timeout, check if the new versions was created
+                                  checkLatestVersion(true);
+                              }
+                              else {
+                                  showFancyboxError();
+                              }
+                          });
+                      }).fail(function() {
+                          showFancyboxError();
                       });
-                  }
-                  if (data === "IN PROGRESS") {
-                      window.setTimeout(function(){
-                          jQuery.fancybox(
-                              '<div style="text-align:center;width:250px;">' +
-                              '<strong>A new version creation is already in progress.</strong><br/><br/>' +
-                              '<span>Please refresh ' +
-                              'this page after a few minutes and check for the new version ' +
-                              'notification message.</span><br/><br/></div>',
-                              {'modal': false}
-                          );
-                      }, 2000);
-                  }
-              },
-              error: function() {
-                  showFancyboxError();
               }
+              if (data === "IN PROGRESS") {
+                                      window.setTimeout(function(){
+                                      jQuery.fancybox(
+                                      '<div style="text-align:center;width:250px;">' +
+                                      '<strong>A new version creation is already in progress.</strong><br/><br/>' +
+                                      '<span>Please refresh ' +
+                                      'this page after a few minutes and check for the new version ' +
+                                      'notification message.</span><br/><br/></div>',
+                                      {'modal': false}
+                                      );
+                                      }, 2000);
+                                      }
+          }).fail(function() {
+                  showFancyboxError();
           });
-      }
   });
 }
 
