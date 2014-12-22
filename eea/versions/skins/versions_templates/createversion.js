@@ -61,8 +61,39 @@ function startCreationOfNewVersion() {
           {'modal': true}
         );
           jQuery.ajax({
-              url     : context_url + "/@@checkAjaxVersioning",
+              url     : context_url + "/@@AjaxVersion",
               success: function(data) {
+                  if (data === "NO VERSION IN PROGRESS") {
+                      jQuery.ajax({
+                          url: context_url + "/@@AjaxVersion?startVersioning=True",
+                          success: function() {
+                              jQuery.ajax({
+                                  url     : context_url + "/@@createVersionAjax",
+                                  type    : "POST",
+                                  success : function(data) {
+                                      if (data.indexOf("SEEURL") === 0) {
+                                          var url = data.replace("SEEURL:", "");
+                                          window.location.href = url;
+                                      } else {
+                                          checkLatestVersion(true);
+                                      }
+                                  },
+                                  error   : function(xhr, ajaxOptions, thrownError) {
+                                      if (jQuery.inArray(xhr.status, timeout_codes) !== -1) {
+                                          // timeout, check if the new versions was created
+                                          checkLatestVersion(true);
+                                      }
+                                      else {
+                                          showFancyboxError();
+                                      }
+                                  }
+                              });
+                          },
+                          error: function() {
+                              showFancyboxError();
+                          }
+                      });
+                  }
                   if (data === "IN PROGRESS") {
                       window.setTimeout(function(){
                           jQuery.fancybox(
@@ -74,29 +105,6 @@ function startCreationOfNewVersion() {
                               {'modal': false}
                           );
                       }, 2000);
-                  }
-                  else {
-                      jQuery.ajax({
-                          url     : context_url + "/@@createVersionAjax",
-                          type    : "POST",
-                          success : function(data) {
-                              if (data.indexOf("SEEURL") === 0) {
-                                  var url = data.replace("SEEURL:", "");
-                                  window.location.href = url;
-                              } else {
-                                  checkLatestVersion(true);
-                              }
-                          },
-                          error   : function(xhr, ajaxOptions, thrownError) {
-                              if (jQuery.inArray(xhr.status, timeout_codes) !== -1) {
-                                  // timeout, check if the new versions was created
-                                  checkLatestVersion(true);
-                              }
-                              else {
-                                  showFancyboxError();
-                              }
-                          }
-                      });
                   }
               },
               error: function() {
