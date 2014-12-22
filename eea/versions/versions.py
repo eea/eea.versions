@@ -350,8 +350,8 @@ class AjaxVersion(object):
     def set_versioning_status(self):
         """ Set time of versioning creation
         """
-        now = time()
-        self.annotations["versioningInProgress"] = now
+        now = DateTime()
+        self.annotations["versioningInProgress"] = time()
         user = self.get_logged_in_user()
         logger.info("VersioningInProgress set for %s by %s at %s", self.url,
                     user, now)
