@@ -61,11 +61,11 @@ function startCreationOfNewVersion() {
           {'modal': true}
         );
           jQuery.ajax({
-              url     : context_url + "/@@AjaxVersion",
+              url     : context_url + "/@@ajaxVersion",
               success: function(data) {
                   if (data === "NO VERSION IN PROGRESS") {
                       jQuery.ajax({
-                          url: context_url + "/@@AjaxVersion?startVersioning=True",
+                          url: context_url + "/@@ajaxVersion?startVersioning=True",
                           success: function() {
                               jQuery.ajax({
                                   url     : context_url + "/@@createVersionAjax",
