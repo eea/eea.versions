@@ -2,7 +2,7 @@
 """
 
 from Acquisition import aq_base
-from DateTime.DateTime import DateTime
+from DateTime.DateTime import DateTime, time
 from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
@@ -302,26 +302,90 @@ class CreateVersion(object):
         return create_version(self.context)
 
 
+class AjaxVersion(object):
+    """ Ajax Versioning progress
+    """
+    def __init__(self, context, request):
+        self.context = context
+        self.url = context.absolute_url()
+        self.request = request
+        self.annotations = self.context.__annotations__
+
+    def get_logged_in_user(self):
+        """
+        :return: user id
+        :rtype:  string
+        """
+        portal_membership = getToolByName(self.context, 'portal_membership',
+                                          None)
+        if not portal_membership:
+            return "UNKNOWN"
+        return portal_membership.getAuthenticatedMember().getId()
+
+    def __call__(self):
+        version_status = self.check_versioning_status()
+        if version_status:
+            return version_status
+        if "startVersioning" in self.request:
+            return self.set_versioning_status()
+        return "NO VERSION IN PROGRESS"
+
+    def check_versioning_status(self):
+        """ Check if versioning is present and didn't take longer than 15
+        minutes
+        """
+        in_progress = self.annotations.get('versioningInProgress')
+        # 22047 check if it took less than 15 minutes since last check
+        # if context still has the versioningInProgress annotation
+        # otherwise request a new version creation
+        # this is done to prevent situations were a new version was requested
+        # and annotation was set but afterwards there was an error or the server
+        # was restarted as such no removing of versioning status being produced
+        if in_progress and (time() - in_progress) < 900.0:
+            logger.info('VersioningInProgress in_progress at %s, now %s '
+                        ', time since last run == %f',
+                        in_progress, time(), time() - in_progress)
+            return "IN PROGRESS"
+
+    def set_versioning_status(self):
+        """ Set time of versioning creation
+        """
+        now = DateTime()
+        self.annotations["versioningInProgress"] = time()
+        user = self.get_logged_in_user()
+        logger.info("VersioningInProgress set for %s by %s at %s", self.url,
+                    user, now)
+        return "VERSIONING STARTED"
+
+    def remove_versioning_status(self):
+        """ Remove versioning status from object annotations
+        """
+        self.annotations["versioningInProgress"] = False
+        logger.info("VersioningInProgress removed for %s", self.url)
+
+
 class CreateVersionAjax(object):
     """ Used by javascript to create a new version in a background thread
     """
-
     def __init__(self, context, request):
         self.context = context
+        self.url = context.absolute_url()
         self.request = request
 
     def __call__(self):
-        # We use the view instead of calling create_version to allow for
-        # packages to override how versions are created.
-        # If view.has_custom_template is True, it means that the view wants
-        # the user to make a decision. We treat this case in javascript
-
         view = getMultiAdapter((self.context, self.request),
                                name="createVersion")
         if getattr(view, 'has_custom_behaviour', False):
-            return "SEEURL: %s/@@createVersion" % self.context.absolute_url()
+            return "SEEURL: %s/@@createVersion" % self.url
         else:
-            view.create()
+            try:
+                view.create()
+            finally:
+                # remove the in progress status from annotation
+                # on version creation or in case of an error
+                view = getMultiAdapter((self.context, self.request),
+                                       name="ajaxVersion")
+                view.remove_versioning_status()
             return "OK"
 
 
