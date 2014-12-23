@@ -7,6 +7,9 @@ Changelog
   progress in which case no new versioning is attempted until previous version
   call is terminated
   [ichim-david refs #22047]
+* Bug fix: Added browserlayer for viewlets, so don't throw error when
+  eea.versions is installed but not activated yet.
+  [szabozo0]
 
 7.4 - (2014-11-20)
 ------------------
