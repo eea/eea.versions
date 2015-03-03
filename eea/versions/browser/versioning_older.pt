@@ -1,0 +1,3 @@
+<metal:condition tal:condition="view/available" >
+    <div metal:use-macro="context/portlet_versions/macros/older_versions" />
+</metal:condition>
