@@ -10,8 +10,8 @@
                      later_versions versions/later_versions;
                      earlier_versions versions/earlier_versions;
                      latest_version versions/latest_version;
-                     isLatest versions/isLatest;
-                     ">
+                     isLatest versions/isLatest;"
+                class="eea-available-version">
 
             <!-- Information about new versions -->
             <tal:new metal:define-slot="new">
@@ -44,26 +44,6 @@
                         </ul>
                     </div>
                     <div class="portalMessage informationMessage" tal:condition="python:isLatest and earlier_versions">
-                        <tal:non-anonymous tal:condition="anon"
-                            tal:define="review_state context/@@plone_context_state/workflow_state">
-                            <span i18n:translate=""
-                                tal:condition="python: review_state == 'published'">
-                                This is the latest published version.
-                            </span>
-                            <span i18n:translate=""
-                                tal:condition="python: review_state != 'published'">
-                                This is the latest version.
-                            </span>
-                        </tal:non-anonymous>
-
-                        <tal:non-anonymous tal:condition="not:anon">
-                            <span i18n:translate="">This is the latest version with state:
-                            <span tal:define="GetWorkflowStateTitle nocall:context/@@getWorkflowStateTitle;
-                                title_state python:GetWorkflowStateTitle(obj=context)" i18n:name="state"
-                                tal:content="title_state" />
-                            </span>
-                        </tal:non-anonymous>
-
                         <a tal:attributes="href string:${request/URL0}#previous-versions"
                             i18n:translate="" class="showOlderVersions">See older versions.</a>
 
