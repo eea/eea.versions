@@ -3,6 +3,9 @@ Changelog
 
 7.6-dev - (unreleased)
 ----------------------
+* Change: added eea.versions.older viewlet with logic that was previously
+  within eea.versions.status viewlet about displaying older revisions
+  [ichimdav refs #23017]
 
 7.5 - (2014-12-23)
 ------------------

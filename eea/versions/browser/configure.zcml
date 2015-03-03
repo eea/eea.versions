@@ -13,6 +13,16 @@
         layer="eea.versions.browser.interfaces.IEEAVersionsPublic"
         />
 
+    <browser:viewlet
+        name="eea.versions.older"
+        for="eea.versions.interfaces.IVersionEnhanced"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
+        template="versioning_older.pt"
+        class=".viewlets.VersionStatusViewlet"
+        permission="zope.Public"
+        layer="eea.versions.browser.interfaces.IEEAVersionsPublic"
+        />
+
     <browser:page
         for="*"
         name="updateCreationDate"
