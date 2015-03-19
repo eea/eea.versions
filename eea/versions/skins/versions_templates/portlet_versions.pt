@@ -66,7 +66,7 @@
     <metal:defines metal:use-macro="context/portlet_versions/macros/defines">
         <metal:content metal:fill-slot="content">
 
-            <div class="portalMessage informationMessage" tal:condition="python:isLatest and earlier_versions" >
+            <div class="portalMessage archiveMessage" tal:condition="python:isLatest and earlier_versions" >
                 <a tal:attributes="href string:${request/URL0}#previous-versions"
                         i18n:translate="" class="showOlderVersions">See older versions.</a>
 
