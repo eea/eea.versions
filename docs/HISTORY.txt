@@ -3,6 +3,9 @@ Changelog
 
 7.7.dev0 - (unreleased)
 -----------------------
+* Change: added missing commit for ticket 23017 which changes the portalMessage
+  of older versions to archiveMessage
+  [ichimdav refs #23017]
 
 7.6 - (2015-03-17)
 ------------------
