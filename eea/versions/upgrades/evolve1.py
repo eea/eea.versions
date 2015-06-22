@@ -37,7 +37,7 @@ def get_object(catalog, rid):
         return None
 
     parent = aq_parent(catalog)
-    if (aq_get(parent, 'REQUEST', None) is None 
+    if (aq_get(parent, 'REQUEST', None) is None
         and _GLOBALREQUEST_INSTALLED):
         request = getRequest()
         if request is not None:
@@ -54,7 +54,7 @@ def get_object(catalog, rid):
 def migrate_versionId_storage(obj):
     """Migrate storage of versionId
     """
-    
+
     old_storage = obj.__annotations__.get('versionId')
     if not old_storage:
         msg = ("no versionId stored for %s, but preset in catalog" %
@@ -101,7 +101,7 @@ def evolve(context):
         i += 1
         if (i % 100) == 0:
             transaction.savepoint()
-    
+
     #somehow not all objects are migrated
     for _type in ['Assessment', 'Specification', 'IndicatorFactSheet',
                     'EEAFigure', 'Data']:

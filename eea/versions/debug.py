@@ -14,14 +14,14 @@ from zope.interface import alsoProvides
 class GetMissingValuesForIndex(BrowserView):
     """We use this to see if there are any objects that have
     an assigned versionId but don't have that value stored in the
-    catalog. This was due to the way the code worked up to 
+    catalog. This was due to the way the code worked up to
     v4.7: whenever a versionId was checked on an object, one
     was assigned, but a catalog reindex was not performed.
-    
+
     Code based on http://stackoverflow.com/questions/11216472/
     how-can-i-look-for-objects-with-missing-value-or-none-as-key
     """
-    
+
     def missing_entries_for_index(self, catalog, index_name):
         """ Return the difference between catalog and index ids
         """
@@ -64,7 +64,7 @@ class GetMissingValuesForIndex(BrowserView):
         results = self.not_indexed_results(catalog, index)
 
         out = StringIO()
-        results = [z for z in results if 
+        results = [z for z in results if
                 (z.portal_type == portal_type) and self.get_real_versionid(z)]
 
         print >> out, "Got %s results" % len(results)
@@ -81,6 +81,6 @@ class GetMissingValuesForIndex(BrowserView):
                           "to see if different"
 
         out.seek(0)
-            
+
         return out.read()
 
