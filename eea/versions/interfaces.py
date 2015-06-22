@@ -6,14 +6,14 @@ from zope.component.interfaces import IObjectEvent
 
 
 class IVersionEnhanced(Interface):
-    """ Objects which have versions.  
-    
+    """ Objects which have versions.
+
     These objects have an annotation with key 'versionId'
-    This annotation is a PersistentMapping and has a key 
-    'versionId' where it stores a string which is the 
+    This annotation is a PersistentMapping and has a key
+    'versionId' where it stores a string which is the
     'versionId' group to which this belongs.
 
-    Any arbitrary object can be made an IVersionEnhanced object, 
+    Any arbitrary object can be made an IVersionEnhanced object,
     through the @@asignVersion action which alsoProvides that
     interface on the object.
     """
