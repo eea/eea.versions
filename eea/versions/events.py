@@ -1,7 +1,7 @@
 """Event handlers
 """
 
-from eea.versions.interfaces import IVersionCreatedEvent 
+from eea.versions.interfaces import IVersionCreatedEvent
 from zope.component.interfaces import ObjectEvent
 from zope.interface import implements
 
