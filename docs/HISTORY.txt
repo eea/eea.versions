@@ -3,6 +3,9 @@ Changelog
 
 7.8.dev0 - (unreleased)
 -----------------------
+* Change: Auto-include zcml within plone context in order to make this package
+  work without having to add it within buildout zcml directive.
+  [avoinea]
 
 7.7 - (2015-04-02)
 ------------------
@@ -14,7 +17,7 @@ Changelog
 ------------------
 * Change: Switched to curl in the jenkins build install script
   [olimpiurob refs #22402]
-* Change: Changed fetch url for jenkins build install script to the install 
+* Change: Changed fetch url for jenkins build install script to the install
   script from the main EEA CPB repository
   [olimpiurob refs #22402]
 * Change: added eea.versions.older viewlet with logic that was previously
