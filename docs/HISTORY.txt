@@ -1,8 +1,11 @@
 Changelog
 =========
 
-7.8.dev0 - (unreleased)
+7.9.dev0 - (unreleased)
 -----------------------
+
+7.8 - (2015-08-18)
+------------------
 * Change: Auto-include zcml within plone context in order to make this package
   work without having to add it within buildout zcml directive.
   [avoinea]
