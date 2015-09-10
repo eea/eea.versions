@@ -3,6 +3,10 @@ Changelog
 
 7.9.dev0 - (unreleased)
 -----------------------
+* Change: removed js code that dealt with hiding of the older versions, this was
+  a design implementation that isn't generic and was moved to another eea theme
+  package
+  [ichimdav refs #27220]
 
 7.8 - (2015-08-18)
 ------------------
