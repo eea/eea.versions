@@ -1,8 +1,11 @@
 Changelog
 =========
 
-7.9.dev0 - (unreleased)
+8.0.dev0 - (unreleased)
 -----------------------
+
+7.9 - (2015-10-05)
+------------------
 * Change: fixed issue 2 - to have previous versions shown on all versions.
   [chiridra refs #28681]
 * Change: removed js code that dealt with hiding of the older versions, this was
