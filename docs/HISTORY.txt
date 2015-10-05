@@ -1,6 +1,9 @@
 Changelog
 =========
 
+8.0.dev0 - (unreleased)
+-----------------------
+
 7.9 - (2015-10-05)
 ------------------
 * Change: fixed issue 2 - to have previous versions shown on all versions.
