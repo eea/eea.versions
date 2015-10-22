@@ -20,7 +20,7 @@ from zope.event import notify
 from zope.interface import alsoProvides, implements, providedBy
 import logging
 import random
-
+from OFS.CopySupport import _cb_encode, _cb_decode
 
 hasNewDiscussion = True
 try:
@@ -410,19 +410,16 @@ def create_version(context, reindex=True):
     # _ = IVersionControl(context).getVersionId()
 
     # Create version object
+    # 1. copy object
     clipb = parent.manage_copyObjects(ids=[obj_id])
+    # 2. pregenerate new id for the copy
+    new_id = generateNewId(parent, obj_id)
+    # 3. alter the clipboard data and inject the desired new id
+    clipb_decoded = _cb_decode(clipb)
+    clipb = _cb_encode((clipb_decoded[0], clipb_decoded[1], [new_id]))
+    # 4. call paste operation
     res = parent.manage_pasteObjects(clipb)
-
-    new_id = res[0]['new_id']
-
-    ver = getattr(parent, new_id)
-
-    # Fixes the generated id: remove copy_of from ID
-    # ZZZ: add -vX sufix to the ids
-    vid = ver.getId()
-    new_id = vid.replace('copy_of_', '')
-    new_id = generateNewId(parent, new_id)
-    parent.manage_renameObject(id=vid, new_id=new_id)
+    # 5. get the version object - no need for a rename anymore
     ver = parent[new_id]
 
     # Set effective date today
