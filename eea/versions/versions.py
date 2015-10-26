@@ -1,7 +1,7 @@
 """main eea.versions module
 """
 
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_inner, aq_parent
 from DateTime.DateTime import DateTime, time
 from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
@@ -27,7 +27,6 @@ from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, eInvalid, \
     escape, MessageDialog, ObjectCopiedEvent, compatibilityCall, \
     ObjectClonedEvent, sanity_check, ObjectWillBeMovedEvent, \
     ObjectMovedEvent, notifyContainerModified, cookie_path
-from Acquisition import aq_base, aq_inner, aq_parent
 
 hasNewDiscussion = True
 try:
