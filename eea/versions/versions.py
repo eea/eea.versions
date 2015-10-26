@@ -20,7 +20,14 @@ from zope.event import notify
 from zope.interface import alsoProvides, implements, providedBy
 import logging
 import random
-
+import sys
+import warnings
+from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, eInvalid, \
+    eNoData, eNotFound, eNotSupported, loadMoniker, ConflictError, \
+    escape, MessageDialog, ObjectCopiedEvent, compatibilityCall, \
+    ObjectClonedEvent, sanity_check, ObjectWillBeMovedEvent, \
+    ObjectMovedEvent, notifyContainerModified, cookie_path
+from Acquisition import aq_base, aq_inner, aq_parent
 
 hasNewDiscussion = True
 try:
@@ -410,19 +417,16 @@ def create_version(context, reindex=True):
     # _ = IVersionControl(context).getVersionId()
 
     # Create version object
+    # 1. copy object
     clipb = parent.manage_copyObjects(ids=[obj_id])
-    res = parent.manage_pasteObjects(clipb)
-
-    new_id = res[0]['new_id']
-
-    ver = getattr(parent, new_id)
-
-    # Fixes the generated id: remove copy_of from ID
-    # ZZZ: add -vX sufix to the ids
-    vid = ver.getId()
-    new_id = vid.replace('copy_of_', '')
-    new_id = generateNewId(parent, new_id)
-    parent.manage_renameObject(id=vid, new_id=new_id)
+    # 2. pregenerate new id for the copy
+    new_id = generateNewId(parent, obj_id)
+    # 3. alter the clipboard data and inject the desired new id
+    clipb_decoded = _cb_decode(clipb)
+    clipb = _cb_encode((clipb_decoded[0], clipb_decoded[1], [new_id]))
+    # 4. call paste operation
+    manage_pasteObjects_Version(parent, clipb)
+    # 5. get the version object - no need for a rename anymore
     ver = parent[new_id]
 
     # Set effective date today
@@ -622,3 +626,172 @@ def _reindex(obj, catalog_tool=None):
     if not catalog_tool:
         catalog_tool = getToolByName(obj, 'portal_catalog')
     catalog_tool.reindexObject(obj)
+
+
+def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
+    """Paste previously copied objects into the current object.
+
+    If calling manage_pasteObjects from python code, pass the result of a
+    previous call to manage_cutObjects or manage_copyObjects as the first
+    argument.
+
+    Also sends IObjectCopiedEvent and IObjectClonedEvent
+    or IObjectWillBeMovedEvent and IObjectMovedEvent.
+    """
+    ### due to the ticket #14598: the need to also handle a cb_copy_data
+    ### structure that contains the desired new id on a copy/paste operation.
+    ### this feature will be used when creating a new version for an object.
+    ### if there is no new id also incapsulated in the cb_copy_data then
+    ### the copy/paste will work as default.
+    ### also the cut/paste remains the same.
+    if cb_copy_data is not None:
+        cp = cb_copy_data
+    elif REQUEST is not None and REQUEST.has_key('__cp'):
+        cp = REQUEST['__cp']
+    else:
+        cp = None
+    if cp is None:
+        raise CopyError(eNoData)
+
+    try:
+        op, mdatas, newids = _cb_decode(cp)
+    except:
+        try:
+            op, mdatas = _cb_decode(cp)
+            newids = []
+        except:
+            raise CopyError(eInvalid)
+    else:
+        if len(mdatas) != len(newids):
+            raise CopyError(eInvalid)
+
+    oblist = []
+    app = self.getPhysicalRoot()
+    for mdata in mdatas:
+        m = loadMoniker(mdata)
+        try:
+            ob = m.bind(app)
+        except ConflictError:
+            raise
+        except:
+            raise CopyError(eNotFound)
+        self._verifyObjectPaste(ob, validate_src=op+1)
+        oblist.append(ob)
+
+    if len(newids) == 0:
+        newids = ['']*len(oblist)
+
+    result = []
+    if op == 0:
+        # Copy operation
+        for ob, new_id in zip(oblist, newids):
+            orig_id = ob.getId()
+            if not ob.cb_isCopyable():
+                raise CopyError(eNotSupported % escape(orig_id))
+
+            try:
+                ob._notifyOfCopyTo(self, op=0)
+            except ConflictError:
+                raise
+            except:
+                raise CopyError(MessageDialog(
+                    title="Copy Error",
+                    message=sys.exc_info()[1],
+                    action='manage_main'))
+
+            if new_id == '':
+                new_id = self._get_id(orig_id)
+            result.append({'id': orig_id, 'new_id': new_id})
+
+            orig_ob = ob
+            ob = ob._getCopy(self)
+            ob._setId(new_id)
+            notify(ObjectCopiedEvent(ob, orig_ob))
+
+            self._setObject(new_id, ob)
+            ob = self._getOb(new_id)
+            ob.wl_clearLocks()
+
+            ob._postCopy(self, op=0)
+
+            compatibilityCall('manage_afterClone', ob, ob)
+
+            notify(ObjectClonedEvent(ob))
+
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST, update_menu=1,
+                                    cb_dataValid=1)
+
+    elif op == 1:
+        # Move operation
+        for ob in oblist:
+            orig_id = ob.getId()
+            if not ob.cb_isMoveable():
+                raise CopyError(eNotSupported % escape(orig_id))
+
+            try:
+                ob._notifyOfCopyTo(self, op=1)
+            except ConflictError:
+                raise
+            except:
+                raise CopyError(MessageDialog(
+                    title="Move Error",
+                    message=sys.exc_info()[1],
+                    action='manage_main'))
+
+            if not sanity_check(self, ob):
+                raise CopyError(
+                        "This object cannot be pasted into itself")
+
+            orig_container = aq_parent(aq_inner(ob))
+            if aq_base(orig_container) is aq_base(self):
+                new_id = orig_id
+            else:
+                new_id = self._get_id(orig_id)
+            result.append({'id': orig_id, 'new_id': new_id})
+
+            notify(ObjectWillBeMovedEvent(ob, orig_container, orig_id,
+                                          self, new_id))
+
+            # try to make ownership explicit so that it gets carried
+            # along to the new location if needed.
+            ob.manage_changeOwnershipType(explicit=1)
+
+            try:
+                orig_container._delObject(orig_id, suppress_events=True)
+            except TypeError:
+                orig_container._delObject(orig_id)
+                warnings.warn(
+                    "%s._delObject without suppress_events is discouraged."
+                    % orig_container.__class__.__name__,
+                    DeprecationWarning)
+            ob = aq_base(ob)
+            ob._setId(new_id)
+
+            try:
+                self._setObject(new_id, ob, set_owner=0, suppress_events=True)
+            except TypeError:
+                self._setObject(new_id, ob, set_owner=0)
+                warnings.warn(
+                    "%s._setObject without suppress_events is discouraged."
+                    % self.__class__.__name__, DeprecationWarning)
+            ob = self._getOb(new_id)
+
+            notify(ObjectMovedEvent(ob, orig_container, orig_id, self, new_id))
+            notifyContainerModified(orig_container)
+            if aq_base(orig_container) is not aq_base(self):
+                notifyContainerModified(self)
+
+            ob._postCopy(self, op=1)
+            # try to make ownership implicit if possible
+            ob.manage_changeOwnershipType(explicit=0)
+
+        if REQUEST is not None:
+            REQUEST['RESPONSE'].setCookie('__cp', 'deleted',
+                                path='%s' % cookie_path(REQUEST),
+                                expires='Wed, 31-Dec-97 23:59:59 GMT')
+            REQUEST['__cp'] = None
+            return self.manage_main(self, REQUEST, update_menu=1,
+                                    cb_dataValid=0)
+
+    return result

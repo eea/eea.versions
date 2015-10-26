@@ -3,6 +3,10 @@ Changelog
 
 8.0.dev0 - (unreleased)
 -----------------------
+* Feature: Performance improvement when creating new version
+  by usign the patched manage_pasteObjects and so avoid the rename after
+  the copy/paste operation
+  [chiridra refs #14598]
 
 7.9 - (2015-10-05)
 ------------------
