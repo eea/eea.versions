@@ -40,7 +40,6 @@ setup(name=name,
       install_requires=[
           'setuptools',
           #'collective.indexing',
-          'Products.EEAPloneAdmin',
       ],
       extras_require={
           'test': [
