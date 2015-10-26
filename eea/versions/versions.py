@@ -655,11 +655,11 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
 
     try:
         op, mdatas, newids = _cb_decode(cp)
-    except:
+    except Exception:
         try:
             op, mdatas = _cb_decode(cp)
             newids = []
-        except:
+        except Exception:
             raise CopyError(eInvalid)
     else:
         if len(mdatas) != len(newids):
