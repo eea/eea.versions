@@ -1,6 +1,9 @@
 Changelog
 =========
 
+8.1.dev0 - (unreleased)
+-----------------------
+
 8.0 - (2015-11-03)
 ------------------
 * Feature: Performance improvement when creating new version
