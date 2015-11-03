@@ -1,8 +1,8 @@
 Changelog
 =========
 
-8.0.dev0 - (unreleased)
------------------------
+8.0 - (2015-11-03)
+------------------
 * Feature: Performance improvement when creating new version
   by usign the patched manage_pasteObjects and so avoid the rename after
   the copy/paste operation
