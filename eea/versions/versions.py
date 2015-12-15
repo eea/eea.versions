@@ -418,6 +418,7 @@ def create_version(context, reindex=True):
     # Create version object
     # 1. copy object
     clipb = parent.manage_copyObjects(ids=[obj_id])
+
     # 2. pregenerate new id for the copy
     new_id = generateNewId(parent, obj_id)
     # 3. alter the clipboard data and inject the desired new id
@@ -427,6 +428,9 @@ def create_version(context, reindex=True):
     manage_pasteObjects_Version(parent, clipb)
     # 5. get the version object - no need for a rename anymore
     ver = parent[new_id]
+
+    # #31440 apply related items from original object to the new version
+    ver.setRelatedItems(context.getRelatedItems())
 
     # Set effective date today
     ver.setCreationDate(DateTime())

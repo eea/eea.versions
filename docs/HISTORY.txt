@@ -3,6 +3,9 @@ Changelog
 
 8.1.dev0 - (unreleased)
 -----------------------
+* Bug fix: reset relations on versioned objects as the paste seems to loose the
+  relationship
+  [ichimdav refs #31440]
 
 8.0 - (2015-11-03)
 ------------------
