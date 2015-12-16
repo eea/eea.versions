@@ -1,6 +1,9 @@
 Changelog
 =========
 
+8.2.dev0 - (unreleased)
+-----------------------
+
 8.1 - (2015-12-16)
 ------------------
 * Bug fix: reset relations on versioned objects as the paste seems to loose the
