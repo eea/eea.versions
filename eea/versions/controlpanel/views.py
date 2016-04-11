@@ -7,7 +7,7 @@ from eea.versions.controlpanel.schema import PortalType
 from z3c.form import form, field
 from z3c.form import button
 from z3c.form.interfaces import DISPLAY_MODE
-from eea.versions.config import  EEAMessageFactory as _
+from eea.versions.config import EEAMessageFactory as _
 
 
 class EEAVersionsToolView(BrowserView):
@@ -49,7 +49,7 @@ class AddPage(form.AddForm):
         """ Create
         """
         ob = PortalType(id=data.get('title', 'ADDTitle'))
-        form.applyChanges(self, ob,  data)
+        form.applyChanges(self, ob, data)
         return ob
 
     def add(self, obj):
@@ -80,12 +80,16 @@ class EditPage(form.EditForm):
     @button.buttonAndHandler(_(u"label_apply", default=u"Apply"),
                              name='apply')
     def handleApply(self, action):
+        """ Apply button
+        """
         super(EditPage, self).handleApply(self, action)
         self.request.response.redirect(self.nextURL())
 
     @button.buttonAndHandler(_(u"label_cancel", default=u"Cancel"),
                              name='cancel_add')
     def handleCancel(self, action):
+        """ Cancel button
+        """
         self.request.response.redirect(self.nextURL())
         return ''
 

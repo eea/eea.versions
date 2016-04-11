@@ -41,9 +41,9 @@
                                 tal:attributes="value ptype/getId" />
                     </td>
                     <td>
-                        <a tal:attributes="href string:${context/absolute_url}/${id}/@@edit" tal:define="id ptype/title">
-                             <span tal:attributes="title id"
-                                   tal:content="id" />
+                        <a tal:attributes="href string:${context/absolute_url}/${ptype/id}/@@edit" tal:define="pid ptype/title">
+                             <span tal:attributes="title pid"
+                                   tal:content="pid" />
                         </a>
                     </td>
                     <td>
