@@ -243,6 +243,43 @@ class GetVersionsView(BrowserView, GetVersions):
         GetVersions.__init__(self, context)
 
 
+class MigrateVersions(BrowserView, GetVersions):
+    def __init__(self, context, request):
+        self.request = request
+        self.context = context
+
+    def __call__(self, *args, **kwargs):
+        cat = self.context.portal_catalog
+        count = 1
+        prefix = "IMG-"
+        brains = cat(portal_type='Image', Language="all", show_inactive=True,
+                     sort_on="created",
+                     sort_order="reverse")
+        increment = True
+        no_versions = []
+        for brain in brains:
+            obj = brain.getObject()
+            if not obj:
+                continue
+            try:
+                adapter = IGetVersions(obj)
+            except TypeError:
+                no_versions.append(obj.absolute_url())
+                continue
+            versions = adapter.versions()
+            for obj in versions:
+                verparent = IVersionControl(obj)
+                if prefix not in verparent.versionId:
+                    verparent.setVersionId("%s%d" % (prefix, count))
+                    obj.reindexObject(idxs=['getVersionId'])
+                    increment = True
+                else:
+                    increment = False
+            if increment:
+                count += 1
+        return "\n".join(no_versions) + "\n" + str(count)
+
+
 class GetWorkflowStateTitle(BrowserView):
     """ Returns the title of the workflow state of the given object
         used on versions viewlet letting you know that there is
@@ -405,6 +442,7 @@ def create_version(context, reindex=True):
     then clean it up to avoid various problems.
     """
     logger.info("Started creating version of %s", context.absolute_url())
+    import pdb; pdb.set_trace()
 
     obj_id = context.getId()
     parent = utils.parent(context)
@@ -798,3 +836,5 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
                                     cb_dataValid=0)
 
     return result
+
+
