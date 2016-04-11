@@ -41,24 +41,25 @@
                                 tal:attributes="value ptype/getId" />
                     </td>
                     <td>
-              <span tal:attributes="
-                      title ptype/title|string:;"
-                      tal:content="ptype/title|string:" />
+                        <a tal:attributes="href string:${context/absolute_url}/${id}/@@edit" tal:define="id ptype/title">
+                             <span tal:attributes="title id"
+                                   tal:content="id" />
+                        </a>
                     </td>
                     <td>
-              <span tal:attributes="
-                      title ptype/search_interface|string:;"
-                      tal:content="ptype/search_interface|string:" />
+                        <span tal:define="value ptype/search_interface|string:;"
+                              tal:attributes="title value"
+                              tal:content="value" />
                     </td>
                     <td>
-              <span tal:attributes="
-                      title ptype/search_type|string:;"
-                      tal:content="ptype/search_type|string:" />
+                        <span tal:define="value ptype/search_type|string:;"
+                              tal:attributes="title value"
+                              tal:content="value" />
                     </td>
                     <td>
-              <span tal:define="value ptype/last_assigned_version_number|string:;"
-                      tal:attributes="title value;"
-                      tal:content="value" />
+                        <span tal:define="value ptype/last_assigned_version_number|string:;"
+                              tal:attributes="title value;"
+                              tal:content="value" />
                     </td>
                 </tr>
             </tal:ptypes>

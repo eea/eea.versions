@@ -5,7 +5,9 @@ from Products.Five import BrowserView
 from eea.versions.controlpanel.interfaces import IEEAVersionsPortalType
 from eea.versions.controlpanel.schema import PortalType
 from z3c.form import form, field
+from z3c.form import button
 from z3c.form.interfaces import DISPLAY_MODE
+from eea.versions.config import  EEAMessageFactory as _
 
 
 class EEAVersionsToolView(BrowserView):
@@ -70,7 +72,20 @@ class EditPage(form.EditForm):
     fields = field.Fields(IEEAVersionsPortalType)
     fields['last_assigned_version_number'].mode = DISPLAY_MODE
 
+    def nextURL(self):
+        """ Next
+        """
+        return "../@@view"
+
+    @button.buttonAndHandler(_(u"label_apply", default=u"Apply"),
+                             name='apply')
     def handleApply(self, action):
         super(EditPage, self).handleApply(self, action)
-        self.request.response.redirect('../@@view')
+        self.request.response.redirect(self.nextURL())
+
+    @button.buttonAndHandler(_(u"label_cancel", default=u"Cancel"),
+                             name='cancel_add')
+    def handleCancel(self, action):
+        self.request.response.redirect(self.nextURL())
+        return ''
 
