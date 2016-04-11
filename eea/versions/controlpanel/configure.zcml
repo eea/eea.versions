@@ -18,7 +18,7 @@
     />
 
     <browser:page name="edit"
-        for=".interfaces.IEEAVersionsTool"
+        for=".interfaces.IEEAVersionsPortalType"
         class=".views.EditPage"
         permission="cmf.ModifyPortalContent"
     />

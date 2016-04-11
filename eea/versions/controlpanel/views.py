@@ -1,10 +1,11 @@
 """ Views
 """
 from Products.Five import BrowserView
-from zope.formlib.form import Fields, PageAddForm, PageEditForm, applyChanges
 
 from eea.versions.controlpanel.interfaces import IEEAVersionsPortalType
 from eea.versions.controlpanel.schema import PortalType
+from z3c.form import form, field
+from z3c.form.interfaces import DISPLAY_MODE
 
 
 class EEAVersionsToolView(BrowserView):
@@ -36,17 +37,17 @@ class EEAVersionsToolView(BrowserView):
             return self.delete(**kwargs)
         return self.index()
 
-
-class AddPage(PageAddForm):
+class AddPage(form.AddForm):
     """ Add page
     """
-    form_fields = Fields(IEEAVersionsPortalType)
+    fields = field.Fields(IEEAVersionsPortalType)
+    fields['last_assigned_version_number'].mode = DISPLAY_MODE
 
     def create(self, data):
         """ Create
         """
         ob = PortalType(id=data.get('title', 'ADDTitle'))
-        applyChanges(ob, self.form_fields, data)
+        form.applyChanges(self, ob,  data)
         return ob
 
     def add(self, obj):
@@ -63,7 +64,13 @@ class AddPage(PageAddForm):
         return "./@@view"
 
 
-class EditPage(PageEditForm):
+class EditPage(form.EditForm):
     """ Edit page
     """
-    form_fields = Fields(IEEAVersionsPortalType)
+    fields = field.Fields(IEEAVersionsPortalType)
+    fields['last_assigned_version_number'].mode = DISPLAY_MODE
+
+    def handleApply(self, action):
+        super(EditPage, self).handleApply(self, action)
+        self.request.response.redirect('../@@view')
+
