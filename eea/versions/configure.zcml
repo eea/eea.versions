@@ -8,8 +8,9 @@
     <include file="documentation.zcml" />
     <include file="profiles.zcml" />
     <include file="skins.zcml" />
-    <include package=".upgrades" />
     <include package=".browser" />
+    <include package=".controlpanel" />
+    <include package=".upgrades" />
 
     <subscriber
              for="eea.versions.interfaces.IVersionEnhanced
