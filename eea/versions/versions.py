@@ -442,7 +442,6 @@ def create_version(context, reindex=True):
     then clean it up to avoid various problems.
     """
     logger.info("Started creating version of %s", context.absolute_url())
-    import pdb; pdb.set_trace()
 
     obj_id = context.getId()
     parent = utils.parent(context)
