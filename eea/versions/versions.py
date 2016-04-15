@@ -251,15 +251,33 @@ class MigrateVersions(BrowserView):
         self.request = request
         self.context = context
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, **kwargs):
         cat = self.context.portal_catalog
         count = 1
-        prefix = "IMG-"
-        brains = cat(portal_type='Image', Language="all", show_inactive=True,
-                     sort_on="created",
-                     sort_order="reverse")
+        ptype = kwargs.get("ptype")
+        interfaces = kwargs.get("iface")
+        prefix = kwargs.get('prefix')
+
+        query = {
+            "Language": "all",
+            "show_inactive": True,
+            "sort_on": "created",
+            "sort_order": "reverse"
+        }
+
+        if ptype:
+            query['portal_type'] = ptype
+        if interfaces:
+            query['object_provides'] = interfaces
+        if not prefix:
+            return "No prefix keyword argument passed"
+        if not ptype and not interfaces:
+            return "No ptype or interfaces keyword argument passed to script"
+
+        brains = cat(**query)
         increment = True
         no_versions = []
+
         for brain in brains:
             obj = brain.getObject()
             if not obj:
@@ -273,7 +291,7 @@ class MigrateVersions(BrowserView):
             for obj in versions:
                 verparent = IVersionControl(obj)
                 if prefix not in verparent.versionId:
-                    verparent.setVersionId("%s%d" % (prefix, count))
+                    verparent.setVersionId("{0}-{1}".format(prefix, count))
                     obj.reindexObject(idxs=['getVersionId'])
                     increment = True
                 else:
@@ -560,7 +578,7 @@ class AssignVersion(object):
 def revoke_version(context):
     """ Assigns a new random id to context, make it split from it version group
     """
-    IVersionControl(context).setVersionId(_random_id(context))
+    IVersionControl(context).setVersionId(new_version_id(context))
 
 
 class RevokeVersion(object):
@@ -623,6 +641,22 @@ def increment_version_prefix_number(obj):
     return obj.last_assigned_version_number
 
 
+def new_version_id(obj):
+    """
+    :param obj: context object
+    :type obj: object
+    :return: new version id containing either random or incremented prefix value
+    :rtype: str
+    """
+    version_prefix = get_version_prefix(obj)
+    if version_prefix:
+        pvalue = increment_version_prefix_number(version_prefix)
+        ptitle = version_prefix.title
+        return '{0}-{1}'.format(ptitle, pvalue)
+    else:
+        return _random_id(obj)
+
+
 def assign_new_version_id(obj, event):
     """Assigns a version id to newly created objects
     """
@@ -634,13 +668,7 @@ def assign_new_version_id(obj, event):
         return
     version_id = IAnnotations(obj).get(VERSION_ID)
     if not version_id:
-        version_prefix = get_version_prefix(obj)
-        if version_prefix:
-            pvalue = increment_version_prefix_number(version_prefix)
-            ptitle = version_prefix.title
-            IAnnotations(obj)[VERSION_ID] = '{0}-{1}'.format(ptitle, pvalue)
-        else:
-            IAnnotations(obj)[VERSION_ID] = _random_id(obj)
+        IAnnotations(obj)[VERSION_ID] = new_version_id(obj)
 
 
 class GetContextInterfaces(object):

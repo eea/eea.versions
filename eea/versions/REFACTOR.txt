@@ -1,5 +1,5 @@
 Done
-=====
+====
 
 * simplify storage of versionId attribute
 * all IVersionEnhanced objects have a versionId, by default
@@ -52,7 +52,7 @@ TODO
 * rename isLatest to is_latest
 
 Discussable
-------------
+-----------
 * add getVersionId to IGetVersions -not needed, available as versionId
 * add security assertions based on interfaces
 * move ds_resolveuid in this package, from eea.dataservice

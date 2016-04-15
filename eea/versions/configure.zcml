@@ -128,4 +128,11 @@
         permission="cmf.ManagePortal"
         />
 
+    <browser:page
+        for="*"
+        name="migrateVersions"
+        permission="cmf.ManagePortal"
+        class=".versions.MigrateVersions"
+    />
+
 </configure>
