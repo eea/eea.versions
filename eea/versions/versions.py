@@ -243,8 +243,11 @@ class GetVersionsView(BrowserView, GetVersions):
         GetVersions.__init__(self, context)
 
 
-class MigrateVersions(BrowserView, GetVersions):
+class MigrateVersions(BrowserView):
+    """ MigrateVersions
+    """
     def __init__(self, context, request):
+        super(MigrateVersions, self).__init__(context, request)
         self.request = request
         self.context = context
 
@@ -554,14 +557,10 @@ class AssignVersion(object):
         return self.request.RESPONSE.redirect(nextURL)
 
 
-def revoke_version(context):  # this should not exist ???
+def revoke_version(context):
     """ Assigns a new random id to context, make it split from it version group
     """
     IVersionControl(context).setVersionId(_random_id(context))
-    # obj = context
-    # verparent = IVersionControl(obj)
-    # verparent.setVersionId('')
-    # directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
 
 
 class RevokeVersion(object):
@@ -581,12 +580,67 @@ class RevokeVersion(object):
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
 
+def get_version_prefix(obj):
+    """
+    :param obj: object to check if we have a defined prefix
+    :type obj: EEAVersionsPortalType
+    :return: Prefix object to be used for versioning
+    :rtype: object
+    """
+    version_tool = getToolByName(obj, "portal_eea_versions")
+    ptype = obj.portal_type
+    iinfo = obj.restrictedTraverse('plone_interface_info')
+    definitions = version_tool.objectItems()
+    for item in definitions:
+        definition = item[1]
+        search_type = definition.search_type
+        if ptype and ptype == search_type:
+            return definition
+        search_interface = definition.search_interface
+        if search_interface and iinfo.provides(search_interface):
+            return definition
+    return None
+
+
+def get_version_prefix_number(obj):
+    """
+    :param obj: EEAVersionsPortalType
+    :type obj: EEAVersionsPortalType
+    :return: Last version number used for given EEAVersionsPortalType object
+    :rtype: int
+    """
+    return obj.last_assigned_version_number
+
+
+def increment_version_prefix_number(obj):
+    """
+    :param obj: EEAVersionsPortalType
+    :type obj: EEAVersionsPortalType
+    :return: Incremented last version number used for param type
+    :rtype: int
+    """
+    obj.last_assigned_version_number += 1
+    return obj.last_assigned_version_number
+
+
 def assign_new_version_id(obj, event):
     """Assigns a version id to newly created objects
     """
+    # 70786 avoid adding new versions to objects found in portal_factory
+    # during creating and saving of object this event is called 8 times
+    # and we only need to apply a version to the object when it is out of
+    # portal_factory
+    if 'portal_factory' in obj.absolute_url():
+        return
     version_id = IAnnotations(obj).get(VERSION_ID)
     if not version_id:
-        IAnnotations(obj)[VERSION_ID] = _random_id(obj)
+        version_prefix = get_version_prefix(obj)
+        if version_prefix:
+            pvalue = increment_version_prefix_number(version_prefix)
+            ptitle = version_prefix.title
+            IAnnotations(obj)[VERSION_ID] = '{0}-{1}'.format(ptitle, pvalue)
+        else:
+            IAnnotations(obj)[VERSION_ID] = _random_id(obj)
 
 
 class GetContextInterfaces(object):
