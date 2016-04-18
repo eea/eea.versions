@@ -1,0 +1,5 @@
+<div class="documentByLine">
+    <strong i18n:translate="">Global ID:</strong>
+     <span tal:content="view/version_id">Version id</span>
+     </span>
+</div>

@@ -14,4 +14,12 @@
     provides="Products.GenericSetup.interfaces.EXTENSION"
     />
 
+    <genericsetup:registerProfile
+        name="to_90"
+        title="EEA Versions 9.0 profile"
+        directory="profiles/upgrades/to_90"
+        description="Profile for EEA Versions version 9.0"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+    />
+
 </configure>
