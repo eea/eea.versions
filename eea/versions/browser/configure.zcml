@@ -25,9 +25,7 @@
 
     <browser:viewlet
         name="eea.versions.versionid"
-        for="eea.versions.interfaces.IVersionEnhanced"
-        manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
-        template="templates/versioning_older.pt"
+        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
         class=".viewlets.VersionIdViewlet"
         permission="zope.Public"
         layer="eea.versions.browser.interfaces.IEEAVersionsPublic"

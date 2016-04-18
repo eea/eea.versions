@@ -10,8 +10,9 @@
 
         <genericsetup:upgradeDepends
             title="Import all steps from eea.versions 9.0 profile"
-            import_profile="eea.versions:to_90"
+            import_profile="eea.versions:eea_versions_upgrade_9.0"
         />
+
 
     </genericsetup:upgradeSteps>
 
