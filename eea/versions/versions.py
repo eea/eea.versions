@@ -313,8 +313,10 @@ class MigrateVersions(BrowserView):
             return "No ptype or interfaces keyword argument passed to script"
         result = []
         vtool = getToolByName(context, 'portal_eea_versions', None)
-        if vtool and not manual:
+        if vtool:
             for obj in vtool.values():
+                if manual and prefix != obj.title:
+                    continue
                 prefix = obj.title
                 search_type = obj.search_type
                 search_iface = obj.search_interface
