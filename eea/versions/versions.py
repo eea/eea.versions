@@ -3,6 +3,7 @@
 
 from Acquisition import aq_base, aq_inner, aq_parent
 from DateTime.DateTime import DateTime, time
+import transaction
 from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
@@ -251,12 +252,49 @@ class MigrateVersions(BrowserView):
         self.request = request
         self.context = context
 
+    def migrate_version(self, brains, prefix, count):
+        """ migrate_versions given brains and prefix
+        """
+        increment = True
+        no_versions = []
+        for brain in brains:
+            if '-' in brain.getVersionId:
+                continue
+            obj = brain.getObject()
+            if not obj:
+                continue
+            try:
+                adapter = IGetVersions(obj)
+            except TypeError:
+                no_versions.append(obj.absolute_url())
+                continue
+            versions = adapter.versions()
+            for obj in versions:
+                verparent = IVersionControl(obj)
+                verparent_id = verparent.versionId
+                if prefix not in verparent_id:
+                    version_id = "{0}-{1}".format(prefix, count)
+                    verparent.setVersionId(version_id)
+                    obj.reindexObject(idxs=['getVersionId'])
+                    increment = True
+                    logger.info('{0} -->  --> {1} new --> {2}'.format(
+                        obj.absolute_url(1), verparent_id,  version_id))
+                else:
+                    increment = False
+            if increment:
+                count += 1
+                if count % 50 == 0:
+                    transaction.commit()
+        return count
+
     def __call__(self, **kwargs):
+        context = self.context
         cat = self.context.portal_catalog
         count = 1
         ptype = kwargs.get("ptype")
         interfaces = kwargs.get("iface")
         prefix = kwargs.get('prefix')
+        manual = kwargs.get('manual')
 
         query = {
             "Language": "all",
@@ -269,36 +307,34 @@ class MigrateVersions(BrowserView):
             query['portal_type'] = ptype
         if interfaces:
             query['object_provides'] = interfaces
-        if not prefix:
+        if manual and not prefix:
             return "No prefix keyword argument passed"
-        if not ptype and not interfaces:
+        if manual and not ptype and not interfaces:
             return "No ptype or interfaces keyword argument passed to script"
-
+        result = []
+        vtool = getToolByName(context, 'portal_eea_versions', None)
+        if vtool and not manual:
+            for obj in vtool.values():
+                prefix = obj.title
+                search_type = obj.search_type
+                search_iface = obj.search_interface
+                if search_type:
+                    query['portal_type'] = search_type
+                    if query.get('object_provides'):
+                        del query['object_provides']
+                if search_iface:
+                    query['object_provides'] = search_iface
+                    if query.get('portal_type'):
+                        del query['portal_type']
+                brains = cat(**query)
+                last_number = self.migrate_version(brains, prefix, count)
+                obj.last_assigned_version_number = last_number
+                result.append(last_number)
+            return result
         brains = cat(**query)
-        increment = True
-        no_versions = []
+        result = self.migrate_version(brains, prefix, count)
+        return result
 
-        for brain in brains:
-            obj = brain.getObject()
-            if not obj:
-                continue
-            try:
-                adapter = IGetVersions(obj)
-            except TypeError:
-                no_versions.append(obj.absolute_url())
-                continue
-            versions = adapter.versions()
-            for obj in versions:
-                verparent = IVersionControl(obj)
-                if prefix not in verparent.versionId:
-                    verparent.setVersionId("{0}-{1}".format(prefix, count))
-                    obj.reindexObject(idxs=['getVersionId'])
-                    increment = True
-                else:
-                    increment = False
-            if increment:
-                count += 1
-        return "\n".join(no_versions) + "\n" + str(count)
 
 
 class GetWorkflowStateTitle(BrowserView):
