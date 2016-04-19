@@ -277,7 +277,7 @@ class MigrateVersions(BrowserView):
                     verparent.setVersionId(version_id)
                     obj.reindexObject(idxs=['getVersionId'])
                     increment = True
-                    logger.info('{0} -->  --> {1} new --> {2}'.format(
+                    logger.info('{0} -->  --> {1} --> {2}'.format(
                         obj.absolute_url(1), verparent_id,  version_id))
                 else:
                     increment = False
@@ -287,14 +287,19 @@ class MigrateVersions(BrowserView):
                     transaction.commit()
         return count
 
-    def __call__(self, **kwargs):
+    def __call__(self):
+        """ Ex call migrateVersions?prefix=FIS
+            migrateVersions?prefix=FIS,IMG
+            if we want to manually run it later with specific values
+            bypassing therefore the other objects that are added
+        """
         context = self.context
+        kwargs = self.request.form
         cat = self.context.portal_catalog
         count = 1
-        ptype = kwargs.get("ptype")
-        interfaces = kwargs.get("iface")
         prefix = kwargs.get('prefix')
-        manual = kwargs.get('manual')
+        if prefix:
+            prefix = prefix.split(',')
 
         query = {
             "Language": "all",
@@ -303,19 +308,11 @@ class MigrateVersions(BrowserView):
             "sort_order": "reverse"
         }
 
-        if ptype:
-            query['portal_type'] = ptype
-        if interfaces:
-            query['object_provides'] = interfaces
-        if manual and not prefix:
-            return "No prefix keyword argument passed"
-        if manual and not ptype and not interfaces:
-            return "No ptype or interfaces keyword argument passed to script"
         result = []
         vtool = getToolByName(context, 'portal_eea_versions', None)
         if vtool:
             for obj in vtool.values():
-                if manual and prefix != obj.title:
+                if prefix and obj.title not in prefix:
                     continue
                 prefix = obj.title
                 search_type = obj.search_type
