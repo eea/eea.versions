@@ -1,22 +1,23 @@
 """ Test versioning functionality
 """
 from eea.versions.versions import create_version
-from eea.versions.tests.base import EEAFixture
+from eea.versions.tests.base import INTEGRATIONAL_TESTING
+import unittest
 
 
-class TestVersioning(EEAFixture):
-    """ TestArchive TestCase class
+class TestVersioning(unittest.TestCase):
+    """ TestVersioning TestCase class
     """
+    layer = INTEGRATIONAL_TESTING
 
-    def afterSetUp(self):
-        """ After Setup
+    def setUp(self):
+        """ Test Setup
         """
-        self.setRoles(('Manager', ))
-        portal = self.portal
-        fid = portal.invokeFactory("Folder", 'f1')
-        self.folder = portal[fid]
-        docid = self.folder.invokeFactory("Document", 'd1')
-        self.doc = self.folder[docid]
+        portal = self.layer['portal']
+        self.fid = portal.invokeFactory("Folder", 'f1')
+        folder = portal[self.fid]
+        docid = folder.invokeFactory("Document", 'd1')
+        self.doc = folder[docid]
 
     def test_version_obj(self):
         """ Test the versioning of the object
@@ -25,10 +26,3 @@ class TestVersioning(EEAFixture):
         assert new_version != self.doc
 
 
-# def test_suite():
-#     """ Test Suite
-#     """
-#     from unittest import TestSuite, makeSuite
-#     suite = TestSuite()
-#     suite.addTest(makeSuite(TestVersioning), name="test_versioning")
-#     return suite
