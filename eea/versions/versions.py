@@ -287,14 +287,14 @@ class MigrateVersions(BrowserView):
                     transaction.commit()
         return count
 
-    def __call__(self):
+    def __call__(self, **kwargs):
         """ Ex call migrateVersions?prefix=FIS
             migrateVersions?prefix=FIS,IMG
             if we want to manually run it later with specific values
             bypassing therefore the other objects that are added
         """
         context = self.context
-        kwargs = self.request.form
+        kwargs = kwargs or self.request.form
         cat = self.context.portal_catalog
         count = 1
         prefix = kwargs.get('prefix')

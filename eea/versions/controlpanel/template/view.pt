@@ -74,6 +74,10 @@
             <input class="context" type="submit" value="Add portal type"
                    name="form.button.Add"
                     i18n:attributes="value" />
+
+            <input class="context" type="submit" value="Migrate selected portal types"
+                   name="form.button.Migrate"
+                    i18n:attributes="value" />
         </div>
     </form>
 

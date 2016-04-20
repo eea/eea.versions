@@ -8,7 +8,7 @@ from z3c.form import form, field
 from z3c.form import button
 from z3c.form.interfaces import DISPLAY_MODE
 from eea.versions.config import EEAMessageFactory as _
-
+from Products.statusmessages.interfaces import IStatusMessage
 
 class EEAVersionsToolView(BrowserView):
     """ Browser view for eea versions tool
@@ -29,6 +29,27 @@ class EEAVersionsToolView(BrowserView):
             return msg
         self.request.response.redirect('@@view')
 
+    def migrate(self, **kwargs):
+        """ Migrate button
+        """
+        ids = kwargs.get('ids', [])
+        if not ids:
+            IStatusMessage(self.context.REQUEST).addStatusMessage(
+                _("You need to select a custom portal type for migration"),
+                type="error")
+        for vid in ids:
+            context = self.context
+            version_tool = context
+            vobj = version_tool.get(vid)
+            vtitle = vobj.title
+            migration_view = context.restrictedTraverse('@@migrateVersions')
+            migration_view(prefix=vtitle)
+
+        IStatusMessage(self.context.REQUEST).addStatusMessage(
+            _("Migration for %s completed" % ",".join(ids)),
+            type="info")
+        self.request.response.redirect('@@view')
+
     def __call__(self, **kwargs):
         if self.request:
             kwargs.update(self.request)
@@ -37,6 +58,8 @@ class EEAVersionsToolView(BrowserView):
             return self.add()
         if kwargs.get('form.button.Delete', None):
             return self.delete(**kwargs)
+        if kwargs.get('form.button.Migrate', None):
+            return self.migrate(**kwargs)
         return self.index()
 
 class AddPage(form.AddForm):
