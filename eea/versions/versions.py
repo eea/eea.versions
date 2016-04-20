@@ -575,7 +575,7 @@ def assign_version(context, new_version):
 
     # Verify if there are more objects under this version
     cat = getToolByName(context, 'portal_catalog')
-    brains = cat.searchResults({'getversionid': new_version,
+    brains = cat.searchResults({'getVersionId': new_version,
                                 'show_inactive': True})
     if brains and not IVersionEnhanced.providedBy(context):
         alsoProvides(context, IVersionEnhanced)

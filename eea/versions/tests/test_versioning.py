@@ -3,7 +3,7 @@
 from Products.CMFCore.utils import getToolByName
 from eea.versions.controlpanel.schema import PortalType
 from eea.versions.interfaces import IVersionControl
-from eea.versions.versions import create_version, revoke_version
+from eea.versions.versions import create_version, revoke_version, assign_version
 from eea.versions.tests.base import INTEGRATIONAL_TESTING
 import unittest
 
@@ -96,3 +96,20 @@ class TestVersioning(unittest.TestCase):
         revoke_version(self.doc)
         assert current_id != IVersionControl(self.doc).versionId
 
+    def test_version_assigned(self):
+        """ Test assign on a version which will assign a new entered value
+        """
+        assign_version(self.doc, 'NEWVersion')
+        assert IVersionControl(self.doc).versionId == 'NEWVersion'
+
+    def test_version_assigned_with_versions(self):
+        """ Test assign on a version which will assign a new entered value
+            on the given version. Notice that the older versions will keep
+            the initial value
+        """
+        current_id = IVersionControl(self.doc).versionId
+        doc2 = create_version(self.doc)
+        assert IVersionControl(self.doc).versionId == current_id
+
+        assign_version(doc2, 'NEWVersion')
+        assert IVersionControl(doc2).versionId != current_id
