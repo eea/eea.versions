@@ -330,9 +330,8 @@ class MigrateVersions(BrowserView):
                 obj.last_assigned_version_number = last_number
                 result.append(last_number)
             return result
-        brains = cat(**query)
-        result = self.migrate_version(brains, prefix, count)
-        return result
+        return "portal_eea_versions tool is not found, no migration will" \
+               " be performed"
 
 
 

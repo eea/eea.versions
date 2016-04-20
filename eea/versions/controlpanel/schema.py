@@ -21,5 +21,5 @@ class PortalType(Folder):
     title = ''
     search_interface = ''
     search_type = ''
-    last_assigned_version_number = 1
+    last_assigned_version_number = 0
 

@@ -32,7 +32,7 @@ class IEEAVersionsPortalType(Interface):
         title=_(u'Last version number'),
         description=_(u'Set automatically and incremented when a new version'
                       u' is assigned'),
-        default=1,
+        default=0,
         required=False
     )
 
