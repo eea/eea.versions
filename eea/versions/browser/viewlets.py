@@ -34,4 +34,7 @@ class VersionIdViewlet(ViewletBase):
     def available(self):
         """ Available
         """
-        return '-' in self.version_id()
+        version = self.version_id()
+        if not version:
+            return ''
+        return '-' in version
