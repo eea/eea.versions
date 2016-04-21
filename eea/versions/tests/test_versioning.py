@@ -7,7 +7,6 @@ from eea.versions.versions import create_version, revoke_version, assign_version
 from eea.versions.tests.base import INTEGRATIONAL_TESTING
 import unittest
 
-
 class TestVersioning(unittest.TestCase):
     """ TestVersioning TestCase class
     """
@@ -41,6 +40,20 @@ class TestVersioning(unittest.TestCase):
         vobjs = PortalType(id='LNK')
         vobjs.title = 'LNK'
         vobjs.search_type = 'Link'
+        pvtool[vobjs.getId()] = vobjs
+        link_id = self.folder.invokeFactory("Link", 'l1')
+        link = self.folder[link_id]
+        assert IVersionControl(link).versionId == 'LNK-1'
+
+    def test_version_prefixed_for_interface_portal_type(self):
+        """ Test the version id of a first object contains prefix-1 chars
+            if content type uses an interface not just a portal_type
+        """
+        pvtool = getToolByName(self.portal, 'portal_eea_versions')
+        vobjs = PortalType(id='LNK')
+        vobjs.title = 'LNK'
+        vobjs.search_interface = \
+            'Products.ATContentTypes.interfaces.link.IATLink'
         pvtool[vobjs.getId()] = vobjs
         link_id = self.folder.invokeFactory("Link", 'l1')
         link = self.folder[link_id]
@@ -113,3 +126,4 @@ class TestVersioning(unittest.TestCase):
 
         assign_version(doc2, 'NEWVersion')
         assert IVersionControl(doc2).versionId != current_id
+

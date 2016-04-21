@@ -17,6 +17,7 @@ from plone.memoize.instance import memoize
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import queryMultiAdapter, getMultiAdapter
+from zope.dottedname.resolve import resolve
 from zope.event import notify
 from zope.interface import alsoProvides, implements, providedBy
 import logging
@@ -334,7 +335,6 @@ class MigrateVersions(BrowserView):
                " be performed"
 
 
-
 class GetWorkflowStateTitle(BrowserView):
     """ Returns the title of the workflow state of the given object
         used on versions viewlet letting you know that there is
@@ -632,6 +632,15 @@ class RevokeVersion(object):
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
 
+def object_provides(obj, iname):
+    """ implement plone_interface_info as plone.app.async
+        does not pass a request and calling restrictedTraverse
+        will end up in error
+    """
+    iface = resolve(iname)
+    return iface.providedBy(aq_base(obj))
+
+
 def get_version_prefix(obj):
     """
     :param obj: object to check if we have a defined prefix
@@ -641,7 +650,6 @@ def get_version_prefix(obj):
     """
     version_tool = getToolByName(obj, "portal_eea_versions")
     ptype = obj.portal_type
-    iinfo = obj.restrictedTraverse('plone_interface_info')
     definitions = version_tool.objectItems()
     for item in definitions:
         definition = item[1]
@@ -649,7 +657,7 @@ def get_version_prefix(obj):
         if ptype and ptype == search_type:
             return definition
         search_interface = definition.search_interface
-        if search_interface and iinfo.provides(search_interface):
+        if search_interface and object_provides(obj, search_interface):
             return definition
     return None
 
