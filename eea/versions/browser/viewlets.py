@@ -34,6 +34,4 @@ class VersionIdViewlet(ViewletBase):
     def available(self):
         """ Available
         """
-        plone = getMultiAdapter((self.context, self.request),
-                                name=u'plone_context_state')
-        return plone.is_view_template() and '-' in self.version_id()
+        return '-' in self.version_id()
