@@ -10,6 +10,18 @@ from z3c.form.interfaces import DISPLAY_MODE
 from eea.versions.config import EEAMessageFactory as _
 from Products.statusmessages.interfaces import IStatusMessage
 
+
+def input_is_valid(self, data):
+    """ Flag input as invalid if both search_type and searc_interface is set
+    """
+    if data.get('search_type') and data.get('search_interface'):
+        self.status = _("Cannot add both Portal type and "
+                        "Provided Interface")
+        self.formErrorsMessage = self.status
+        return False
+    return True
+
+
 class EEAVersionsToolView(BrowserView):
     """ Browser view for eea versions tool
     """
@@ -62,6 +74,7 @@ class EEAVersionsToolView(BrowserView):
             return self.migrate(**kwargs)
         return self.index()
 
+
 class AddPage(form.AddForm):
     """ Add page
     """
@@ -71,6 +84,9 @@ class AddPage(form.AddForm):
     def create(self, data):
         """ Create
         """
+        valid_input = input_is_valid(self, data)
+        if not valid_input:
+            return
         ob = PortalType(id=data.get('title', 'ADDTitle'))
         form.applyChanges(self, ob, data)
         return ob
@@ -78,6 +94,8 @@ class AddPage(form.AddForm):
     def add(self, obj):
         """ Add
         """
+        if not obj:
+            return
         name = obj.getId()
         self.context[name] = obj
         self._finished_add = True
@@ -105,6 +123,10 @@ class EditPage(form.EditForm):
     def handleApply(self, action):
         """ Apply button
         """
+        data = self.extractData()[0]
+        valid_input = input_is_valid(self, data)
+        if not valid_input:
+            return
         super(EditPage, self).handleApply(self, action)
         self.request.response.redirect(self.nextURL())
 
