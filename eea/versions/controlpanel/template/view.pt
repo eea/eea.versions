@@ -29,6 +29,7 @@
                 <th i18n:translate="">Friendly name</th>
                 <th i18n:translate="">Provided interface</th>
                 <th i18n:translate="">Portal type</th>
+                <th i18n:translate="">Display in document byline</th>
                 <th i18n:translate="">Last version number</th>
             </tr>
             </thead>
@@ -55,6 +56,11 @@
                         <span tal:define="value ptype/search_type|string:;"
                               tal:attributes="title value"
                               tal:content="value" />
+                    </td>
+                    <td>
+                        <span tal:define="value ptype/show_version_id|string:;"
+                                tal:attributes="title value"
+                                tal:content="value" />
                     </td>
                     <td>
                         <span tal:define="value ptype/last_assigned_version_number|string:;"
