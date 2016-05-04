@@ -1,3 +1,5 @@
+""" Vocabularies
+"""
 from zope.schema.interfaces import IVocabularyFactory
 from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary

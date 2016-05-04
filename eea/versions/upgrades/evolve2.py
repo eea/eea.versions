@@ -1,11 +1,12 @@
 """ evolve script
 """
 
+import logging
+
+import transaction
 from eea.versions.interfaces import IVersionEnhanced, IGetVersions
 from eea.versions.versions import _random_id, VERSION_ID
 from zope.annotation.interfaces import IAnnotations
-import logging
-import transaction
 
 logger = logging.getLogger('eea.versions.migration')
 

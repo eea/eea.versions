@@ -1,18 +1,17 @@
 """main eea.versions module
 """
-
+import transaction
+import logging
+import random
+import sys
+import warnings
 from Acquisition import aq_base, aq_inner, aq_parent
 from DateTime.DateTime import DateTime, time
-import transaction
 from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
 from Products.Five.browser import BrowserView
-from eea.versions.events import VersionCreatedEvent
-from eea.versions.interfaces import ICreateVersionView
-from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
-from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from plone.memoize.instance import memoize
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
@@ -20,10 +19,10 @@ from zope.component import queryMultiAdapter, getMultiAdapter
 from zope.dottedname.resolve import resolve
 from zope.event import notify
 from zope.interface import alsoProvides, implements, providedBy
-import logging
-import random
-import sys
-import warnings
+from eea.versions.events import VersionCreatedEvent
+from eea.versions.interfaces import ICreateVersionView
+from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
+from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, eInvalid, \
     eNoData, eNotFound, eNotSupported, loadMoniker, ConflictError, \
     escape, MessageDialog, ObjectCopiedEvent, compatibilityCall, \

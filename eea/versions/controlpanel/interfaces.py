@@ -44,7 +44,7 @@ class IEEAVersionsPortalType(Interface):
 
 
 class IEEAVersionsTool(Interface):
-    """ """
+    """ IEEAVersionsTool """
 
 class IEEAVersionsCatalog(Interface):
-    """ """
+    """ IEEAVersionsCatalog """
