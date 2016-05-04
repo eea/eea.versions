@@ -15,4 +15,3 @@ class VersionStatusViewlet(ViewletBase):
         plone = getMultiAdapter((self.context, self.request),
                                 name=u'plone_context_state')
         return plone.is_view_template()
-

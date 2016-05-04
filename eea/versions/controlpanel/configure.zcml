@@ -1,0 +1,31 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  i18n_domain="eea">
+
+
+    <browser:page name="view"
+        for=".interfaces.IEEAVersionsTool"
+        class=".views.EEAVersionsToolView"
+        template="template/view.pt"
+        permission="cmf.ModifyPortalContent"
+    />
+
+    <browser:page name="add"
+        for=".interfaces.IEEAVersionsTool"
+        class=".views.AddPage"
+        permission="cmf.ModifyPortalContent"
+    />
+
+    <browser:page name="edit"
+        for=".interfaces.IEEAVersionsPortalType"
+        class=".views.EditPage"
+        permission="cmf.ModifyPortalContent"
+    />
+
+    <utility
+        factory=".vocabularies.ObjectProvidesVocabulary"
+        name="eea.versions.vocabularies.ObjectProvides"
+    />
+
+</configure>

@@ -8,8 +8,9 @@
     <include file="documentation.zcml" />
     <include file="profiles.zcml" />
     <include file="skins.zcml" />
-    <include package=".upgrades" />
     <include package=".browser" />
+    <include package=".controlpanel" />
+    <include package=".upgrades" />
 
     <subscriber
              for="eea.versions.interfaces.IVersionEnhanced
@@ -126,5 +127,12 @@
         class=".debug.GetMissingValuesForIndex"
         permission="cmf.ManagePortal"
         />
+
+    <browser:page
+        for="*"
+        name="migrateVersions"
+        permission="cmf.ManagePortal"
+        class=".versions.MigrateVersions"
+    />
 
 </configure>

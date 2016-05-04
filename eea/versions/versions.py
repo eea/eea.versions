@@ -3,6 +3,7 @@
 
 from Acquisition import aq_base, aq_inner, aq_parent
 from DateTime.DateTime import DateTime, time
+import transaction
 from Persistence import PersistentMapping
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
@@ -16,6 +17,7 @@ from plone.memoize.instance import memoize
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import queryMultiAdapter, getMultiAdapter
+from zope.dottedname.resolve import resolve
 from zope.event import notify
 from zope.interface import alsoProvides, implements, providedBy
 import logging
@@ -241,6 +243,96 @@ class GetVersionsView(BrowserView, GetVersions):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         GetVersions.__init__(self, context)
+
+
+class MigrateVersions(BrowserView):
+    """ MigrateVersions
+    """
+    def __init__(self, context, request):
+        super(MigrateVersions, self).__init__(context, request)
+        self.request = request
+        self.context = context
+
+    def migrate_version(self, brains, prefix, count):
+        """ migrate_versions given brains and prefix
+        """
+        increment = True
+        no_versions = []
+        for brain in brains:
+            if '-' in brain.getVersionId:
+                continue
+            obj = brain.getObject()
+            if not obj:
+                continue
+            try:
+                adapter = IGetVersions(obj)
+            except TypeError:
+                no_versions.append(obj.absolute_url())
+                continue
+            versions = adapter.versions()
+            for obj in versions:
+                verparent = IVersionControl(obj)
+                verparent_id = verparent.versionId
+                if prefix not in verparent_id:
+                    version_id = "{0}-{1}".format(prefix, count)
+                    verparent.setVersionId(version_id)
+                    obj.reindexObject(idxs=['getVersionId'])
+                    increment = True
+                    logger.info('{0} -->  --> {1} --> {2}'.format(
+                        obj.absolute_url(1), verparent_id,  version_id))
+                else:
+                    increment = False
+            if increment:
+                count += 1
+                if count % 50 == 0:
+                    transaction.commit()
+        return count
+
+    def __call__(self, **kwargs):
+        """ Ex call migrateVersions?prefix=FIS
+            migrateVersions?prefix=FIS,IMG
+            if we want to manually run it later with specific values
+            bypassing therefore the other objects that are added
+        """
+        context = self.context
+        kwargs = kwargs or self.request.form
+        cat = self.context.portal_catalog
+        count = 1
+        prefix = kwargs.get('prefix')
+        if prefix:
+            prefix = prefix.split(',')
+
+        query = {
+            "Language": "all",
+            "show_inactive": True,
+            "sort_on": "created",
+            "sort_order": "reverse"
+        }
+
+        result = []
+        vtool = getToolByName(context, 'portal_eea_versions', None)
+        if vtool:
+            for obj in vtool.values():
+                if prefix and obj.title not in prefix:
+                    continue
+                prefix = obj.title
+                search_type = obj.search_type
+                search_iface = obj.search_interface
+                if search_type:
+                    query['portal_type'] = search_type
+                    if query.get('object_provides'):
+                        del query['object_provides']
+                if search_iface:
+                    query['object_provides'] = search_iface
+                    if query.get('portal_type'):
+                        del query['portal_type']
+                brains = cat(**query)
+                last_number = self.migrate_version(brains, prefix, count)
+                obj.last_assigned_version_number = last_number
+                result.append(last_number)
+            return result
+        return "portal_eea_versions tool is not found, no migration will" \
+               " be performed"
 
 
 class GetWorkflowStateTitle(BrowserView):
@@ -483,7 +575,7 @@ def assign_version(context, new_version):
 
     # Verify if there are more objects under this version
     cat = getToolByName(context, 'portal_catalog')
-    brains = cat.searchResults({'getversionid': new_version,
+    brains = cat.searchResults({'getVersionId': new_version,
                                 'show_inactive': True})
     if brains and not IVersionEnhanced.providedBy(context):
         alsoProvides(context, IVersionEnhanced)
@@ -517,14 +609,10 @@ class AssignVersion(object):
         return self.request.RESPONSE.redirect(nextURL)
 
 
-def revoke_version(context):  # this should not exist ???
+def revoke_version(context):
     """ Assigns a new random id to context, make it split from it version group
     """
-    IVersionControl(context).setVersionId(_random_id(context))
-    # obj = context
-    # verparent = IVersionControl(obj)
-    # verparent.setVersionId('')
-    # directlyProvides(obj, directlyProvidedBy(obj)-IVersionEnhanced)
+    IVersionControl(context).setVersionId(new_version_id(context))
 
 
 class RevokeVersion(object):
@@ -544,12 +632,87 @@ class RevokeVersion(object):
         return self.request.RESPONSE.redirect(self.context.absolute_url())
 
 
+def object_provides(obj, iname):
+    """ implement plone_interface_info as plone.app.async
+        does not pass a request and calling restrictedTraverse
+        will end up in error
+    """
+    iface = resolve(iname)
+    return iface.providedBy(aq_base(obj))
+
+
+def get_version_prefix(obj):
+    """
+    :param obj: object to check if we have a defined prefix
+    :type obj: EEAVersionsPortalType
+    :return: Prefix object to be used for versioning
+    :rtype: object
+    """
+    version_tool = getToolByName(obj, "portal_eea_versions", None)
+    if not version_tool:
+        return None
+    ptype = obj.portal_type
+    definitions = version_tool.objectItems()
+    for item in definitions:
+        definition = item[1]
+        search_type = definition.search_type
+        if ptype and ptype == search_type:
+            return definition
+        search_interface = definition.search_interface
+        if search_interface and object_provides(obj, search_interface):
+            return definition
+    return None
+
+
+def get_version_prefix_number(obj):
+    """
+    :param obj: EEAVersionsPortalType
+    :type obj: EEAVersionsPortalType
+    :return: Last version number used for given EEAVersionsPortalType object
+    :rtype: int
+    """
+    return obj.last_assigned_version_number
+
+
+def increment_version_prefix_number(obj):
+    """
+    :param obj: EEAVersionsPortalType
+    :type obj: EEAVersionsPortalType
+    :return: Incremented last version number used for param type
+    :rtype: int
+    """
+    obj.last_assigned_version_number += 1
+    return obj.last_assigned_version_number
+
+
+def new_version_id(obj):
+    """
+    :param obj: context object
+    :type obj: object
+    :return: new version id containing either random or incremented prefix value
+    :rtype: str
+    """
+    version_prefix = get_version_prefix(obj)
+    if version_prefix:
+        pvalue = increment_version_prefix_number(version_prefix)
+        ptitle = version_prefix.title
+        return '{0}-{1}'.format(ptitle, pvalue)
+    else:
+        return _random_id(obj)
+
+
 def assign_new_version_id(obj, event):
     """Assigns a version id to newly created objects
     """
+    # 70786 avoid adding new versions to objects found in portal_factory
+    # during creating and saving of object this event is called 8 times
+    # and we only need to apply a version to the object when it is out of
+    # portal_factory
+    if 'portal_factory' in obj.absolute_url():
+        return
     version_id = IAnnotations(obj).get(VERSION_ID)
     if not version_id:
-        IAnnotations(obj)[VERSION_ID] = _random_id(obj)
+        IAnnotations(obj)[VERSION_ID] = new_version_id(obj)
 
 
 class GetContextInterfaces(object):
@@ -798,3 +961,5 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
                                     cb_dataValid=0)
 
     return result
+
+

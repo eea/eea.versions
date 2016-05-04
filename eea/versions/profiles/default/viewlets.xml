@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
 <object>
-    <!-- plone.belowcontentbody order -->
-    <order manager="plone.belowcontentbody" skinname="*"
+    <!-- plone.belowcontenttitle order -->
+    <order manager="plone.belowcontenttitle" skinname="*"
         based-on="Plone Default">
         <viewlet name="eea.versions.older"
-            insert-before="plone.belowcontentbody.relateditems" />
+            insert-before="plone.belowcontenttitle.relateditems" />
     </order>
-    <!-- end plone.belowcontentbody order -->
+    <!-- end plone.belowcontenttitle order -->
+
+
 
 
 </object>

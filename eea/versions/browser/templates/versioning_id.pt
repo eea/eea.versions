@@ -1,0 +1,4 @@
+<div class="documentByLine" id="version-global-id" tal:condition="view/available">
+    <strong i18n:translate="">Global ID:</strong>
+     <span tal:content="view/version_id">Version id</span>
+</div>

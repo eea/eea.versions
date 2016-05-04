@@ -1,0 +1,93 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+        metal:use-macro="here/prefs_main_template/macros/master"
+        i18n:domain="eea">
+
+<body>
+
+<div metal:fill-slot="prefs_configlet_main">
+    <h1 class="documentFirstHeading"
+            i18n:translate="">EEA Versions Tool</h1>
+
+    <a href=""
+       class="link-parent"
+            tal:attributes="href string:$portal_url/@@overview-controlpanel"
+            i18n:translate="">Up to Site Setup</a>
+
+    <p i18n:translate="">
+        Use the form below to define, change or remove custom portal types.
+    </p>
+
+    <form method="post"
+            tal:define="portal_types context/objectValues"
+            tal:attributes="action string:${context/absolute_url}/@@view">
+
+        <table class="listing nosort controlpanel-listing">
+            <thead tal:condition="portal_types">
+            <tr>
+                <th class="smallcolumn">&nbsp;</th>
+                <th i18n:translate="">Friendly name</th>
+                <th i18n:translate="">Provided interface</th>
+                <th i18n:translate="">Portal type</th>
+                <th i18n:translate="">Display in document byline</th>
+                <th i18n:translate="">Last version number</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tal:ptypes repeat="ptype portal_types">
+                <tr tal:define="oddrow repeat/ptype/odd"
+                        tal:attributes="class python:oddrow and 'even' or 'odd'">
+                    <td>
+                        <input type="checkbox" name="ids:list"
+                                tal:attributes="value ptype/getId" />
+                    </td>
+                    <td>
+                        <a tal:attributes="href string:${context/absolute_url}/${ptype/id}/@@edit" tal:define="pid ptype/title">
+                             <span tal:attributes="title pid"
+                                   tal:content="pid" />
+                        </a>
+                    </td>
+                    <td>
+                        <span tal:define="value ptype/search_interface|string:;"
+                              tal:attributes="title value"
+                              tal:content="value" />
+                    </td>
+                    <td>
+                        <span tal:define="value ptype/search_type|string:;"
+                              tal:attributes="title value"
+                              tal:content="value" />
+                    </td>
+                    <td>
+                        <span tal:define="value ptype/show_version_id|string:;"
+                                tal:attributes="title value"
+                                tal:content="value" />
+                    </td>
+                    <td>
+                        <span tal:define="value ptype/last_assigned_version_number|string:;"
+                              tal:attributes="title value;"
+                              tal:content="value" />
+                    </td>
+                </tr>
+            </tal:ptypes>
+            </tbody>
+        </table>
+
+        <div class="inlineDisplay">
+            <input class="context" type="submit" value="Delete"
+                    tal:condition="portal_types"
+                   name="form.button.Delete"
+                    i18n:attributes="value" />
+            <input class="context" type="submit" value="Add portal type"
+                   name="form.button.Add"
+                    i18n:attributes="value" />
+
+            <input class="context" type="submit" value="Migrate selected portal types"
+                   name="form.button.Migrate"
+                    i18n:attributes="value" />
+        </div>
+    </form>
+
+</div>
+
+</body>
+</html>

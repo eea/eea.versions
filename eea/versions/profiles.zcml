@@ -6,12 +6,20 @@
 
   <i18n:registerTranslations directory="locales" />
 
-  <genericsetup:registerProfile
-    name="default"
-    title="EEA Versions"
-    directory="profiles/default"
-    description="Profile for EEA Versions"
-    provides="Products.GenericSetup.interfaces.EXTENSION"
+    <genericsetup:registerProfile
+        name="default"
+        title="EEA Versions"
+        directory="profiles/default"
+        description="Profile for EEA Versions"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+    />
+
+    <genericsetup:registerProfile
+        name="eea_versions_upgrade_9.0"
+        title="EEA Versions 9.0 profile"
+        directory="profiles/upgrades/to_90"
+        description="Profile for EEA Versions version 9.0"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
     />
 
 </configure>
