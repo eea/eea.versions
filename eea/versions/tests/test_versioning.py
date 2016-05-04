@@ -1,11 +1,12 @@
 """ Test versioning functionality
 """
+import unittest
 from Products.CMFCore.utils import getToolByName
 from eea.versions.controlpanel.schema import PortalType
 from eea.versions.interfaces import IVersionControl
 from eea.versions.versions import create_version, revoke_version, assign_version
 from eea.versions.tests.base import INTEGRATIONAL_TESTING
-import unittest
+
 
 class TestVersioning(unittest.TestCase):
     """ TestVersioning TestCase class

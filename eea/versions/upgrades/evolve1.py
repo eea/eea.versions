@@ -1,19 +1,14 @@
 """ Evolve script
 """
+from pkg_resources import DistributionNotFound
+from pkg_resources import get_distribution
 from Acquisition import aq_base
 from Acquisition import aq_get
 from Acquisition import aq_parent
 from ZPublisher.BaseRequest import RequestContainer
 from eea.versions.interfaces import IVersionEnhanced
 from eea.versions.versions import _random_id
-from pkg_resources import DistributionNotFound
-from pkg_resources import get_distribution
 from zope.interface import alsoProvides
-import logging
-import transaction
-
-logger = logging.getLogger('eea.versions.migration')
-
 try:
     get_distribution('five.globalrequest')
 except DistributionNotFound:
@@ -21,9 +16,12 @@ except DistributionNotFound:
 else:
     _GLOBALREQUEST_INSTALLED = True
 
-
 if _GLOBALREQUEST_INSTALLED:
     from zope.globalrequest import getRequest
+import logging
+import transaction
+
+logger = logging.getLogger('eea.versions.migration')
 
 
 def get_object(catalog, rid):
