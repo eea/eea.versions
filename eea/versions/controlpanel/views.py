@@ -132,9 +132,8 @@ class EditPage(form.EditForm):
 
     @button.buttonAndHandler(_(u"label_cancel", default=u"Cancel"),
                              name='cancel_add')
-    def handleCancel(self, action):
+    def handleCancel(self):
         """ Cancel button
         """
         self.request.response.redirect(self.nextURL())
         return ''
-

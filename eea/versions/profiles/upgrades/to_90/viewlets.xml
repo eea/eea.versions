@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<object>
-    <!-- plone.belowcontenttitle order -->
-    <order manager="plone.belowcontenttitle" skinname="*">
-        <viewlet name="eea.versions.versionid"
-            insert-after="*" />
-    </order>
-    <!-- end plone.belowcontenttitle order -->
-</object>

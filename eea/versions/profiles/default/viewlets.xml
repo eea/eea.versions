@@ -8,13 +8,6 @@
     </order>
     <!-- end plone.belowcontenttitle order -->
 
-    <!-- plone.belowcontenttitle order -->
-    <order manager="plone.belowcontenttitle" skinname="*"
-        based-on="Plone Default">
-        <viewlet name="eea.versions.versionid"
-            insert-after="*" />
-    </order>
-    <!-- end plone.belowcontenttitle order -->
 
 
 

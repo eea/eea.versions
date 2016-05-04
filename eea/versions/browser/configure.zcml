@@ -23,13 +23,6 @@
         layer="eea.versions.browser.interfaces.IEEAVersionsPublic"
         />
 
-    <browser:viewlet
-        name="eea.versions.versionid"
-        manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-        class=".viewlets.VersionIdViewlet"
-        permission="zope.Public"
-        layer="eea.versions.browser.interfaces.IEEAVersionsPublic"
-    />
 
     <browser:page
         for="*"
