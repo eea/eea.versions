@@ -1,5 +1,7 @@
 """ Evolve script
 """
+import logging
+import transaction
 from pkg_resources import DistributionNotFound
 from pkg_resources import get_distribution
 from Acquisition import aq_base
@@ -18,8 +20,6 @@ else:
 
 if _GLOBALREQUEST_INSTALLED:
     from zope.globalrequest import getRequest
-import logging
-import transaction
 
 logger = logging.getLogger('eea.versions.migration')
 
