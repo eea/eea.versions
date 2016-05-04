@@ -3,7 +3,14 @@ Changelog
 
 9.0.dev0 - (unreleased)
 -----------------------
-
+* Feature: added ability to create prefixes in order to have non random version
+  ids
+  [ichimdav refs #70786]
+* Feature: added tests for versioning process
+  [ichimdav refs #70786]
+* Feature: added ability to migrate content types from the random to the prefixed
+  incremented versions
+  [ichimdav refs #70786]
 
 8.1 - (2015-12-16)
 ------------------
