@@ -3,6 +3,8 @@ Changelog
 
 9.1.dev0 - (unreleased)
 -----------------------
+* Feature: productID exposed in rdf output
+  [alecghica refs #72025]
 
 9.0 - (2016-05-05)
 ------------------
