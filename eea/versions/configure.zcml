@@ -12,10 +12,13 @@
     <include package=".controlpanel" />
     <include package=".upgrades" />
 
-    <subscriber
-             for="eea.versions.interfaces.IVersionEnhanced
-                  zope.lifecycleevent.interfaces.IObjectCreatedEvent"
-             handler="eea.versions.versions.assign_new_version_id" />
+    <subscriber factory=".marshaller.ProductIdModifier"
+                for="eea.versions.interfaces.IVersionEnhanced"
+                provides="eea.rdfmarshaller.interfaces.ISurfResourceModifier" />
+
+    <subscriber for="eea.versions.interfaces.IVersionEnhanced
+                     zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+                handler="eea.versions.versions.assign_new_version_id" />
 
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 
