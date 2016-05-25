@@ -132,7 +132,7 @@ class GetVersions(object):
         # they only see published (and with effective_date) objects
 
         # during creation self.context has not been indexed
-        if not self.context.UID() in [o.UID() for o in objects]:
+        if not self.context.UID() in [o.UID() for o in objects if o]:
             objects.append(self.context)
 
         # Store versions as ordered list, with the oldest item first
@@ -258,7 +258,7 @@ class MigrateVersions(BrowserView):
         increment = True
         no_versions = []
         for brain in brains:
-            if '-' in brain.getVersionId:
+            if prefix in brain.getVersionId:
                 continue
             obj = brain.getObject()
             if not obj:
@@ -274,6 +274,13 @@ class MigrateVersions(BrowserView):
                 verparent_id = verparent.versionId
                 if prefix not in verparent_id:
                     version_id = "{0}-{1}".format(prefix, count)
+                    if getattr(obj, 'getTranslations', None):
+                        translations = obj.getTranslations()
+                        for trans_tuple in translations.items():
+                            translation = trans_tuple[1][0]
+                            if translation != obj:
+                                translation.setVersionId(
+                                    version_id + '-' + trans_tuple[0])
                     verparent.setVersionId(version_id)
                     obj.reindexObject(idxs=['getVersionId'])
                     increment = True
@@ -287,17 +294,13 @@ class MigrateVersions(BrowserView):
                     transaction.commit()
         return count
 
-    def __call__(self, **kwargs):
-        """ Ex call migrateVersions?prefix=FIS
-            migrateVersions?prefix=FIS,IMG
-            if we want to manually run it later with specific values
-            bypassing therefore the other objects that are added
-        """
+    def migrate_versions(self, **kwargs):
         context = self.context
         kwargs = kwargs or self.request.form
         cat = self.context.portal_catalog
         count = 1
         prefix = kwargs.get('prefix')
+        logger.info('PREFIX IS %s', prefix)
         if prefix:
             prefix = prefix.split(',')
 
@@ -332,6 +335,14 @@ class MigrateVersions(BrowserView):
             return result
         return "portal_eea_versions tool is not found, no migration will" \
                " be performed"
+
+    def __call__(self, **kwargs):
+        """ Ex call migrateVersions?prefix=FIS
+            migrateVersions?prefix=FIS,IMG
+            if we want to manually run it later with specific values
+            bypassing therefore the other objects that are added
+        """
+        return self.migrate_versions(**kwargs)
 
 
 class GetWorkflowStateTitle(BrowserView):
