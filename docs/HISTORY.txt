@@ -3,6 +3,12 @@ Changelog
 
 9.1.dev0 - (unreleased)
 -----------------------
+* Feature: migration now sets version plus language prefix as version id
+  if version object is defined in order to avoid adding a new prefixed object
+  in case we have a new translation
+  [ichim-david refs #72521]
+* Feature: migration of objects now allows rerun if prefix is different
+  [ichim-david refs #72521]
 * Feature: productID exposed in rdf output
   [alecghica refs #72025]
 
