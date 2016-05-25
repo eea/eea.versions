@@ -2,7 +2,6 @@
 """
 from zope.component import adapts
 from zope.interface import implements
-import rdflib
 from eea.rdfmarshaller.interfaces import ISurfResourceModifier
 from .interfaces import IVersionEnhanced, IGetVersions
 
