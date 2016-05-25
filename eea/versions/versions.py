@@ -28,10 +28,9 @@ from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, eInvalid, \
     escape, MessageDialog, ObjectCopiedEvent, compatibilityCall, \
     ObjectClonedEvent, sanity_check, ObjectWillBeMovedEvent, \
     ObjectMovedEvent, notifyContainerModified, cookie_path
-
-hasNewDiscussion = True
 try:
     from plone.app.discussion.interfaces import IConversation
+    hasNewDiscussion = True
 except ImportError:
     hasNewDiscussion = False
 
@@ -284,8 +283,8 @@ class MigrateVersions(BrowserView):
                     verparent.setVersionId(version_id)
                     obj.reindexObject(idxs=['getVersionId'])
                     increment = True
-                    logger.info('{0} -->  --> {1} --> {2}'.format(
-                        obj.absolute_url(1), verparent_id,  version_id))
+                    logger.info('%s -->  --> %s --> %s',
+                        obj.absolute_url(1), verparent_id, version_id)
                 else:
                     increment = False
             if increment:
@@ -295,6 +294,8 @@ class MigrateVersions(BrowserView):
         return count
 
     def migrate_versions(self, **kwargs):
+        """ migrate_versions given brains and prefix
+        """
         context = self.context
         kwargs = kwargs or self.request.form
         cat = self.context.portal_catalog
