@@ -245,6 +245,49 @@ class GetVersionsView(BrowserView, GetVersions):
         GetVersions.__init__(self, context)
 
 
+def migrate_version(brains, prefix, count):
+    """ migrate_versions given brains and prefix
+    """
+    increment = True
+    no_versions = []
+    for brain in brains:
+        if prefix in brain.getVersionId:
+            continue
+        obj = brain.getObject()
+        if not obj:
+            continue
+        try:
+            adapter = IGetVersions(obj)
+        except TypeError:
+            no_versions.append(obj.absolute_url())
+            continue
+        versions = adapter.versions()
+        for obj in versions:
+            verparent = IVersionControl(obj)
+            verparent_id = verparent.versionId
+            if prefix not in verparent_id:
+                version_id = "{0}-{1}".format(prefix, count)
+                if getattr(obj, 'getTranslations', None):
+                    translations = obj.getTranslations()
+                    for trans_tuple in translations.items():
+                        translation = trans_tuple[1][0]
+                        if translation != obj:
+                            translation.setVersionId(
+                                version_id + '-' + trans_tuple[0])
+                verparent.setVersionId(version_id)
+                obj.reindexObject(idxs=['getVersionId'])
+                increment = True
+                logger.info('%s -->  --> %s --> %s',
+                    obj.absolute_url(1), verparent_id, version_id)
+            else:
+                increment = False
+        if increment:
+            count += 1
+            if count % 50 == 0:
+                transaction.commit()
+    return count
+
+
 class MigrateVersions(BrowserView):
     """ MigrateVersions
     """
@@ -252,48 +295,6 @@ class MigrateVersions(BrowserView):
         super(MigrateVersions, self).__init__(context, request)
         self.request = request
         self.context = context
-
-    def migrate_version(self, brains, prefix, count):
-        """ migrate_versions given brains and prefix
-        """
-        increment = True
-        no_versions = []
-        for brain in brains:
-            if prefix in brain.getVersionId:
-                continue
-            obj = brain.getObject()
-            if not obj:
-                continue
-            try:
-                adapter = IGetVersions(obj)
-            except TypeError:
-                no_versions.append(obj.absolute_url())
-                continue
-            versions = adapter.versions()
-            for obj in versions:
-                verparent = IVersionControl(obj)
-                verparent_id = verparent.versionId
-                if prefix not in verparent_id:
-                    version_id = "{0}-{1}".format(prefix, count)
-                    if getattr(obj, 'getTranslations', None):
-                        translations = obj.getTranslations()
-                        for trans_tuple in translations.items():
-                            translation = trans_tuple[1][0]
-                            if translation != obj:
-                                translation.setVersionId(
-                                    version_id + '-' + trans_tuple[0])
-                    verparent.setVersionId(version_id)
-                    obj.reindexObject(idxs=['getVersionId'])
-                    increment = True
-                    logger.info('%s -->  --> %s --> %s',
-                        obj.absolute_url(1), verparent_id, version_id)
-                else:
-                    increment = False
-            if increment:
-                count += 1
-                if count % 50 == 0:
-                    transaction.commit()
-        return count
 
     def migrate_versions(self, **kwargs):
         """ migrate_versions given brains and prefix
@@ -332,7 +333,7 @@ class MigrateVersions(BrowserView):
                     if query.get('portal_type'):
                         del query['portal_type']
                 brains = cat(**query)
-                last_number = self.migrate_version(brains, prefix, count)
+                last_number = migrate_version(brains, prefix, count)
                 obj.last_assigned_version_number = last_number
                 result.append(last_number)
             return result

@@ -12,6 +12,8 @@ def get_version_prefix(obj):
     :return: Prefix object to be used for versioning
     :rtype: object
     """
+    # note that this will find first result as such best to
+    # avoid adding the same portal_type for different objects
     version_tool = getToolByName(obj, "portal_eea_versions", None)
     if not version_tool:
         return None
