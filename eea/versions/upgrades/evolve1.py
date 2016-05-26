@@ -9,7 +9,7 @@ from Acquisition import aq_get
 from Acquisition import aq_parent
 from ZPublisher.BaseRequest import RequestContainer
 from eea.versions.interfaces import IVersionEnhanced
-from eea.versions.versions import _random_id
+from eea.versions.utils import _random_id
 from zope.interface import alsoProvides
 try:
     get_distribution('five.globalrequest')
@@ -17,9 +17,8 @@ except DistributionNotFound:
     _GLOBALREQUEST_INSTALLED = False
 else:
     _GLOBALREQUEST_INSTALLED = True
-
-if _GLOBALREQUEST_INSTALLED:
     from zope.globalrequest import getRequest
+
 
 logger = logging.getLogger('eea.versions.migration')
 

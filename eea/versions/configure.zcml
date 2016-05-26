@@ -20,6 +20,10 @@
                      zope.lifecycleevent.interfaces.IObjectCreatedEvent"
                 handler="eea.versions.versions.assign_new_version_id" />
 
+    <subscriber for="eea.versions.interfaces.IVersionEnhanced
+                     Products.LinguaPlone.events.IObjectTranslatedEvent"
+        handler="eea.versions.events.assign_new_version_id_for_translation" />
+
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 
     <class class="Products.Archetypes.BaseObject.BaseObject">

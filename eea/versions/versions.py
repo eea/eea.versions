@@ -1,33 +1,36 @@
 """main eea.versions module
 """
-import transaction
 import logging
-import random
 import sys
-import warnings
 from Acquisition import aq_base, aq_inner, aq_parent
-from DateTime.DateTime import DateTime, time
 from Persistence import PersistentMapping
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone import PloneMessageFactory as _
-from Products.CMFPlone import utils
-from Products.Five.browser import BrowserView
-from plone.memoize.instance import memoize
-from zope.annotation.interfaces import IAnnotations
-from zope.component import adapts
-from zope.component import queryMultiAdapter, getMultiAdapter
-from zope.dottedname.resolve import resolve
-from zope.event import notify
+
+import warnings
 from zope.interface import alsoProvides, implements, providedBy
-from eea.versions.events import VersionCreatedEvent
-from eea.versions.interfaces import ICreateVersionView
-from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
-from eea.versions.interfaces import IVersionControl, IVersionEnhanced
+
+import transaction
+from DateTime.DateTime import DateTime, time
 from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, eInvalid, \
     eNoData, eNotFound, eNotSupported, loadMoniker, ConflictError, \
     escape, MessageDialog, ObjectCopiedEvent, compatibilityCall, \
     ObjectClonedEvent, sanity_check, ObjectWillBeMovedEvent, \
     ObjectMovedEvent, notifyContainerModified, cookie_path
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone import PloneMessageFactory as _
+from Products.CMFPlone import utils
+from Products.Five.browser import BrowserView
+from eea.versions.controlpanel.utils import new_version_id
+from eea.versions.events import VersionCreatedEvent
+from eea.versions.interfaces import ICreateVersionView
+from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
+from eea.versions.interfaces import IVersionControl, IVersionEnhanced
+from plone.memoize.instance import memoize
+from zope.annotation import IAnnotations
+from zope.annotation.interfaces import IAnnotations
+from zope.component import adapts
+from zope.component import queryMultiAdapter, getMultiAdapter
+from zope.event import notify
+
 try:
     from plone.app.discussion.interfaces import IConversation
     hasNewDiscussion = True
@@ -601,6 +604,20 @@ def assign_version(context, new_version):
     context.reindexObject()
 
 
+def assign_new_version_id(obj, event):
+    """Assigns a version id to newly created objects
+    """
+    # 70786 avoid adding new versions to objects found in portal_factory
+    # during creating and saving of object this event is called 8 times
+    # and we only need to apply a version to the object when it is out of
+    # portal_factory
+    if 'portal_factory' in obj.absolute_url():
+        return
+    version_id = IAnnotations(obj).get(VERSION_ID)
+    if not version_id:
+        IAnnotations(obj)[VERSION_ID] = new_version_id(obj)
+
+
 class AssignVersion(object):
     """ Assign new version ID
     """
@@ -641,89 +658,6 @@ class RevokeVersion(object):
         pu.addPortalMessage(message, 'structure')
 
         return self.request.RESPONSE.redirect(self.context.absolute_url())
-
-
-def object_provides(obj, iname):
-    """ implement plone_interface_info as plone.app.async
-        does not pass a request and calling restrictedTraverse
-        will end up in error
-    """
-    iface = resolve(iname)
-    return iface.providedBy(aq_base(obj))
-
-
-def get_version_prefix(obj):
-    """
-    :param obj: object to check if we have a defined prefix
-    :type obj: EEAVersionsPortalType
-    :return: Prefix object to be used for versioning
-    :rtype: object
-    """
-    version_tool = getToolByName(obj, "portal_eea_versions", None)
-    if not version_tool:
-        return None
-    ptype = obj.portal_type
-    definitions = version_tool.objectItems()
-    for item in definitions:
-        definition = item[1]
-        search_type = definition.search_type
-        if ptype and ptype == search_type:
-            return definition
-        search_interface = definition.search_interface
-        if search_interface and object_provides(obj, search_interface):
-            return definition
-    return None
-
-
-def get_version_prefix_number(obj):
-    """
-    :param obj: EEAVersionsPortalType
-    :type obj: EEAVersionsPortalType
-    :return: Last version number used for given EEAVersionsPortalType object
-    :rtype: int
-    """
-    return obj.last_assigned_version_number
-
-
-def increment_version_prefix_number(obj):
-    """
-    :param obj: EEAVersionsPortalType
-    :type obj: EEAVersionsPortalType
-    :return: Incremented last version number used for param type
-    :rtype: int
-    """
-    obj.last_assigned_version_number += 1
-    return obj.last_assigned_version_number
-
-
-def new_version_id(obj):
-    """
-    :param obj: context object
-    :type obj: object
-    :return: new version id containing either random or incremented prefix value
-    :rtype: str
-    """
-    version_prefix = get_version_prefix(obj)
-    if version_prefix:
-        pvalue = increment_version_prefix_number(version_prefix)
-        ptitle = version_prefix.title
-        return '{0}-{1}'.format(ptitle, pvalue)
-    else:
-        return _random_id(obj)
-
-
-def assign_new_version_id(obj, event):
-    """Assigns a version id to newly created objects
-    """
-    # 70786 avoid adding new versions to objects found in portal_factory
-    # during creating and saving of object this event is called 8 times
-    # and we only need to apply a version to the object when it is out of
-    # portal_factory
-    if 'portal_factory' in obj.absolute_url():
-        return
-    version_id = IAnnotations(obj).get(VERSION_ID)
-    if not version_id:
-        IAnnotations(obj)[VERSION_ID] = new_version_id(obj)
 
 
 class GetContextInterfaces(object):
@@ -767,34 +701,6 @@ def generateNewId(location, gid):
         i += 1
 
     return new_id
-
-
-def _random_id(context, size=10):
-    """ Returns a random arbitrary sized string, usable as version id
-    """
-    try:
-        catalog = getToolByName(context, "portal_catalog")
-    except AttributeError:
-        catalog = None  # can happen in tests
-    chars = "ABCDEFGHIJKMNOPQRSTUVWXYZ0123456789"
-    res = "".join(random.sample(chars, size))
-
-    if not catalog:
-        return res
-
-    if not catalog.Indexes.get('getVersionId'):
-        return res
-
-    i = 0
-    while True:
-        if not catalog.searchResults(getVersionId=res):
-            break
-        res = "".join(random.sample(chars, size))
-        if i > 100:  # what are the odds of that?
-            break
-        i += 1
-
-    return res
 
 
 def _reindex(obj, catalog_tool=None):
@@ -972,5 +878,3 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
                                     cb_dataValid=0)
 
     return result
-
-
