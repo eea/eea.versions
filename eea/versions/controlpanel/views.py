@@ -139,6 +139,15 @@ class EditPage(form.EditForm):
         title = data.get('title')
         if title and self.context.title == title:
             return False
+        current_id = self.context.id
+        tool = self.context.aq_parent
+        # 72521 Folderish content type fails when calling manage_renameObject
+        # with operation is not supported and a simple change of id
+        # will keep the object with the previous id as such we need to recreate
+        # it and then delete the previous object
+        self.context._setId(title)
+        tool._setObject(str(title), self.context)
+        tool._delObject(current_id)
         data['last_assigned_version_number'] = 0
         changes = self.applyChanges(data)
         if changes:
@@ -149,7 +158,7 @@ class EditPage(form.EditForm):
 
     @button.buttonAndHandler(_(u"label_cancel", default=u"Cancel"),
                              name='cancel_add')
-    def handleCancel(self):
+    def handleCancel(self, action):
         """ Cancel button
         """
         self.request.response.redirect(self.nextURL())
