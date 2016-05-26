@@ -6,6 +6,11 @@ from eea.versions.controlpanel.schema import PortalType
 from eea.versions.interfaces import IVersionControl
 from eea.versions.versions import create_version, revoke_version, assign_version
 from eea.versions.tests.base import INTEGRATIONAL_TESTING
+try:
+    from Products.LinguaPlone.interfaces import ITranslationFactory
+    has_lingua_plone = True
+except ImportError:
+    has_lingua_plone = False
 
 
 class TestVersioning(unittest.TestCase):
@@ -89,6 +94,26 @@ class TestVersioning(unittest.TestCase):
         link2 = self.folder[link2_id]
         assert IVersionControl(link).versionId != \
                IVersionControl(link2).versionId
+
+    def test_version_prefixed_translated_content(self):
+        """ Test the version id of a translation contains the same version id
+            as the object it derived from plus language id
+        """
+        if not has_lingua_plone:
+            assert True
+            return
+        pvtool = getToolByName(self.portal, 'portal_eea_versions')
+        vobjs = PortalType(id='LNK')
+        vobjs.title = 'LNK'
+        vobjs.search_type = 'Link'
+        pvtool[vobjs.getId()] = vobjs
+        link_id = self.folder.invokeFactory("Link", 'l1')
+        link = self.folder[link_id]
+        ITranslationFactory(self.folder)
+
+        trans_lang = str(link.languages()[-1])
+        translation = link.addTranslation(trans_lang)
+        assert IVersionControl(translation).versionId == 'LNK-1-' + trans_lang
 
     def test_version_prefixed_revoked(self):
         """ Test the version id set to prefix-2 chars after version revoke

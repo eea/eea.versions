@@ -1,6 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="eea">
 
     <include package="Products.CMFCore" />
@@ -19,6 +20,11 @@
     <subscriber for="eea.versions.interfaces.IVersionEnhanced
                      zope.lifecycleevent.interfaces.IObjectCreatedEvent"
                 handler="eea.versions.versions.assign_new_version_id" />
+
+    <subscriber for="eea.versions.interfaces.IVersionEnhanced
+                     Products.LinguaPlone.events.IObjectTranslatedEvent"
+        handler="eea.versions.events.assign_new_version_id_for_translation"
+        zcml:condition="installed Products.LinguaPlone" />
 
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 

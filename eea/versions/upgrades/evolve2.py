@@ -5,7 +5,8 @@ import logging
 
 import transaction
 from eea.versions.interfaces import IVersionEnhanced, IGetVersions
-from eea.versions.versions import _random_id, VERSION_ID
+from eea.versions.versions import VERSION_ID
+from eea.versions.utils import _random_id
 from zope.annotation.interfaces import IAnnotations
 
 logger = logging.getLogger('eea.versions.migration')
