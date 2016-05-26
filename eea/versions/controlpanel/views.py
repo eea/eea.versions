@@ -127,8 +127,25 @@ class EditPage(form.EditForm):
         valid_input = input_is_valid(self, data)
         if not valid_input:
             return
+        reset_triggered = self.reset_version_number(data)
+        if reset_triggered:
+            return self.request.response.redirect(self.nextURL())
         super(EditPage, self).handleApply(self, action)
         self.request.response.redirect(self.nextURL())
+
+    def reset_version_number(self, data):
+        """ reset version number if title is different
+        """
+        title = data.get('title')
+        if title and self.context.title == title:
+            return False
+        data['last_assigned_version_number'] = 0
+        changes = self.applyChanges(data)
+        if changes:
+            self.status = self.successMessage
+        else:
+            self.status = self.noChangesMessage
+        return True
 
     @button.buttonAndHandler(_(u"label_cancel", default=u"Cancel"),
                              name='cancel_add')

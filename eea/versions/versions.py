@@ -25,7 +25,6 @@ from eea.versions.interfaces import ICreateVersionView
 from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from plone.memoize.instance import memoize
-from zope.annotation import IAnnotations
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import queryMultiAdapter, getMultiAdapter
