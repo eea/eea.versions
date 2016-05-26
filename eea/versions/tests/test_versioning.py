@@ -101,6 +101,7 @@ class TestVersioning(unittest.TestCase):
         """
         if not has_lingua_plone:
             assert True
+            return
         pvtool = getToolByName(self.portal, 'portal_eea_versions')
         vobjs = PortalType(id='LNK')
         vobjs.title = 'LNK'
