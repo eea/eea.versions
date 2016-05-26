@@ -22,7 +22,8 @@
 
     <subscriber for="eea.versions.interfaces.IVersionEnhanced
                      Products.LinguaPlone.events.IObjectTranslatedEvent"
-        handler="eea.versions.events.assign_new_version_id_for_translation" />
+        handler="eea.versions.events.assign_new_version_id_for_translation"
+        zcml:condition="installed Products.LinguaPlone" />
 
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
 

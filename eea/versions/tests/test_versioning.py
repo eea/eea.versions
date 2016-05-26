@@ -112,6 +112,7 @@ class TestVersioning(unittest.TestCase):
         translation = link.addTranslation(trans_lang)
         assert IVersionControl(translation).versionId == 'LNK-1-' + trans_lang
 
+
     def test_version_prefixed_revoked(self):
         """ Test the version id set to prefix-2 chars after version revoke
         """
