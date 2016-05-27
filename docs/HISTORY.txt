@@ -1,6 +1,9 @@
 Changelog
 =========
 
+9.2.dev0 - (unreleased)
+-----------------------
+
 9.1 - (2016-05-27)
 ------------------
 * Feature: added prefix_language option for version object which if enabled
