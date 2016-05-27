@@ -3,6 +3,9 @@ Changelog
 
 9.1.dev0 - (unreleased)
 -----------------------
+* Feature: added prefix_language option for version object which if enabled
+  allows you to have a language suffix for all versions
+  [ichim-david refs #72521]
 * Feature: translated objects from LinguaPlone get version plus language prefix
   as version id if version object is defined in order to avoid adding a new 
   prefixed object in case we have a new translation

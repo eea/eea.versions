@@ -30,8 +30,14 @@ class IEEAVersionsPortalType(Interface):
 
     show_version_id = schema.Bool(
         title=_(u'Display in document byline'),
-        description=_(u'Boolean if global id should be visible in byline'),
+        description=_(u'Boolean if global id is visible in byline'),
         default=True
+    )
+
+    prefix_with_language = schema.Bool(
+        title=_(u'Append language prefix to version id'),
+        description=_(u'Boolean if language prefix is added to versionId'),
+        default=False
     )
 
     last_assigned_version_number = schema.Int(

@@ -32,6 +32,8 @@ def assign_new_version_id_for_translation(obj, event):
             return
         decrement_version_prefix_number(version_prefix)
         cvid = IAnnotations(canonical).get(VERSION_ID)
+        if version_prefix.prefix_with_language:
+            cvid = '-'.join(cvid.split('-')[:-1])
         translation_vid = cvid + '-' + target.getLanguage()
         IAnnotations(target)[VERSION_ID] = translation_vid
 
