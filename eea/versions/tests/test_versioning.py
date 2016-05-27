@@ -115,6 +115,43 @@ class TestVersioning(unittest.TestCase):
         translation = link.addTranslation(trans_lang)
         assert IVersionControl(translation).versionId == 'LNK-1-' + trans_lang
 
+    def test_version_prefixed_with_language(self):
+        """ Test the version id of a version contains prefix plus language id
+            if prefix_with_language is set on version object
+        """
+        if not has_lingua_plone:
+            assert True
+            return
+        pvtool = getToolByName(self.portal, 'portal_eea_versions')
+        vobjs = PortalType(id='LNK')
+        vobjs.title = 'LNK'
+        vobjs.search_type = 'Link'
+        vobjs.prefix_with_language = True
+        pvtool[vobjs.getId()] = vobjs
+        link_id = self.folder.invokeFactory("Link", 'l1')
+        link = self.folder[link_id]
+        link_lang = link.getLanguage()
+        assert IVersionControl(link).versionId == 'LNK-1-' + link_lang
+
+    def test_version_prefixed_with_language_on_translation(self):
+        """ Test the version id of a translation contains prefix plus
+            language id even if prefix_with_language is set on version object
+        """
+        if not has_lingua_plone:
+            assert True
+            return
+        pvtool = getToolByName(self.portal, 'portal_eea_versions')
+        vobjs = PortalType(id='LNK')
+        vobjs.title = 'LNK'
+        vobjs.search_type = 'Link'
+        vobjs.prefix_with_language = True
+        pvtool[vobjs.getId()] = vobjs
+        link_id = self.folder.invokeFactory("Link", 'l1')
+        link = self.folder[link_id]
+        trans_lang = str(link.languages()[-1])
+        translation = link.addTranslation(trans_lang)
+        assert IVersionControl(translation).versionId == 'LNK-1-' + trans_lang
+
     def test_version_prefixed_revoked(self):
         """ Test the version id set to prefix-2 chars after version revoke
         """

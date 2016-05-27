@@ -73,6 +73,9 @@ def new_version_id(obj):
     if version_prefix:
         pvalue = increment_version_prefix_number(version_prefix)
         ptitle = version_prefix.title
-        return '{0}-{1}'.format(ptitle, pvalue)
+        cvid = '{0}-{1}'.format(ptitle, pvalue)
+        if version_prefix.prefix_with_language:
+            cvid = cvid + '-' + obj.getLanguage()
+        return cvid
     else:
         return _random_id(obj)

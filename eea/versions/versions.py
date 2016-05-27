@@ -245,14 +245,13 @@ class GetVersionsView(BrowserView, GetVersions):
         GetVersions.__init__(self, context)
 
 
-def migrate_version(brains, prefix, count):
+def migrate_version(brains, vobj, count):
     """ migrate_versions given brains and prefix
     """
     increment = True
     no_versions = []
+    prefix = str(vobj.title)
     for brain in brains:
-        if prefix in brain.getVersionId:
-            continue
         obj = brain.getObject()
         if not obj:
             continue
@@ -267,17 +266,33 @@ def migrate_version(brains, prefix, count):
             verparent_id = verparent.versionId
             if prefix not in verparent_id:
                 version_id = "{0}-{1}".format(prefix, count)
+                orig_id = version_id
+                if vobj.prefix_with_language:
+                    version_id = version_id + '-' + obj.getLanguage()
+                else:
+                    if getattr(obj, 'isCanonical', None):
+                        cobj = obj.getCanonical()
+                        if cobj is not obj:
+                            IVersionControl(cobj).setVersionId(version_id)
+                            cobj.reindexObject(idxs=['getVersionId'])
+                            version_id = version_id + '-' + obj.getLanguage()
                 if getattr(obj, 'getTranslations', None):
                     translations = obj.getTranslations()
+                    canonical = obj.getCanonical()
+                    if vobj.prefix_with_language:
+                        IVersionControl(canonical).setVersionId(
+                            orig_id + '-' + canonical.getLanguage())
+                        canonical.reindexObject(idxs=['getVersionId'])
                     for trans_tuple in translations.items():
                         translation = trans_tuple[1][0]
-                        if translation != obj:
-                            translation.setVersionId(
-                                version_id + '-' + trans_tuple[0])
+                        if translation != canonical:
+                            IVersionControl(translation).setVersionId(
+                                orig_id + '-' + trans_tuple[0])
+                            translation.reindexObject(idxs=['getVersionId'])
                 verparent.setVersionId(version_id)
                 obj.reindexObject(idxs=['getVersionId'])
                 increment = True
-                logger.info('%s -->  --> %s --> %s',
+                logger.info('%s ==> %s --> %s',
                     obj.absolute_url(1), verparent_id, version_id)
             else:
                 increment = False
@@ -333,7 +348,7 @@ class MigrateVersions(BrowserView):
                     if query.get('portal_type'):
                         del query['portal_type']
                 brains = cat(**query)
-                last_number = migrate_version(brains, prefix, count)
+                last_number = migrate_version(brains, obj, count)
                 obj.last_assigned_version_number = last_number
                 result.append(last_number)
             return result
