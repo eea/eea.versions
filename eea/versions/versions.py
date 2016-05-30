@@ -300,6 +300,7 @@ def migrate_version(brains, vobj, count):
             count += 1
             if count % 50 == 0:
                 transaction.commit()
+    logger.info("MIGRATION DONE")
     return count
 
 
@@ -327,7 +328,6 @@ class MigrateVersions(BrowserView):
             "Language": "all",
             "show_inactive": True,
             "sort_on": "created",
-            "sort_order": "reverse"
         }
 
         result = []
