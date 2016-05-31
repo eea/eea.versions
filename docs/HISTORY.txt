@@ -1,8 +1,11 @@
 Changelog
 =========
 
-9.1.dev0 - (unreleased)
+9.2.dev0 - (unreleased)
 -----------------------
+
+9.1 - (2016-05-27)
+------------------
 * Feature: added prefix_language option for version object which if enabled
   allows you to have a language suffix for all versions
   [ichim-david refs #72521]
