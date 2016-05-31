@@ -616,7 +616,7 @@ def assign_version(context, new_version):
     # Set new version ID
     verparent = IVersionControl(context)
     verparent.setVersionId(new_version)
-    context.reindexObject()
+    context.reindexObject(idxs=['getVersionId'])
 
 
 def assign_new_version_id(obj, event):
@@ -668,6 +668,7 @@ class RevokeVersion(object):
 
     def __call__(self):
         revoke_version(self.context)
+        self.context.reindexObject(idxs=['getVersionId'])
         pu = getToolByName(self.context, 'plone_utils')
         message = _(u'Version revoked.')
         pu.addPortalMessage(message, 'structure')
