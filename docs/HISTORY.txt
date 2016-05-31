@@ -1,8 +1,8 @@
 Changelog
 =========
 
-9.2.dev0 - (unreleased)
------------------------
+9.2 - (2016-05-31)
+------------------
 * Bug fix: reindex getVersionId when performing a revoke in order to ensure
   that the version viewlet no longer takes into consideration the revoked
   object as part of the previous versioning chain
