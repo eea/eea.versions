@@ -293,6 +293,7 @@ def migrate_version(brains, vobj, count, **kwargs):
                         canonical = obj.getCanonical()
                         if vobj.prefix_with_language:
                             version_id = orig_id + '-' + canonical.getLanguage()
+                        IVersionControl(canonical).setVersionId(version_id)
                         canonical.reindexObject(idxs=['getVersionId'])
                         for trans_tuple in translations.items():
                             translation = trans_tuple[1][0]
