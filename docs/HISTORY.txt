@@ -1,6 +1,9 @@
 Changelog
 =========
 
+9.4.dev0 - (unreleased)
+-----------------------
+
 9.3 - (2016-06-02)
 ------------------
 * Change: create EEA Permalink Mapping objects if eea.dataservice is
