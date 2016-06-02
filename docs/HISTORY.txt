@@ -3,6 +3,9 @@ Changelog
 
 9.3.dev0 - (unreleased)
 -----------------------
+* Change: create EEA Permalink Mapping objects if eea.dataservice is
+  installed when migrating versions to new schema
+  [ichimdav refs #72875]
 
 9.2 - (2016-05-31)
 ------------------
