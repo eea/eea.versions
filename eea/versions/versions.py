@@ -1,5 +1,6 @@
 """main eea.versions module
 """
+# pylint:disable=R0101
 import logging
 import sys
 from Acquisition import aq_base, aq_inner, aq_parent
@@ -28,6 +29,7 @@ from plone.memoize.instance import memoize
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import queryMultiAdapter, getMultiAdapter
+from zope.component.hooks import getSite
 from zope.event import notify
 
 try:
@@ -35,6 +37,12 @@ try:
     hasNewDiscussion = True
 except ImportError:
     hasNewDiscussion = False
+
+try:
+    from eea.dataservice.content.Permalink import zmi_addPermalinkMapping
+    hasDataservice = True
+except ImportError:
+    hasDataservice = False
 
 logger = logging.getLogger('eea.versions.versions')
 
@@ -245,12 +253,21 @@ class GetVersionsView(BrowserView, GetVersions):
         GetVersions.__init__(self, context)
 
 
-def migrate_version(brains, vobj, count):
+def migrate_version(brains, vobj, count, **kwargs):
     """ migrate_versions given brains and prefix
     """
     increment = True
     no_versions = []
     prefix = str(vobj.title)
+    parent = None
+    datasets = kwargs.get('datasets')
+    if datasets:
+        site = getSite()
+        parent = site.get('eea_permalink_objects')
+        if not parent:
+            parent_id = site.invokeFactory('Folder', 'eea_permalink_objects')
+            parent = site[parent_id]
+
     for brain in brains:
         obj = brain.getObject()
         if not obj:
@@ -261,6 +278,7 @@ def migrate_version(brains, vobj, count):
             no_versions.append(obj.absolute_url())
             continue
         versions = adapter.versions()
+        latest_version = versions[-1]
         for obj in versions:
             verparent = IVersionControl(obj)
             verparent_id = verparent.versionId
@@ -269,28 +287,29 @@ def migrate_version(brains, vobj, count):
                 orig_id = version_id
                 if vobj.prefix_with_language:
                     version_id = version_id + '-' + obj.getLanguage()
-                else:
-                    if getattr(obj, 'isCanonical', None):
-                        cobj = obj.getCanonical()
-                        if cobj is not obj:
-                            IVersionControl(cobj).setVersionId(version_id)
-                            cobj.reindexObject(idxs=['getVersionId'])
-                            version_id = version_id + '-' + obj.getLanguage()
                 if getattr(obj, 'getTranslations', None):
                     translations = obj.getTranslations()
-                    canonical = obj.getCanonical()
-                    if vobj.prefix_with_language:
-                        IVersionControl(canonical).setVersionId(
-                            orig_id + '-' + canonical.getLanguage())
+                    if len(translations) > 1:
+                        canonical = obj.getCanonical()
+                        if vobj.prefix_with_language:
+                            version_id = orig_id + '-' + canonical.getLanguage()
                         canonical.reindexObject(idxs=['getVersionId'])
-                    for trans_tuple in translations.items():
-                        translation = trans_tuple[1][0]
-                        if translation != canonical:
-                            IVersionControl(translation).setVersionId(
-                                orig_id + '-' + trans_tuple[0])
-                            translation.reindexObject(idxs=['getVersionId'])
-                verparent.setVersionId(version_id)
-                obj.reindexObject(idxs=['getVersionId'])
+                        for trans_tuple in translations.items():
+                            translation = trans_tuple[1][0]
+                            if translation != canonical:
+                                version_id = orig_id + '-' + trans_tuple[0]
+                                IVersionControl(translation).setVersionId(
+                                    version_id)
+                                translation.reindexObject(idxs=['getVersionId'])
+                    else:
+                        if datasets and obj is latest_version:
+                            vid = IGetVersions(obj).versionId
+                            zmi_addPermalinkMapping(parent, vid, version_id)
+                        verparent.setVersionId(version_id)
+                        obj.reindexObject(idxs=['getVersionId'])
+                else:
+                    verparent.setVersionId(version_id)
+                    obj.reindexObject(idxs=['getVersionId'])
                 increment = True
                 logger.info('%s ==> %s --> %s',
                     obj.absolute_url(1), verparent_id, version_id)
@@ -332,6 +351,11 @@ class MigrateVersions(BrowserView):
 
         result = []
         vtool = getToolByName(context, 'portal_eea_versions', None)
+        ptool = getToolByName(context, 'portal_properties')
+        stool = ptool.site_properties
+        datasets_types = stool.get('dataset_types') or \
+                         ['Assessment', 'Data', 'EEAFigure',
+                          'Specification', 'Indicator FactSheet']
         if vtool:
             for obj in vtool.values():
                 if prefix and obj.title not in prefix:
@@ -347,8 +371,13 @@ class MigrateVersions(BrowserView):
                     query['object_provides'] = search_iface
                     if query.get('portal_type'):
                         del query['portal_type']
+
+                datasets = False
+                if query.get('portal_type', []) in datasets_types:
+                    datasets = True
                 brains = cat(**query)
-                last_number = migrate_version(brains, obj, count)
+                last_number = migrate_version(brains, obj, count,
+                                              datasets=datasets)
                 obj.last_assigned_version_number = last_number
                 result.append(last_number)
             return result
