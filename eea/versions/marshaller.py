@@ -1,5 +1,7 @@
 """ plugins to modify @@rdf output
 """
+from eea.versions.interfaces import IGetVersions
+
 class ProductIdModifier(object):
     """ Adds information about product ID
     """
