@@ -28,7 +28,7 @@ from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from plone.memoize.instance import memoize
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
-from zope.component import queryMultiAdapter, getMultiAdapter
+from zope.component import queryAdapter, queryMultiAdapter, getMultiAdapter
 from zope.component.hooks import getSite
 from zope.event import notify
 
@@ -272,11 +272,11 @@ def migrate_version(brains, vobj, count, **kwargs):
         obj = brain.getObject()
         if not obj:
             continue
-        try:
-            adapter = IGetVersions(obj)
-        except TypeError:
+        adapter = queryAdapter(obj, IGetVersions)
+        if not adapter:
             no_versions.append(obj.absolute_url())
             continue
+
         versions = adapter.versions()
         latest_version = versions[-1]
         for obj in versions:
