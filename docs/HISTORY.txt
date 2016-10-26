@@ -3,6 +3,8 @@ Changelog
 
 9.4.dev0 - (unreleased)
 -----------------------
+* Bug fix: Drop eea.rdfmarshaller hard dependency
+  [avoinea refs #1 (github)]
 
 9.3 - (2016-06-02)
 ------------------
@@ -23,7 +25,7 @@ Changelog
   allows you to have a language suffix for all versions
   [ichim-david refs #72521]
 * Feature: translated objects from LinguaPlone get version plus language prefix
-  as version id if version object is defined in order to avoid adding a new 
+  as version id if version object is defined in order to avoid adding a new
   prefixed object in case we have a new translation
   [ichim-david refs #72521]
 * Feature: migration now sets version plus language prefix as version id

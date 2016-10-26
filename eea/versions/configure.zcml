@@ -13,16 +13,20 @@
     <include package=".controlpanel" />
     <include package=".upgrades" />
 
-    <subscriber factory=".marshaller.ProductIdModifier"
-                for="eea.versions.interfaces.IVersionEnhanced"
-                provides="eea.rdfmarshaller.interfaces.ISurfResourceModifier" />
+    <subscriber
+        zcml:condition="installed eea.rdfmarshaller"
+        factory=".marshaller.ProductIdModifier"
+        for="eea.versions.interfaces.IVersionEnhanced"
+        provides="eea.rdfmarshaller.interfaces.ISurfResourceModifier" />
 
-    <subscriber for="eea.versions.interfaces.IVersionEnhanced
-                     zope.lifecycleevent.interfaces.IObjectCreatedEvent"
-                handler="eea.versions.versions.assign_new_version_id" />
+    <subscriber
+        for="eea.versions.interfaces.IVersionEnhanced
+             zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+        handler="eea.versions.versions.assign_new_version_id" />
 
-    <subscriber for="eea.versions.interfaces.IVersionEnhanced
-                     Products.LinguaPlone.events.IObjectTranslatedEvent"
+    <subscriber
+        for="eea.versions.interfaces.IVersionEnhanced
+             Products.LinguaPlone.events.IObjectTranslatedEvent"
         handler="eea.versions.events.assign_new_version_id_for_translation"
         zcml:condition="installed Products.LinguaPlone" />
 

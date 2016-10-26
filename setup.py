@@ -39,8 +39,6 @@ setup(name=name,
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'eea.rdfmarshaller',
-          #'collective.indexing',
       ],
       extras_require={
           'test': [
