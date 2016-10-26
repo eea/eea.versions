@@ -1,18 +1,8 @@
 """ plugins to modify @@rdf output
 """
-from zope.component import adapts
-from zope.interface import implements
-from eea.rdfmarshaller.interfaces import ISurfResourceModifier
-from .interfaces import IVersionEnhanced, IGetVersions
-
-
 class ProductIdModifier(object):
     """ Adds information about product ID
     """
-
-    implements(ISurfResourceModifier)
-    adapts(IVersionEnhanced)
-
     def __init__(self, context):
         self.context = context
 
