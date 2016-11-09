@@ -4,13 +4,13 @@
       tal:define="versions_view nocall:context/@@getVersions; 
                   versionId versions_view/versionId; 
                   uid context/UID">
-    <!-- GID (persistent link)  -->
+
     <dt i18n:translate="">Permalink to this version</dt>
     <dd>
       <a tal:attributes="href string:${context/aq_parent/absolute_url}/ds_resolveuid/${uid};
         title uid" tal:content="uid" />
     </dd>
-    <!-- permalink to latest version -->
+
     <dt i18n:translate="">Permalink to latest version</dt>
     <dd>
       <a tal:define="start string:${context/aq_parent/absolute_url}/ds_resolveuid/;
@@ -18,5 +18,6 @@
         tal:attributes="href string:${start}${version}; title version"
         tal:content="version" />
     </dd>
+
   </dl>
 </html>
