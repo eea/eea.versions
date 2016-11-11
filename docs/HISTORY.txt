@@ -3,6 +3,11 @@ Changelog
 
 9.5.dev0 - (unreleased)
 -----------------------
+* Feature: all permalinks logic moved under this package, e.g. ds_resolveuid
+  [alecghica refs #76194]
+* Feature: permalink macro is now generic, ds_resolveuid can be
+  called now from any context
+  [alecghica refs #76194]
 
 9.4 - (2016-10-26)
 ------------------

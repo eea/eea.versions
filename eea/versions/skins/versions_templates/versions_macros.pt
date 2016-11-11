@@ -7,13 +7,13 @@
 
     <dt i18n:translate="">Permalink to this version</dt>
     <dd>
-      <a tal:attributes="href string:${context/aq_parent/absolute_url}/ds_resolveuid/${uid};
+      <a tal:attributes="href string:${context/portal_url}/ds_resolveuid/${uid};
         title uid" tal:content="uid" />
     </dd>
 
     <dt i18n:translate="">Permalink to latest version</dt>
     <dd>
-      <a tal:define="start string:${context/aq_parent/absolute_url}/ds_resolveuid/;
+      <a tal:define="start string:${context/portal_url}/ds_resolveuid/;
                      version python:versionId or uid; "
         tal:attributes="href string:${start}${version}; title version"
         tal:content="version" />
