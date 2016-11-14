@@ -1,6 +1,9 @@
 Changelog
 =========
 
+9.6.dev0 - (unreleased)
+-----------------------
+
 9.5 - (2016-11-14)
 ------------------
 * Feature: all permalinks logic moved under this package, e.g. ds_resolveuid
