@@ -14,7 +14,6 @@
 <metal:versions metal:define-macro="versions">
     <metal:defines metal:use-macro="context/portlet_versions/macros/defines">
         <metal:content metal:fill-slot="content">
-
             <div tal:define="isVersionEnhanced isVersionEnhanced | here/@@isVersionEnhanced;
                              anon context/@@plone_portal_state/anonymous;
                              later_versions versions/later_versions;
@@ -55,42 +54,47 @@
                         </div>
                     </tal:cond>
                 </tal:new>
-
             </div>
-
         </metal:content>
     </metal:defines>
 </metal:versions>
 
 <metal:older metal:define-macro="older_versions">
-    <metal:defines metal:use-macro="context/portlet_versions/macros/defines">
-        <metal:content metal:fill-slot="content">
-
-            <div class="portalMessage archiveMessage" tal:condition="earlier_versions" >
-                <a tal:attributes="href string:${request/URL0}#previous-versions"
-                        i18n:translate="" class="showOlderVersions">See older versions.</a>
-
-                <!-- Information about old versions -->
-                <tal:old metal:define-slot="old">
-                    <dl id="previous-versions">
-                        <dt class="portletItem" tal:repeat="doc earlier_versions">
-                            <a tal:define="doc_url doc/url;
-                                           doc_published doc/date;
-                                           doc_title doc/title;
-                                           doc_state doc/review_state;"
-                                    tal:attributes="href doc_url; class string:state-$doc_state">
-                                <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
-                                <tal:title replace="doc_title"/>
-                            </a>
-                        </dt>
-                    </dl>
-                </tal:old>
+    <div class="eea-accordion-panels collapsed-by-default non-exclusive">
+        <div class="eea-accordion-panel">
+            <h2 class="notoc eea-icon-right-container eea-icon eea-icon-link"
+                style="width:100%" i18n:translate="">Permalinks</h2>
+            <div class="pane">
+                <metal:permalinks use-macro="context/versions_macros/macros/permalinks" />
             </div>
+        </div>
 
-        </metal:content>
-    </metal:defines>
+        <metal:defines metal:use-macro="context/portlet_versions/macros/defines">
+            <metal:content metal:fill-slot="content">
+                <div class="eea-accordion-panel" tal:condition="earlier_versions">
+                    <h2 class="notoc eea-icon-right-container eea-icon eea-icon-history"
+                        style="width:100%" i18n:translate="">Older versions</h2>
+                    <div class="pane">
+                        <tal:old metal:define-slot="old">
+                            <dl id="previous-versions">
+                                <dt class="portletItem" tal:repeat="doc earlier_versions">
+                                    <a tal:define="doc_url doc/url;
+                                                   doc_published doc/date;
+                                                   doc_title doc/title;
+                                                   doc_state doc/review_state;"
+                                            tal:attributes="href doc_url; class string:state-$doc_state versionUrl">
+                                        <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
+                                        <tal:title replace="doc_title"/>
+                                    </a>
+                                </dt>
+                            </dl>
+                        </tal:old>
+                    </div>
+                </div>
+            </metal:content>
+        </metal:defines>
+    </div>
 </metal:older>
-
 
 </body>
 </html>
