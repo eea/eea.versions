@@ -3,6 +3,10 @@ Changelog
 
 9.6.dev0 - (unreleased)
 -----------------------
+* Feature: permalinks are now visible on all content types
+  [alecghica refs #76194]
+* Feature: permalinks and older versions are displayed as accordion
+  [alecghica refs #76194]
 
 9.5 - (2016-11-14)
 ------------------
