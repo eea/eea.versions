@@ -60,7 +60,7 @@
 </metal:versions>
 
 <metal:older metal:define-macro="older_versions">
-    <div class="eea-accordion-panels collapsed-by-default non-exclusive">
+    <div class="eea-accordion-panels collapsed-by-default non-exclusive" id="eea-versions-portlet">
         <div class="eea-accordion-panel">
             <h2 class="notoc eea-icon-right-container eea-icon eea-icon-link"
                 style="width:100%" i18n:translate="">Permalinks</h2>

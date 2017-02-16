@@ -3,6 +3,8 @@ Changelog
 
 9.7.dev0 - (unreleased)
 -----------------------
+* Feature: Remove older version portlet from PDF export
+  [avoinea refs #81054]
 
 9.6 - (2016-11-21)
 ------------------
