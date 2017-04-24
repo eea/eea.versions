@@ -1,10 +1,13 @@
 Changelog
 =========
 
-9.8.dev0 - (unreleased)
+9.9.dev0 - (unreleased)
 -----------------------
+
+9.8 - (2017-04-24)
+------------------
 * Change: updated package information
-[eduard-fironda]
+  [eduard-fironda]
 
 9.7 - (2017-02-21)
 ------------------
