@@ -4,7 +4,7 @@ from plone.app.layout.viewlets.common import ViewletBase
 from plone.memoize import view
 from zope.component import getMultiAdapter
 from eea.versions.utils import object_provides
-from eea.versions.interfaces import IVersionControl
+from eea.versions.interfaces import IGetVersions
 
 
 class VersionStatusViewlet(ViewletBase):
@@ -26,15 +26,19 @@ class CanonicalURL(ViewletBase):
 
     @view.memoize
     def render(self):
+        """ render canonical url
+        """
         archive = 'eea.workflow.interfaces.IObjectArchived'
         archived = object_provides(self.context, archive)
         canonical_url = self.context.absolute_url()
         if archived:
-            vobj = IVersionControl(self.context)
-            if not vobj.isLatest():
-                latest = vobj.latest_version().absolute_url()
-                canonical_url = latest.absolute_url()
-            # versions = vobj.versions
+            vobj = IGetVersions(self.context)
+            versions = vobj.versions()
+            for obj in versions[::-1]:
+                archived = object_provides(obj, archive)
+                if not archived:
+                    canonical_url = obj.absolute_url()
+                    break
         else:
             context_state = getMultiAdapter(
                 (self.context, self.request), name=u'plone_context_state')
