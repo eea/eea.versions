@@ -39,7 +39,7 @@ class IGetVersions(Interface):
 
     versionId = Attribute(u"""The version ID string of the context""")
 
-    def versions():
+    def versions(self):
         """Returns all objects that are in the version group
 
         The objects are sorted based on their effective date,
@@ -48,47 +48,47 @@ class IGetVersions(Interface):
         Anonymous users will only get published objects.
         """
 
-    def enumerate_versions():
+    def enumerate_versions(self):
         """Returns a mapping of version_number:object
 
         Number 1 is the oldest object.
         """
 
-    def version_number():
+    def version_number(self):
         """Returns the number of the version.
 
         First version gets number 1, and so on.
         """
 
-    def later_versions():
+    def later_versions(self):
         """Returns a list of objects that are created/published
         later then the current object.
         """
 
-    def earlier_versions():
+    def earlier_versions(self):
         """Returns a list of objects that are created/published
         earlier then the current object.
         """
 
-    def latest_version():
+    def latest_version(self):
         """Returns the last created (or published) object in this version
         group
         """
 
-    def first_version():
+    def first_version(self):
         """Returns the oldest created/published object in this version group
         """
 
-    def isLatest():
+    def isLatest(self):
         """Returns True if current object is the last object in version group,
         otherwise returns False
         """
 
-    def getLatestVersionUrl():
+    def getLatestVersionUrl(self):
         """Returns the absolute url of the last object in version group
         """
 
-    def __call__():
+    def __call__(self):
         """ Same as enumerate_versions()
         """
 

@@ -3,7 +3,6 @@
 from plone.app.layout.viewlets.common import ViewletBase
 from plone.memoize import view
 from zope.component import getMultiAdapter
-from eea.versions.utils import object_provides
 from eea.versions.interfaces import IGetVersions
 
 
@@ -28,17 +27,13 @@ class CanonicalURL(ViewletBase):
     def render(self):
         """ render canonical url
         """
-        archive = 'eea.workflow.interfaces.IObjectArchived'
-        archived = object_provides(self.context, archive)
         canonical_url = self.context.absolute_url()
-        if archived:
-            vobj = IGetVersions(self.context)
-            versions = vobj.versions()
+        vobj = IGetVersions(self.context)
+        versions = vobj.versions()
+        if versions:
             for obj in versions[::-1]:
-                archived = object_provides(obj, archive)
-                if not archived:
-                    canonical_url = obj.absolute_url()
-                    break
+                canonical_url = obj.absolute_url()
+                break
         else:
             context_state = getMultiAdapter(
                 (self.context, self.request), name=u'plone_context_state')
