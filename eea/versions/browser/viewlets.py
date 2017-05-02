@@ -29,18 +29,12 @@ class CanonicalURL(ViewletBase):
         """ render canonical url
         """
         archive = 'eea.workflow.interfaces.IObjectArchived'
-        archived = object_provides(self.context, archive)
         canonical_url = self.context.absolute_url()
-        if archived:
-            vobj = IGetVersions(self.context)
-            versions = vobj.versions()
-            for obj in versions[::-1]:
-                archived = object_provides(obj, archive)
-                if not archived:
-                    canonical_url = obj.absolute_url()
-                    break
-        else:
-            context_state = getMultiAdapter(
-                (self.context, self.request), name=u'plone_context_state')
-            canonical_url = context_state.canonical_object_url()
+        vobj = IGetVersions(self.context)
+        versions = vobj.versions()
+        for obj in versions[::-1]:
+            archived = object_provides(obj, archive)
+            if not archived:
+                canonical_url = obj.absolute_url()
+                break
         return u'    <link rel="canonical" href="%s" />' % canonical_url
