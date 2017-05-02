@@ -3,6 +3,7 @@
 from plone.app.layout.viewlets.common import ViewletBase
 from plone.memoize import view
 from zope.component import getMultiAdapter
+from zope.component import queryAdapter
 from eea.versions.interfaces import IGetVersions
 
 
@@ -28,8 +29,8 @@ class CanonicalURL(ViewletBase):
         """ render canonical url
         """
         canonical_url = self.context.absolute_url()
-        vobj = IGetVersions(self.context)
-        versions = vobj.versions()
+        vobj = queryAdapter(self.context, IGetVersions)
+        versions = vobj.versions() if vobj else []
         if versions:
             for obj in versions[::-1]:
                 canonical_url = obj.absolute_url()
