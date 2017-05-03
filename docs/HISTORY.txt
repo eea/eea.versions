@@ -3,6 +3,8 @@ Changelog
 
 9.9.dev0 - (unreleased)
 -----------------------
+* Feature: customize canonical url viewlet to point to latest version
+  [ichim-david refs #83306]
 
 9.8 - (2017-04-24)
 ------------------
