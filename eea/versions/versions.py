@@ -3,11 +3,16 @@
 # pylint:disable=R0101
 import logging
 import sys
+import warnings
 from Acquisition import aq_base, aq_inner, aq_parent
 from Persistence import PersistentMapping
 
-import warnings
 from zope.interface import alsoProvides, implements, providedBy
+from zope.annotation.interfaces import IAnnotations
+from zope.component import adapts
+from zope.component import queryAdapter, queryMultiAdapter, getMultiAdapter
+from zope.component.hooks import getSite
+from zope.event import notify
 
 import transaction
 from DateTime.DateTime import DateTime, time
@@ -26,11 +31,6 @@ from eea.versions.interfaces import ICreateVersionView
 from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from plone.memoize.instance import memoize
-from zope.annotation.interfaces import IAnnotations
-from zope.component import adapts
-from zope.component import queryAdapter, queryMultiAdapter, getMultiAdapter
-from zope.component.hooks import getSite
-from zope.event import notify
 
 try:
     from plone.app.discussion.interfaces import IConversation

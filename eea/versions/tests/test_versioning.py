@@ -189,4 +189,3 @@ class TestVersioning(unittest.TestCase):
 
         assign_version(doc2, 'NEWVersion')
         assert IVersionControl(doc2).versionId != current_id
-
