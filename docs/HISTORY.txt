@@ -1,8 +1,11 @@
 Changelog
 =========
 
-10.0.dev0 - (unreleased)
+10.1.dev0 - (unreleased)
 ------------------------
+
+10.0 - (2017-05-15)
+-------------------
 * Change: fixed PyLint warnings and errors
   [eduard-fironda refs #84949]
 
