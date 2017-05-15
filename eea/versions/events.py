@@ -1,12 +1,11 @@
 """Event handlers
 """
 from zope.interface import implements
-
+from zope.annotation import IAnnotations
+from zope.component.interfaces import ObjectEvent
 from eea.versions.controlpanel.utils import decrement_version_prefix_number
 from eea.versions.controlpanel.utils import get_version_prefix
 from eea.versions.interfaces import IVersionCreatedEvent
-from zope.annotation import IAnnotations
-from zope.component.interfaces import ObjectEvent
 
 VERSION_ID = 'versionId'
 
@@ -36,5 +35,3 @@ def assign_new_version_id_for_translation(obj, event):
             cvid = '-'.join(cvid.split('-')[:-1])
         translation_vid = cvid + '-' + target.getLanguage()
         IAnnotations(target)[VERSION_ID] = translation_vid
-
-

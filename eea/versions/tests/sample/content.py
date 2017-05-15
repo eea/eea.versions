@@ -37,5 +37,3 @@ class SampleData(base.ATCTBTreeFolder):
 
     meta_type = "Sample Data"
     schema = SampleDataSchema
-
-

@@ -37,5 +37,3 @@ class EEAVersionsTool(Folder):
         if not catalog:
             return ctool(**query)
         return catalog(**query)
-
-

@@ -123,4 +123,3 @@ class TestVersioningTool(unittest.TestCase):
         translation = link.addTranslation(trans_lang)
         assert IVersionControl(translation).versionId == 'LNK-1-' + trans_lang
         assert vobjs.last_assigned_version_number == 1
-

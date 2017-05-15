@@ -1,14 +1,13 @@
 """ Views
 """
 from Products.Five import BrowserView
-
+from Products.statusmessages.interfaces import IStatusMessage
 from eea.versions.controlpanel.interfaces import IEEAVersionsPortalType
 from eea.versions.controlpanel.schema import PortalType
+from eea.versions.config import EEAMessageFactory as _
 from z3c.form import form, field
 from z3c.form import button
 from z3c.form.interfaces import DISPLAY_MODE
-from eea.versions.config import EEAMessageFactory as _
-from Products.statusmessages.interfaces import IStatusMessage
 
 
 def input_is_valid(self, data):

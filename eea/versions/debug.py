@@ -1,10 +1,10 @@
 """Debug views and upgrade utilities
 """
 
+from StringIO import StringIO
 from BTrees.IIBTree import IISet, difference
 from Products.Five import BrowserView
 from Products.ZCatalog.Lazy import LazyMap
-from StringIO import StringIO
 from eea.versions.interfaces import IVersionEnhanced
 from eea.versions.versions import VERSION_ID
 from zope.annotation.interfaces import IAnnotations
@@ -83,4 +83,3 @@ class GetMissingValuesForIndex(BrowserView):
         out.seek(0)
 
         return out.read()
-

@@ -14,4 +14,3 @@ def getVersionIdForIndex(obj):
     except (TypeError, ValueError): #ComponentLookupError,
         # The catalog expects AttributeErrors when a value can't be found
         raise AttributeError
-

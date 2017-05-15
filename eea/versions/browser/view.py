@@ -90,7 +90,3 @@ class UpdateCreationDate(BrowserView):
             wf_error_objs_count, "\n".join(wf_error_objs),
             count, "\n".join(objs_urls))
         return message
-
-
-
-
