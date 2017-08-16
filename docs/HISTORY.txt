@@ -1,8 +1,8 @@
 Changelog
 =========
 
-10.1.dev0 - (unreleased)
-------------------------
+10.1 - (2017-08-16)
+-------------------
 * Bug fix W3C compliance modifications
   [valipod refs #86295]
 
