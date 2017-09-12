@@ -670,7 +670,14 @@ class AssignVersion(object):
         pu = getToolByName(self.context, 'plone_utils')
         new_version = self.request.form.get('new-version', '').strip()
         nextURL = self.request.form.get('nextURL', self.context.absolute_url())
-
+        # #87691 append /view for ptypes that need it in order to avoid file
+        # download
+        pprops = getToolByName(self.context, 'portal_properties')
+        if pprops:
+            sprops = pprops.site_properties
+            if self.context.portal_type in sprops.typesUseViewActionInListings:
+                if nextURL[-5:] != '/view':
+                    nextURL += '/view'
         if new_version:
             assign_version(self.context, new_version)
             message = _(u'Version ID changed.')
@@ -702,7 +709,17 @@ class RevokeVersion(object):
         message = _(u'Version revoked.')
         pu.addPortalMessage(message, 'structure')
 
-        return self.request.RESPONSE.redirect(self.context.absolute_url())
+        # #87691 append /view for ptypes that need it in order to avoid file
+        # download
+        nextURL = self.context.absolute_url()
+        pprops = getToolByName(self.context, 'portal_properties')
+        if pprops:
+            sprops = pprops.site_properties
+            if self.context.portal_type in sprops.typesUseViewActionInListings:
+                if nextURL[-5:] != '/view':
+                    nextURL += '/view'
+
+        return self.request.RESPONSE.redirect(nextURL)
 
 
 class GetContextInterfaces(object):
