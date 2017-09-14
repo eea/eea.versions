@@ -3,6 +3,9 @@ Changelog
 
 10.2.dev0 - (unreleased)
 ------------------------
+* Bug fix: Changed the versions catalog search to use unrestrictedSearchResults
+  for anonymous users
+  [iulianpetchesi refs #87488]
 * Change: assignVersion and revokeVersion now redirect to absolute_url + '/view'
   for portal_types defined in site_properties.typesUseViewActionInListings
   [ichim-david refs #87691]

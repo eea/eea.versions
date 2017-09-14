@@ -126,11 +126,13 @@ class GetVersions(object):
         if not cat:
             return []
         query = {'getVersionId': self.versionId}
+
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.isAnonymousUser():
             query['review_state'] = 'published'
-
-        brains = cat(**query)
+            brains = cat.unrestrictedSearchResults(**query)
+        else:
+            brains = cat(**query)
         objects = [b.getObject() for b in brains]
 
         # Some objects don't have EffectiveDate so we have to sort
