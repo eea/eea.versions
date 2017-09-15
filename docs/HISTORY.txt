@@ -1,6 +1,9 @@
 Changelog
 =========
 
+10.3.dev0 - (unreleased)
+------------------------
+
 10.2 - (2017-09-15)
 -------------------
 * Bug fix: Changed the versions catalog search to use unrestrictedSearchResults
