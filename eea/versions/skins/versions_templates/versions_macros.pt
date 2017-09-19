@@ -13,9 +13,10 @@
 
     <dt i18n:translate="">Permalink to latest version</dt>
     <dd>
-      <a tal:define="start string:${context/portal_url}/ds_resolveuid/;
-                     version python:versionId or uid; "
-        tal:attributes="href string:${start}${version}; title version"
+      <a tal:define="start string:${context/portal_url};
+                     version python: versionId or uid;
+                     language versions_view/getCurrentLanguage; "
+        tal:attributes="href string:${start}/${language}/ds_resolveuid/${version}; title version"
         tal:content="version" />
     </dd>
 

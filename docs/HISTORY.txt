@@ -3,6 +3,9 @@ Changelog
 
 10.3.dev0 - (unreleased)
 ------------------------
+* Bug fix: Added language entry to the latest version link in order for it to
+  work properly
+  [petchesi-iulian refs #87470]
 
 10.2 - (2017-09-15)
 -------------------

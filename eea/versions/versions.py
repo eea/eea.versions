@@ -244,6 +244,17 @@ class GetVersions(object):
 
         return self.latest_version().absolute_url()
 
+    def getCurrentLanguage(self):
+        """ Return the language of the context
+        """
+        context = self.context
+        portal_state = context.unrestrictedTraverse("@@plone_portal_state")
+        lang = aq_inner(context).Language() or portal_state.default_language()
+
+        if lang == 'en':
+            return 'SITE'
+        return lang
+
 
 class GetVersionsView(BrowserView, GetVersions):
     """ The @@getVersions view
