@@ -252,8 +252,8 @@ class GetVersions(object):
         lang = aq_inner(context).Language() or portal_state.default_language()
 
         if lang == 'en':
-            return 'SITE'
-        return lang
+            return ''
+        return '/' + lang
 
 
 class GetVersionsView(BrowserView, GetVersions):

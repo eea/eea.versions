@@ -3,6 +3,8 @@ Changelog
 
 10.4.dev0 - (unreleased)
 ------------------------
+* Bug fix: Remove hardcoded EEA 'SITE' language from versions
+  [petchesi-iulian refs #87470]
 
 10.3 - (2017-09-26)
 -------------------
