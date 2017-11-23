@@ -26,21 +26,18 @@
                     <tal:cond condition="isVersionEnhanced">
                         <div class="portalMessage warningMessage">
                             <tal:messages define="title_state python:later_versions[0]['title_state']">
-                                <strong tal:condition="anon" i18n:translate="">
-                                    Note: new version is available!
-                                </strong>
-                                <strong tal:condition="not:anon">
-                                <span i18n:translate="msg_new_version_with_state">
-                                    Note: there is a new version available with state:
-                                    <span tal:replace="title_state" i18n:name="state" />
+                                <span i18n:translate="">
+                                    <strong>This is an old version</strong>, kept for reference only.<br><br>
                                 </span>
-                                </strong>
+                                <span>
+                                   <a class="standardButton" style="font-size:100%;" tal:attributes="href latest_version/absolute_url" i18n:translate="">Go to latest <em tal:condition="not:anon" tal:content="title_state" i18n:name="state" /> version</a>
+                                </span>
                             </tal:messages>
-
-                            <div>
-                                <a tal:attributes="href latest_version/absolute_url" tal:content="latest_version/Title">Title</a>
-                            </div>
-
+                            <script>
+                                $(document.body).ready(function () {
+                                $(".warningMessage").fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+                                });
+                            </script>
                             <ul tal:replace="nothing">
                                 <li tal:repeat="doc later_versions">
                                     <a tal:define="doc_url doc/url; doc_published doc/date; doc_title doc/title;"
