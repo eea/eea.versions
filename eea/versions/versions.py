@@ -105,6 +105,8 @@ class GetVersions(object):
         """
         request = getattr(context, 'REQUEST', None)
         state = getMultiAdapter((context, request), name='plone_context_state')
+        # fix for folders with a default view set, when creating a
+        # version, we need the folder, not the page
         self.context = state.canonical_object()
 
         self.versionId = IVersionControl(self.context).versionId
@@ -539,6 +541,8 @@ class CreateVersionAjax(object):
     """
     def __init__(self, context, request):
         state = getMultiAdapter((context, request), name='plone_context_state')
+        # fix for folders with a default view set, when creating a
+        # version, we need the folder, not the page
         self.context = state.canonical_object()
         self.url = self.context.absolute_url()
         self.request = request
