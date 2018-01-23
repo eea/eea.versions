@@ -1,8 +1,8 @@
 Changelog
 =========
 
-10.7.dev0 - (unreleased)
-------------------------
+10.7 - (2018-01-23)
+-------------------
 * bugfix in create version for folders with changed default view
   [dumitval refs #89997]
 * bugfix in older versions portlet in case of folders with changed default view
