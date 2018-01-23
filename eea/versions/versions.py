@@ -103,12 +103,15 @@ class GetVersions(object):
     def __init__(self, context):
         """ Constructor
         """
-        self.context = context
+        request = getattr(context, 'REQUEST', None)
+        state = getMultiAdapter((context, request), name='plone_context_state')
+        # fix for folders with a default view set, when creating a
+        # version, we need the folder, not the page
+        self.context = state.canonical_object()
 
         self.versionId = IVersionControl(self.context).versionId
 
         failsafe = lambda obj: "Unknown"
-        request = getattr(self.context, 'REQUEST', None)
         self.state_title_getter = queryMultiAdapter((self.context, request),
                                     name=u'getWorkflowStateTitle') or failsafe
 
@@ -537,8 +540,11 @@ class CreateVersionAjax(object):
     """ Used by javascript to create a new version in a background thread
     """
     def __init__(self, context, request):
-        self.context = context
-        self.url = context.absolute_url()
+        state = getMultiAdapter((context, request), name='plone_context_state')
+        # fix for folders with a default view set, when creating a
+        # version, we need the folder, not the page
+        self.context = state.canonical_object()
+        self.url = self.context.absolute_url()
         self.request = request
 
     def __call__(self):

@@ -1,8 +1,15 @@
 Changelog
 =========
 
-10.6.dev0 - (unreleased)
-------------------------
+10.7 - (2018-01-23)
+-------------------
+* bugfix in create version for folders with changed default view
+  [dumitval refs #89997]
+* bugfix in older versions portlet in case of folders with changed default view
+  [dumitval refs #89997]
+
+10.6 - (2017-12-12)
+-------------------
 * Change: Replace eeacms/zptlint with eeacms/plone-test:4 zptlint
   [avoinea refs #90415]
 * Change: make new version warning simpler, more visible and user friendly.
