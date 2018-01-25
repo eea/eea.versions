@@ -1,4 +1,4 @@
-"""main eea.versions module
+""" Main eea.versions module
 """
 # pylint:disable=R0101
 import logging
@@ -6,14 +6,12 @@ import sys
 import warnings
 from Acquisition import aq_base, aq_inner, aq_parent
 from Persistence import PersistentMapping
-
 from zope.interface import alsoProvides, implements, providedBy
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import queryAdapter, queryMultiAdapter, getMultiAdapter
 from zope.component.hooks import getSite
 from zope.event import notify
-
 import transaction
 from DateTime.DateTime import DateTime, time
 from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, eInvalid, \
@@ -107,7 +105,11 @@ class GetVersions(object):
         state = getMultiAdapter((context, request), name='plone_context_state')
         # fix for folders with a default view set, when creating a
         # version, we need the folder, not the page
-        self.context = state.canonical_object()
+        parent = state.canonical_object()
+        if IVersionEnhanced.providedBy(parent):
+            self.context = parent
+        else:
+            self.context = context
 
         self.versionId = IVersionControl(self.context).versionId
 
@@ -543,7 +545,11 @@ class CreateVersionAjax(object):
         state = getMultiAdapter((context, request), name='plone_context_state')
         # fix for folders with a default view set, when creating a
         # version, we need the folder, not the page
-        self.context = state.canonical_object()
+        parent = state.canonical_object()
+        if IVersionEnhanced.providedBy(parent):
+            self.context = parent
+        else:
+            self.context = context
         self.url = self.context.absolute_url()
         self.request = request
 

@@ -1,7 +1,6 @@
 """ EEA Versions utils
 """
 import random
-
 from Products.CMFCore.utils import getToolByName
 from zope.dottedname.resolve import resolve
 from Acquisition import aq_base
@@ -14,7 +13,6 @@ def object_provides(obj, iname):
     """
     iface = resolve(iname)
     return iface.providedBy(aq_base(obj))
-
 
 def _random_id(context, size=10):
     """ Returns a random arbitrary sized string, usable as version id
