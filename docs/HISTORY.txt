@@ -14,9 +14,10 @@ Changelog
 
 10.7 - (2018-01-23)
 -------------------
-* bugfix in create version for folders with changed default view
+* Bug fix: fixed bug in create version for folders with changed default view
   [valipod refs #89997]
-* bugfix in older versions portlet in case of folders with changed default view
+* Bug fix: fixed bug in older versions portlet in case of folders with changed
+  default view
   [valipod refs #89997]
 
 10.6 - (2017-12-12)
