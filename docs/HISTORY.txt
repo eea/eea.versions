@@ -3,10 +3,12 @@ Changelog
 
 10.7.dev0 - (unreleased)
 ------------------------
+* bugfix avoid crash of versions method because of unrestricted search
+  [valipod refs #90671]
 * bugfix in create version for folders with changed default view
-  [dumitval refs #89997]
+  [valipod refs #89997]
 * bugfix in older versions portlet in case of folders with changed default view
-  [dumitval refs #89997]
+  [valipod refs #89997]
 
 10.6 - (2017-12-12)
 -------------------
