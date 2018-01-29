@@ -1,6 +1,11 @@
 Changelog
 =========
 
+10.9 - (2018-01-26)
+-------------------
+* Bug fix: avoid crash of versions method because of unrestricted search
+  [valipod refs #90671]
+
 10.8 - (2018-01-25)
 -------------------
 * Bug fix: fixed bug in create version for folders with changed default view
@@ -10,9 +15,10 @@ Changelog
 10.7 - (2018-01-23)
 -------------------
 * Bug fix: fixed bug in create version for folders with changed default view
-  [dumitval refs #89997]
-* Bug fix: fixed bug in older versions portlet in case of folders with changed default view
-  [dumitval refs #89997]
+  [valipod refs #89997]
+* Bug fix: fixed bug in older versions portlet in case of folders with changed
+  default view
+  [valipod refs #89997]
 
 10.6 - (2017-12-12)
 -------------------
