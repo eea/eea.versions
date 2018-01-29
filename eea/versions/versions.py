@@ -143,10 +143,11 @@ class GetVersions(object):
         for b in brains:
             try:
                 objects.append(b.getObject())
-            except Unauthorized:
+            except Unauthorized as err:
                 # because of the unrestricted search done above, this
                 # might happen, and we don't need a crash
-                pass
+                logger.warn(err)
+                continue
 
         # Some objects don't have EffectiveDate so we have to sort
         # them using CreationDate. This has the side effect that

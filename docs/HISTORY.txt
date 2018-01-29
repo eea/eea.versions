@@ -3,7 +3,7 @@ Changelog
 
 10.9 - (2018-01-26)
 -------------------
-* bugfix avoid crash of versions method because of unrestricted search
+* Bug fix: avoid crash of versions method because of unrestricted search
   [valipod refs #90671]
 
 10.8 - (2018-01-25)
