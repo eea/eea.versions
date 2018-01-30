@@ -1,6 +1,11 @@
 Changelog
 =========
 
+11.0 - (2018-01-30)
+-------------------
+* Bug fix: Drop `canonical_object` call for default_page. Use instead aq_parent
+  [avoinea refs #91514]
+
 10.9 - (2018-01-26)
 -------------------
 * Bug fix: avoid crash of versions method because of unrestricted search
