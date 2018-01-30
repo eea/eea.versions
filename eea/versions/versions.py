@@ -106,11 +106,11 @@ class GetVersions(object):
         state = getMultiAdapter((context, request), name='plone_context_state')
         # fix for folders with a default view set, when creating a
         # version, we need the folder, not the page
-        parent = state.canonical_object()
-        if IVersionEnhanced.providedBy(parent):
-            self.context = parent
-        else:
-            self.context = context
+        self.context = context
+        if state.is_default_page():
+            parent = aq_parent(context)
+            if IVersionEnhanced.providedBy(parent):
+                self.context = parent
 
         self.versionId = IVersionControl(self.context).versionId
 
