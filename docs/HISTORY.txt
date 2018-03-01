@@ -1,6 +1,11 @@
 Changelog
 =========
 
+11.1 - (2018-03-01)
+-------------------
+* Feature: Fix tests to work with Products.CMFCore >= 2.2.12
+  [avoinea refs #92869]
+
 11.0 - (2018-01-30)
 -------------------
 * Bug fix: Drop `canonical_object` call for default_page. Use instead aq_parent

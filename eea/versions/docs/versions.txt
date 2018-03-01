@@ -228,6 +228,16 @@ When versioning, the discussion items should be removed and unindexed:
     ...     from zope.component import createObject
     ... except:
     ...     hasNewDiscussion = False
+
+Latest versions of CMFCore queue and process indexing operations (index, reindex, unindex) at transaction boundaries.
+But this isn't well covered within tests, thus we have to manually call processQueue.
+See https://community.plone.org/t/strange-catalog-behavior-on-plone-5-1/4582/3
+
+    >>> try:
+    ...     from Products.CMFCore.indexing import processQueue
+    ... except ImportError:
+    ...     processQueue = lambda: 1
+
     >>> catalog = getToolByName(data1, "portal_catalog")
     >>> dtool = getToolByName(data1, "portal_discussion")
     >>> data1.allow_discussion = True
@@ -237,10 +247,12 @@ When versioning, the discussion items should be removed and unindexed:
     ...     comment.title = 'title'
     ...     comment.text = 'text'
     ...     comment_id = conversation.addComment(comment)
+    ...     _ = processQueue()
     ...     print len(catalog.searchResults(path="/".join(data1.getPhysicalPath()) + "/++conversation++default/"))
     ... else:
     ...     tb = dtool.getDiscussionFor(data1)
     ...     id = tb.createReply('title', 'text')
+    ...     _ = processQueue()
     ...     print len(catalog.searchResults(path="/".join(data1.getPhysicalPath()) + "/talkback/"))
     1
     >>> createVersionView = data1.unrestrictedTraverse('@@createVersion')
