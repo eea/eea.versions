@@ -1,6 +1,11 @@
 Changelog
 =========
 
+11.2 - (2018-03-05)
+-------------------
+* Bug fix: Don't crash folder move/rename due to Catalog indexing queue
+  [avoinea refs #92869]
+
 11.1 - (2018-03-01)
 -------------------
 * Feature: Fix tests to work with Products.CMFCore >= 2.2.12
