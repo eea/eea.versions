@@ -5,7 +5,6 @@ import logging
 import sys
 import warnings
 from Acquisition import aq_base, aq_inner, aq_parent
-from AccessControl import Unauthorized
 from Persistence import PersistentMapping
 from zope.interface import alsoProvides, implements, providedBy
 from zope.annotation.interfaces import IAnnotations
