@@ -103,7 +103,7 @@ class GetVersions(object):
         """
         request = getattr(context, 'REQUEST', None)
         state = getMultiAdapter((context, request), name='plone_context_state')
-        # fix for folders with a default view set, when creating a
+        # #91514 fix for folders with a default view set, when creating a
         # version, we need the folder, not the page
         self.context = context
         if state.is_default_page():
@@ -149,8 +149,37 @@ class GetVersions(object):
                 logger.warn(err)
                 continue
             else:
-                objects.append(obj)
-
+                # #93975: before #91514 versions were sometimes incorrectly
+                # created in that pages set as default view were assigned as
+                # versions for folders. For such cases we need to replace the
+                # page with the 'canonical_object'
+                state = getMultiAdapter((obj, self.context.REQUEST),
+                                        name='plone_context_state')
+                canonical_obj = state.canonical_object()
+                if canonical_obj != obj:
+                    canonical_obj_version = IAnnotations(canonical_obj)[
+                        VERSION_ID]
+                    if canonical_obj_version != self.versionId:
+                        query['getVersionId'] = canonical_obj_version
+                        o_brains = cat.unrestrictedSearchResults(**query)
+                        if len(o_brains) > 1:
+                            logger.warn(
+                                'DefaultView: Object %s has different '
+                                'version id than its default view' %
+                                canonical_obj.absolute_url())
+                        else:
+                            assign_version(canonical_obj, self.versionId)
+                            RevokeVersion(obj, self.context.REQUEST).__call__()
+                            logger.warn(
+                                'DefaultView: Version id moved from default '
+                                'view to canonical object for %s' %
+                                canonical_obj.absolute_url())
+                    else:
+                        # the default view had the same version id as
+                        # the canonical object, thre is no need for that
+                        RevokeVersion(obj, self.context.REQUEST).__call__()
+                if canonical_obj not in objects:
+                    objects.append(canonical_obj)
 
         # Some objects don't have EffectiveDate so we have to sort
         # them using CreationDate. This has the side effect that
@@ -555,7 +584,7 @@ class CreateVersionAjax(object):
     """
     def __init__(self, context, request):
         state = getMultiAdapter((context, request), name='plone_context_state')
-        # fix for folders with a default view set, when creating a
+        # #91514 fix for folders with a default view set, when creating a
         # version, we need the folder, not the page
         parent = state.canonical_object()
         if IVersionEnhanced.providedBy(parent):
