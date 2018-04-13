@@ -1,8 +1,12 @@
 ============
 EEA Versions
 ============
-.. image:: http://ci.eionet.europa.eu/job/eea/job/eea.versions/job/master/badge/icon
-  :target: http://ci.eionet.europa.eu/job/eea/job/eea.versions/job/master/display/redirect
+.. image:: https://ci.eionet.europa.eu/buildStatus/icon?job=eea/eea.versions/develop
+  :target: https://ci.eionet.europa.eu/job/eea/job/eea.versions/job/develop/display/redirect
+  :alt: develop
+.. image:: https://ci.eionet.europa.eu/buildStatus/icon?job=eea/eea.versions/master
+  :target: https://ci.eionet.europa.eu/job/eea/job/eea.versions/job/master/display/redirect
+  :alt: master
 
 EEA Versions is a versioning system based on a version ID to group certains
 objects and EffectiveDate to determine version number.
