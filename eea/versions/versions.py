@@ -103,7 +103,7 @@ class GetVersions(object):
         """
         request = getattr(context, 'REQUEST', None)
         state = getMultiAdapter((context, request), name='plone_context_state')
-        # fix for folders with a default view set, when creating a
+        # #91514 fix for folders with a default view set, when creating a
         # version, we need the folder, not the page
         self.context = context
         if state.is_default_page():
@@ -114,8 +114,8 @@ class GetVersions(object):
         self.versionId = IVersionControl(self.context).versionId
 
         failsafe = lambda obj: "Unknown"
-        self.state_title_getter = queryMultiAdapter((self.context, request),
-                                    name=u'getWorkflowStateTitle') or failsafe
+        self.state_title_getter = queryMultiAdapter(
+            (self.context, request), name=u'getWorkflowStateTitle') or failsafe
 
     @memoize
     def versions(self):
@@ -149,8 +149,37 @@ class GetVersions(object):
                 logger.warn(err)
                 continue
             else:
-                objects.append(obj)
-
+                # #93975: before #91514 versions were sometimes incorrectly
+                # created in that pages set as default view were assigned as
+                # versions for folders. For such cases we need to replace the
+                # page with the 'canonical_object'
+                state = getMultiAdapter((obj, self.context.REQUEST),
+                                        name='plone_context_state')
+                canonical_obj = state.canonical_object()
+                if canonical_obj != obj:
+                    canonical_obj_version = IAnnotations(canonical_obj)[
+                        VERSION_ID]
+                    if canonical_obj_version != self.versionId:
+                        query['getVersionId'] = canonical_obj_version
+                        o_brains = cat.unrestrictedSearchResults(**query)
+                        if len(o_brains) > 1:
+                            logger.warn(
+                                'DefaultView: Object %s has different '
+                                'version id than its default view' %
+                                canonical_obj.absolute_url())
+                        else:
+                            assign_version(canonical_obj, self.versionId)
+                            RevokeVersion(obj, self.context.REQUEST).__call__()
+                            logger.warn(
+                                'DefaultView: Version id moved from default '
+                                'view to canonical object for %s' %
+                                canonical_obj.absolute_url())
+                    else:
+                        # the default view had the same version id as
+                        # the canonical object, thre is no need for that
+                        RevokeVersion(obj, self.context.REQUEST).__call__()
+                if canonical_obj not in objects:
+                    objects.append(canonical_obj)
 
         # Some objects don't have EffectiveDate so we have to sort
         # them using CreationDate. This has the side effect that
@@ -166,9 +195,9 @@ class GetVersions(object):
         # #20827 check if creation_date isn't bigger than the effective
         # date of the object as there are situation where the effective_date
         # is smaller such as for object without an workflow like FigureFile
-        _versions = sorted(objects,
-                           key=lambda ob: ob.effective_date if ob.effective_date
-                           else ob.creation_date)
+        _versions = sorted(
+            objects, key=lambda ob: ob.effective_date if ob.effective_date
+            else ob.creation_date)
 
         return _versions
 
@@ -321,7 +350,8 @@ def migrate_version(brains, vobj, count, **kwargs):
                     if len(translations) > 1:
                         canonical = obj.getCanonical()
                         if vobj.prefix_with_language:
-                            version_id = orig_id + '-' + canonical.getLanguage()
+                            version_id = orig_id + '-' + \
+                                canonical.getLanguage()
                         IVersionControl(canonical).setVersionId(version_id)
                         canonical.reindexObject(idxs=['getVersionId'])
                         for trans_tuple in translations.items():
@@ -330,7 +360,8 @@ def migrate_version(brains, vobj, count, **kwargs):
                                 version_id = orig_id + '-' + trans_tuple[0]
                                 IVersionControl(translation).setVersionId(
                                     version_id)
-                                translation.reindexObject(idxs=['getVersionId'])
+                                translation.reindexObject(
+                                    idxs=['getVersionId'])
                     else:
                         if datasets and obj is latest_version:
                             vid = IGetVersions(obj).versionId
@@ -342,7 +373,7 @@ def migrate_version(brains, vobj, count, **kwargs):
                     obj.reindexObject(idxs=['getVersionId'])
                 increment = True
                 logger.info('%s ==> %s --> %s',
-                    obj.absolute_url(1), verparent_id, version_id)
+                            obj.absolute_url(1), verparent_id, version_id)
             else:
                 increment = False
         if increment:
@@ -383,9 +414,9 @@ class MigrateVersions(BrowserView):
         vtool = getToolByName(context, 'portal_eea_versions', None)
         ptool = getToolByName(context, 'portal_properties')
         stool = ptool.site_properties
-        datasets_types = stool.get('dataset_types') or \
-                         ['Assessment', 'Data', 'EEAFigure',
-                          'Specification', 'Indicator FactSheet']
+        datasets_types = stool.get('dataset_types') or [
+            'Assessment', 'Data', 'EEAFigure', 'Specification',
+            'Indicator FactSheet']
         if vtool:
             for obj in vtool.values():
                 if prefix and obj.title not in prefix:
@@ -521,12 +552,12 @@ class AjaxVersion(object):
         minutes
         """
         in_progress = self.annotations.get('versioningInProgress')
-        # 22047 check if it took less than 15 minutes since last check
-        # if context still has the versioningInProgress annotation
-        # otherwise request a new version creation
-        # this is done to prevent situations were a new version was requested
-        # and annotation was set but afterwards there was an error or the server
-        # was restarted as such no removing of versioning status being produced
+        # 22047 check if it took less than 15 minutes since last check if
+        # context still has the versioningInProgress annotation, otherwise
+        # request the creation of a new version. this is done to prevent
+        # situations were a new version was requested and annotation was set
+        # but afterwards there was an error or the server was restarted,
+        # as such no removing of versioning status being produced
         if in_progress and (time() - in_progress) < 900.0:
             logger.info('VersioningInProgress in_progress at %s, now %s '
                         ', time since last run == %f',
@@ -555,7 +586,7 @@ class CreateVersionAjax(object):
     """
     def __init__(self, context, request):
         state = getMultiAdapter((context, request), name='plone_context_state')
-        # fix for folders with a default view set, when creating a
+        # #91514 fix for folders with a default view set, when creating a
         # version, we need the folder, not the page
         parent = state.canonical_object()
         if IVersionEnhanced.providedBy(parent):
@@ -820,15 +851,15 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
     Also sends IObjectCopiedEvent and IObjectClonedEvent
     or IObjectWillBeMovedEvent and IObjectMovedEvent.
     """
-    ### due to the ticket #14598: the need to also handle a cb_copy_data
-    ### structure that contains the desired new id on a copy/paste operation.
-    ### this feature will be used when creating a new version for an object.
-    ### if there is no new id also incapsulated in the cb_copy_data then
-    ### the copy/paste will work as default.
-    ### also the cut/paste remains the same.
+    # due to the ticket #14598: the need to also handle a cb_copy_data
+    # structure that contains the desired new id on a copy/paste operation.
+    # this feature will be used when creating a new version for an object.
+    # if there is no new id also incapsulated in the cb_copy_data then
+    # the copy/paste will work as default.
+    # also the cut/paste remains the same.
     if cb_copy_data is not None:
         cp = cb_copy_data
-    elif REQUEST is not None and REQUEST.has_key('__cp'):
+    elif REQUEST is not None and '__cp' in REQUEST:
         cp = REQUEST['__cp']
     else:
         cp = None
@@ -855,13 +886,13 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
             ob = m.bind(app)
         except ConflictError:
             raise
-        except:
+        except Exception:
             raise CopyError(eNotFound)
-        self._verifyObjectPaste(ob, validate_src=op+1)
+        self._verifyObjectPaste(ob, validate_src=op + 1)
         oblist.append(ob)
 
     if len(newids) == 0:
-        newids = ['']*len(oblist)
+        newids = [''] * len(oblist)
 
     result = []
     if op == 0:
@@ -875,7 +906,7 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
                 ob._notifyOfCopyTo(self, op=0)
             except ConflictError:
                 raise
-            except:
+            except Exception:
                 raise CopyError(MessageDialog(
                     title="Copy Error",
                     message=sys.exc_info()[1],
@@ -915,15 +946,14 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
                 ob._notifyOfCopyTo(self, op=1)
             except ConflictError:
                 raise
-            except:
+            except Exception:
                 raise CopyError(MessageDialog(
                     title="Move Error",
                     message=sys.exc_info()[1],
                     action='manage_main'))
 
             if not sanity_check(self, ob):
-                raise CopyError(
-                        "This object cannot be pasted into itself")
+                raise CopyError("This object cannot be pasted into itself")
 
             orig_container = aq_parent(aq_inner(ob))
             if aq_base(orig_container) is aq_base(self):
@@ -969,9 +999,9 @@ def manage_pasteObjects_Version(self, cb_copy_data=None, REQUEST=None):
             ob.manage_changeOwnershipType(explicit=0)
 
         if REQUEST is not None:
-            REQUEST['RESPONSE'].setCookie('__cp', 'deleted',
-                                path='%s' % cookie_path(REQUEST),
-                                expires='Wed, 31-Dec-97 23:59:59 GMT')
+            REQUEST['RESPONSE'].setCookie(
+                '__cp', 'deleted', path='%s' % cookie_path(REQUEST),
+                expires='Wed, 31-Dec-97 23:59:59 GMT')
             REQUEST['__cp'] = None
             return self.manage_main(self, REQUEST, update_menu=1,
                                     cb_dataValid=0)

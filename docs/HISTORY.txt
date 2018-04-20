@@ -1,6 +1,11 @@
 Changelog
 =========
 
+11.3 - (2018-04-19)
+------------------------
+* fix for default view being linked as a version of the parent folder
+  [valipod refs #93975]
+
 11.2 - (2018-03-05)
 -------------------
 * Bug fix: Don't crash folder move/rename due to Catalog indexing queue
