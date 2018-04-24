@@ -1,6 +1,11 @@
 Changelog
 =========
 
+11.4 - (2018-04-24)
+---------------------
+* fix for non version enhanced objects
+ [valipod refs #93975]
+
 11.3 - (2018-04-19)
 ------------------------
 * fix for default view being linked as a version of the parent folder
@@ -533,4 +538,3 @@ Changelog
 ------------------
 * Initial release, based on code from eea.dataservice
   [tiberich]
-
