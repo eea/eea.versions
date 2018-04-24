@@ -156,7 +156,8 @@ class GetVersions(object):
                 state = getMultiAdapter((obj, self.context.REQUEST),
                                         name='plone_context_state')
                 canonical_obj = state.canonical_object()
-                if canonical_obj != obj:
+                if IVersionEnhanced.providedBy(
+                        canonical_obj) and canonical_obj != obj:
                     canonical_obj_version = IAnnotations(canonical_obj)[
                         VERSION_ID]
                     if canonical_obj_version != self.versionId:
@@ -178,8 +179,11 @@ class GetVersions(object):
                         # the default view had the same version id as
                         # the canonical object, thre is no need for that
                         RevokeVersion(obj, self.context.REQUEST).__call__()
-                if canonical_obj not in objects:
-                    objects.append(canonical_obj)
+                    if canonical_obj not in objects:
+                        objects.append(canonical_obj)
+                else:
+                    if obj not in objects:
+                        objects.append(obj)
 
         # Some objects don't have EffectiveDate so we have to sort
         # them using CreationDate. This has the side effect that
