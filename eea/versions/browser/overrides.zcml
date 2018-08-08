@@ -1,20 +1,13 @@
-<configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:plone="http://namespaces.plone.org/plone"
-    xmlns:zcml="http://namespaces.zope.org/zcml"
-    xmlns:five="http://namespaces.zope.org/five">
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:plone="http://namespaces.plone.org/plone"
+           xmlns:zcml="http://namespaces.zope.org/zcml"
+           xmlns:five="http://namespaces.zope.org/five">
 
-
-    <configure zcml:condition="installed plone.app.layout">
-        <browser:viewlet
-                name="plone.links.canonical_url"
-                manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
-                class=".viewlets.CanonicalURL"
-                permission="zope2.View"
-        />
-    </configure>
-
+    <browser:viewlet
+            name="plone.links.canonical_url"
+            manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+            class=".viewlets.CanonicalURL"
+            permission="zope2.View" />
 
 </configure>
-
