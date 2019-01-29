@@ -27,5 +27,5 @@ Authors
 
   EEA_ - European Environment Agency (EU)
 
-.. _EEA: http://www.eea.europa.eu/
-.. _`eea.sparql`: http://eea.github.com/docs/eea.sparql
+.. _EEA: https://www.eea.europa.eu/
+.. _`eea.sparql`: https://eea.github.io/docs/eea.sparql
