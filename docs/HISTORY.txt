@@ -1,7 +1,7 @@
 Changelog
 =========
 
-11.6-dev0 - (unreleased)
+11.6 - (2019-10-03)
 --------------------------
 * Change: Modified the older versions viewlet to use effective/creation date
   instead of lastUpload
