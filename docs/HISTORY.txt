@@ -17,7 +17,7 @@ Changelog
 11.4 - (2018-04-24)
 --------------------------
 * fix for non version enhanced objects
- [valipod refs #93975]
+  [valipod refs #93975]
 
 11.3 - (2018-04-19)
 ------------------------
