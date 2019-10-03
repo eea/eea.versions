@@ -272,11 +272,11 @@ class GetVersions(object):
         state_id = self.wftool().getInfoFor(obj, 'review_state', '(Unknown)')
         state = self.state_title_getter(obj)
 
-        field = obj.getField('lastUpload')  # Note: specific to dataservice
-        if field:
-            date = field.getAccessor(obj)()
-        else:
-            date = obj.getEffectiveDate() or obj.creation_date
+        date = obj.getEffectiveDate() or obj.creation_date
+        if not date:
+            field = obj.getField('lastUpload')  # Note: specific to dataservice
+            if field:
+                date = field.getAccessor(obj)()
         if not isinstance(date, DateTime):
             date = None
 
