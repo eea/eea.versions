@@ -1,17 +1,23 @@
 Changelog
 =========
 
+11.6 - (2019-10-03)
+--------------------------
+* Change: Modified the older versions viewlet to use effective/creation date
+  instead of lastUpload
+  [iulianpetchesi refs #102731]
+
 11.5 - (2019-01-28)
----------------------
+--------------------------
 * Jenkins: Add sonarqube step
   [avoinea refs #101552]
 * Change: updated URLs pointing to eea.europa.eu with https://
   [alecghica refs #95849]
 
 11.4 - (2018-04-24)
----------------------
+--------------------------
 * fix for non version enhanced objects
- [valipod refs #93975]
+  [valipod refs #93975]
 
 11.3 - (2018-04-19)
 ------------------------

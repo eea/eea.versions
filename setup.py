@@ -10,6 +10,7 @@ version = open(os.path.join(*path)).read().strip()
 setup(name=name,
       version=version,
       description="EEA versions",
+      long_description_content_type="text/x-rst",
       long_description=open("README.rst").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # https://pypi.python.org/pypi?%3Aaction=list_classifiers
