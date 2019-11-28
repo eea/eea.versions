@@ -2,12 +2,13 @@
 """
 import logging
 
-from plone import api
 from DateTime.DateTime import DateTime
+from plone.memoize import view
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFEditions.utilities import maybeSaveVersion
 from Products.Five import BrowserView
 from Products.CMFCore.utils import getToolByName
+from zope.component import getMultiAdapter
 import transaction
 
 
@@ -101,6 +102,7 @@ class ReportVersionsHelperView(BrowserView):
     def is_report(self):
         return self.context.portal_type == 'Report'
 
+    @view.memoize
     def report_versions(self):
         report_view = self.context.restrictedTraverse('@@report_view')
         versions = report_view.does_replace()
@@ -108,11 +110,24 @@ class ReportVersionsHelperView(BrowserView):
         res = []
         for ver in versions:
             obj = ver.getObject()
+            state = getMultiAdapter((obj, self.request), name='plone_context_state')
+
             res.append({
                 'url': obj.absolute_url(),
                 'date': obj.effective(),
                 'title': obj.Title(),
-                'review_state': api.content.get_state(obj),
+                'review_state': state.workflow_state(),
             })
 
         return res
+
+    def patched_toLocalizedTime(self, date, obj):
+        toLocalizedTime = self.context.restrictedTraverse('@@plone').toLocalizedTime
+        try:
+            formatted_date = toLocalizedTime(date)
+        except ValueError:
+            logger = logging.getLogger('eea.versions.patched_toLocalizedTime')
+            logger.error('Date error for object: %s' % obj['url'])
+            if date.year() < 1900:
+                formatted_date = toLocalizedTime(0)
+        return formatted_date

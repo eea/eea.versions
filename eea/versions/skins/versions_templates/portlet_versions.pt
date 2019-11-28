@@ -102,7 +102,7 @@
                                                    doc_title doc/title;
                                                    doc_state doc/review_state;"
                                             tal:attributes="href doc_url; class string:state-$doc_state versionUrl">
-                                        <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
+                                        <tal:date replace="python:report_versions_view.patched_toLocalizedTime(doc_published, doc) + ' - '" tal:condition="doc_published" />
                                         <tal:title replace="doc_title"/>
                                     </a>
                                 </div>
