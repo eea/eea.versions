@@ -1,6 +1,9 @@
 Changelog
 =========
 
+11.8-dev0 - (unreleased)
+---------------------------
+
 11.7 - (2019-11-28)
 ---------------------------
 * Change: Modified the older versions viewlet to use publication version series
