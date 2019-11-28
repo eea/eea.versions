@@ -2,6 +2,7 @@
 """
 import logging
 
+from plone import api
 from DateTime.DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFEditions.utilities import maybeSaveVersion
@@ -90,3 +91,28 @@ class UpdateCreationDate(BrowserView):
             wf_error_objs_count, "\n".join(wf_error_objs),
             count, "\n".join(objs_urls))
         return message
+
+
+class ReportVersionsHelperView(BrowserView):
+    """ Helper view that return previous versions for reports
+    """
+
+    @property
+    def is_report(self):
+        return self.context.portal_type == 'Report'
+
+    def report_versions(self):
+        report_view = self.context.restrictedTraverse('@@report_view')
+        versions = report_view.does_replace()
+
+        res = []
+        for ver in versions:
+            obj = ver.getObject()
+            res.append({
+                'url': obj.absolute_url(),
+                'date': obj.effective(),
+                'title': obj.Title(),
+                'review_state': api.content.get_state(obj),
+            })
+
+        return res
