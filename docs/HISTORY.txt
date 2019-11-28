@@ -1,7 +1,7 @@
 Changelog
 =========
 
-11.7-dev0 - (unreleased)
+11.7 - (2019-11-28)
 ---------------------------
 * Change: Modified the older versions viewlet to use publication version series
   for publications(Report)
