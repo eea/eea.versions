@@ -1,6 +1,12 @@
 Changelog
 =========
 
+11.7 - (2019-11-28)
+---------------------------
+* Change: Modified the older versions viewlet to use publication version series
+  for publications(Report)
+  [iulianpetchesi refs #110020]
+
 11.6 - (2019-10-03)
 --------------------------
 * Change: Modified the older versions viewlet to use effective/creation date

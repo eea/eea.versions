@@ -31,4 +31,12 @@
         class=".view.UpdateCreationDate"
         />
 
+    <browser:page
+        name="report_versions_view"
+        for="*"
+        class=".view.ReportVersionsHelperView"
+        permission="zope2.View"
+        allowed_attributes="report_versions is_report patched_toLocalizedTime"
+    />
+
 </configure>
