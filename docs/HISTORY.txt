@@ -1,6 +1,11 @@
 Changelog
 =========
 
+11.8 - (2019-12-05)
+---------------------------
+* Change: Refs #110020 Fix version viewlet error.
+  [Petchesi-Iulian]
+
 11.7 - (2019-11-28)
 ---------------------------
 * Change: Modified the older versions viewlet to use publication version series
