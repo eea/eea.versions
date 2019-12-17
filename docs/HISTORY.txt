@@ -1,7 +1,7 @@
 Changelog
 =========
 
-11.9-dev0 - (unreleased)
+11.9 - (2019-12-17)
 ---------------------------
 * Change: Revert previous allowed_attributes change for older versions viewlet
   [iulianpetchesi refs #112194]
