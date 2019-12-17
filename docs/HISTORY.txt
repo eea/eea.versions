@@ -1,10 +1,15 @@
 Changelog
 =========
 
+11.9 - (2019-12-17)
+---------------------------
+* Change: Revert previous allowed_attributes change for older versions viewlet
+  [iulianpetchesi refs #112194]
+
 11.8 - (2019-12-05)
 ---------------------------
 * Change: Refs #110020 Fix version viewlet error.
-  [Petchesi-Iulian]
+  [iulianpetchesi refs #110020]
 
 11.7 - (2019-11-28)
 ---------------------------
