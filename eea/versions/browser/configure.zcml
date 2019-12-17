@@ -21,7 +21,6 @@
         class=".viewlets.VersionStatusViewlet"
         permission="zope.Public"
         layer="eea.versions.browser.interfaces.IEEAVersionsPublic"
-        allowed_attributes="report_versions is_report patched_toLocalizedTime"
         />
 
 
