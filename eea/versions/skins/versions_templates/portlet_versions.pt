@@ -69,7 +69,8 @@
 
         <metal:defines metal:use-macro="context/portlet_versions/macros/defines">
             <metal:content metal:fill-slot="content">
-                <div class="eea-accordion-panel" tal:condition="python: earlier_versions and not report_versions_view.is_report">
+                <div class="eea-accordion-panel" tal:condition="earlier_versions">
+                <tal:condition condition="not:report_versions_view/is_report">
                     <h2 class="notoc eea-icon-right-container eea-icon eea-icon-history"
                         style="width:100%" i18n:translate="">Older versions</h2>
                     <div class="pane">
@@ -88,6 +89,7 @@
                             </div>
                         </tal:old>
                     </div>
+                </tal:condition>
                 </div>
 
                 <div class="eea-accordion-panel" tal:condition="report_versions_view/is_report">
