@@ -1,6 +1,11 @@
 Changelog
 =========
 
+12.0 - (2020-01-30)
+---------------------------
+* Bug fix: Fixed the older versions viewlet for Data and EEAFigures
+  [alecghica refs #113639]
+
 11.9 - (2019-12-17)
 ---------------------------
 * Change: Revert previous allowed_attributes change for older versions viewlet
@@ -32,12 +37,12 @@ Changelog
 
 11.4 - (2018-04-24)
 --------------------------
-* fix for non version enhanced objects
+* Bug fix: fix for non version enhanced objects
   [valipod refs #93975]
 
 11.3 - (2018-04-19)
 ------------------------
-* fix for default view being linked as a version of the parent folder
+* Bug fix: fix for default view being linked as a version of the parent folder
   [valipod refs #93975]
 
 11.2 - (2018-03-05)
