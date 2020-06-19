@@ -58,10 +58,13 @@
 </metal:versions>
 
 <metal:older metal:define-macro="older_versions">
-    <div class="eea-accordion-panels collapsed-by-default non-exclusive" id="eea-versions-portlet">
+<!--?  class="eea-accordion-panels collapsed-by-default non-exclusive"-->
+    <div  id="eea-versions-portlet">
         <div class="eea-accordion-panel">
-            <h2 class="notoc eea-icon-right-container eea-icon eea-icon-link"
-                style="width:100%" i18n:translate="">Permalinks</h2>
+            <h2 class="notoc eea-icon-left-container eea-accordion-title">
+<!--?              <span class="eea-icon eea-icon-link"></span>-->
+              <span i18n:translate="">Permalinks</span>
+            </h2>
             <div class="pane">
                 <metal:permalinks use-macro="context/versions_macros/macros/permalinks" />
             </div>
@@ -71,7 +74,7 @@
             <metal:content metal:fill-slot="content">
                 <div class="eea-accordion-panel" tal:condition="earlier_versions">
                 <tal:condition condition="not:report_versions_view/is_report">
-                    <h2 class="notoc eea-icon-right-container eea-icon eea-icon-history"
+                    <h2 class="notoc eea-icon-left-container eea-icon eea-icon-history eea-accordion-title"
                         style="width:100%" i18n:translate="">Older versions</h2>
                     <div class="pane">
                         <tal:old metal:define-slot="old">
@@ -92,8 +95,8 @@
                 </tal:condition>
                 </div>
 
-                <div class="eea-accordion-panel" tal:condition="report_versions_view/is_report">
-                    <h2 class="notoc eea-icon-right-container eea-icon eea-icon-history"
+                <div class="eea-accordion-panel" tal:condition="python:report_versions_view.is_report and earlier_versions">
+                    <h2 class="notoc eea-icon-left-container eea-icon eea-icon-history eea-accordion-title"
                         style="width:100%" i18n:translate="">Older versions</h2>
                     <div class="pane" tal:define="report_versions python: report_versions_view.report_versions()">
                         <tal:old metal:define-slot="old">

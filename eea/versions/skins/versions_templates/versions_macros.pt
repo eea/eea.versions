@@ -1,6 +1,6 @@
 <html xmlns:metal="http://xml.zope.org/namespaces/metal"
   i18n:domain="eea">
-  <dl metal:define-macro="permalinks" id="permalinks" style="margin-top: 15px"
+  <dl metal:define-macro="permalinks" id="permalinks"
       tal:define="versions_view nocall:context/@@getVersions; 
                   versionId versions_view/versionId; 
                   uid context/UID">
