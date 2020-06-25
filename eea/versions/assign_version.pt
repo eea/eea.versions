@@ -5,7 +5,7 @@
   <body>
     <div metal:fill-slot="main">
       <h1 i18n:translate="">Assign version</h1>
-      <p class="documentDescription">
+      <p class="assign-version-current">
         <span i18n:translate="">Current Version ID:</span>
         <tal:versionId content="context/@@getVersions/versionId" />
       </p>

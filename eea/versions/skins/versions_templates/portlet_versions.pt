@@ -58,11 +58,9 @@
 </metal:versions>
 
 <metal:older metal:define-macro="older_versions">
-<!--?  class="eea-accordion-panels collapsed-by-default non-exclusive"-->
     <div  id="eea-versions-portlet">
         <div class="eea-accordion-panel">
             <h2 class="notoc eea-icon-left-container eea-accordion-title">
-<!--?              <span class="eea-icon eea-icon-link"></span>-->
               <span i18n:translate="">Permalinks</span>
             </h2>
             <div class="pane">
@@ -95,7 +93,9 @@
                 </tal:condition>
                 </div>
 
-                <div class="eea-accordion-panel" tal:condition="python:report_versions_view.is_report and earlier_versions">
+              <tal:condition condition="report_versions_view/is_report">
+                <tal:cond tal:condition="earlier_versions">
+                <div class="eea-accordion-panel">
                     <h2 class="notoc eea-icon-left-container eea-icon eea-icon-history eea-accordion-title"
                         style="width:100%" i18n:translate="">Older versions</h2>
                     <div class="pane" tal:define="report_versions python: report_versions_view.report_versions()">
@@ -115,6 +115,8 @@
                         </tal:old>
                     </div>
                 </div>
+              </tal:cond>
+              </tal:condition>
             </metal:content>
         </metal:defines>
     </div>
