@@ -58,68 +58,66 @@
 </metal:versions>
 
 <metal:older metal:define-macro="older_versions">
-    <div  id="eea-versions-portlet">
-        <div class="eea-accordion-panel">
-            <h2 class="notoc eea-icon-left-container eea-accordion-title">
-              <span i18n:translate="">Permalinks</span>
-            </h2>
-            <div class="pane">
-                <metal:permalinks use-macro="context/versions_macros/macros/permalinks" />
-            </div>
+    <div class="eea-accordion-panel eea-versions-portlet">
+        <h2 class="notoc eea-icon-left-container eea-accordion-title">
+          <span i18n:translate="">Permalinks</span>
+        </h2>
+        <div class="pane">
+            <metal:permalinks use-macro="context/versions_macros/macros/permalinks" />
         </div>
-
-        <metal:defines metal:use-macro="context/portlet_versions/macros/defines">
-            <metal:content metal:fill-slot="content">
-                <div class="eea-accordion-panel" tal:condition="earlier_versions">
-                <tal:condition condition="not:report_versions_view/is_report">
-                    <h2 class="notoc eea-icon-left-container eea-icon eea-icon-history eea-accordion-title"
-                        style="width:100%" i18n:translate="">Older versions</h2>
-                    <div class="pane">
-                        <tal:old metal:define-slot="old">
-                            <div id="previous-versions">
-                                <div class="portletItem" tal:repeat="doc earlier_versions">
-                                    <a tal:define="doc_url doc/url;
-                                                   doc_published doc/date;
-                                                   doc_title doc/title;
-                                                   doc_state doc/review_state;"
-                                            tal:attributes="href doc_url; class string:state-$doc_state versionUrl">
-                                        <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
-                                        <tal:title replace="doc_title"/>
-                                    </a>
-                                </div>
-                            </div>
-                        </tal:old>
-                    </div>
-                </tal:condition>
-                </div>
-
-              <tal:condition condition="report_versions_view/is_report">
-                <tal:cond tal:condition="earlier_versions">
-                <div class="eea-accordion-panel">
-                    <h2 class="notoc eea-icon-left-container eea-icon eea-icon-history eea-accordion-title"
-                        style="width:100%" i18n:translate="">Older versions</h2>
-                    <div class="pane" tal:define="report_versions python: report_versions_view.report_versions()">
-                        <tal:old metal:define-slot="old">
-                            <div id="previous-versions">
-                                <div class="portletItem" tal:repeat="doc report_versions">
-                                    <a tal:define="doc_url doc/url;
-                                                   doc_published doc/date;
-                                                   doc_title doc/title;
-                                                   doc_state doc/review_state;"
-                                            tal:attributes="href doc_url; class string:state-$doc_state versionUrl">
-                                        <tal:date replace="python:report_versions_view.patched_toLocalizedTime(doc_published, doc) + ' - '" tal:condition="doc_published" />
-                                        <tal:title replace="doc_title"/>
-                                    </a>
-                                </div>
-                            </div>
-                        </tal:old>
-                    </div>
-                </div>
-              </tal:cond>
-              </tal:condition>
-            </metal:content>
-        </metal:defines>
     </div>
+
+    <metal:defines metal:use-macro="context/portlet_versions/macros/defines">
+        <metal:content metal:fill-slot="content">
+            <div class="eea-accordion-panel eea-versions-portlet" tal:condition="earlier_versions">
+            <tal:condition condition="not:report_versions_view/is_report">
+                <h2 class="notoc eea-icon-left-container eea-icon eea-icon-history eea-accordion-title"
+                    style="width:100%" i18n:translate="">Older versions</h2>
+                <div class="pane">
+                    <tal:old metal:define-slot="old">
+                        <div id="previous-versions">
+                            <div class="portletItem" tal:repeat="doc earlier_versions">
+                                <a tal:define="doc_url doc/url;
+                                               doc_published doc/date;
+                                               doc_title doc/title;
+                                               doc_state doc/review_state;"
+                                        tal:attributes="href doc_url; class string:state-$doc_state versionUrl">
+                                    <tal:date replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
+                                    <tal:title replace="doc_title"/>
+                                </a>
+                            </div>
+                        </div>
+                    </tal:old>
+                </div>
+            </tal:condition>
+            </div>
+
+          <tal:condition condition="report_versions_view/is_report">
+            <tal:cond tal:condition="earlier_versions">
+            <div class="eea-accordion-panel eea-versions-portlet">
+                <h2 class="notoc eea-icon-left-container eea-icon eea-icon-history eea-accordion-title"
+                    style="width:100%" i18n:translate="">Older versions</h2>
+                <div class="pane" tal:define="report_versions python: report_versions_view.report_versions()">
+                    <tal:old metal:define-slot="old">
+                        <div id="previous-versions">
+                            <div class="portletItem" tal:repeat="doc report_versions">
+                                <a tal:define="doc_url doc/url;
+                                               doc_published doc/date;
+                                               doc_title doc/title;
+                                               doc_state doc/review_state;"
+                                        tal:attributes="href doc_url; class string:state-$doc_state versionUrl">
+                                    <tal:date replace="python:report_versions_view.patched_toLocalizedTime(doc_published, doc) + ' - '" tal:condition="doc_published" />
+                                    <tal:title replace="doc_title"/>
+                                </a>
+                            </div>
+                        </div>
+                    </tal:old>
+                </div>
+            </div>
+          </tal:cond>
+          </tal:condition>
+        </metal:content>
+    </metal:defines>
 </metal:older>
 
 </body>

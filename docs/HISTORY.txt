@@ -3,13 +3,16 @@ Changelog
 
 12.2-dev0 - (unreleased)
 ---------------------------
+* Change: Changed portlet_versions so that we no longer have a div with the
+  id 'eea-versions-portlet' and now we attached the id to the accordion panel
+  class
+  [iulianpetchesi refs #119540]
 * Change: removed documentDescription class from assign_version when checking
   current version set as that is not documentDescription
   [ichim-david refs #117296]
 * Bug fix: avoid Unauthorised error when checking if context is report within
   portlet_versions
   [ichim-david refs #117296]
-
 
 12.1 - (2020-06-19)
 ---------------------------
