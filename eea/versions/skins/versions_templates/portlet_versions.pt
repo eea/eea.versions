@@ -72,7 +72,7 @@
             <div class="eea-accordion-panel eea-versions-portlet" tal:condition="earlier_versions">
             <tal:condition condition="not:report_versions_view/is_report">
                 <h2 class="notoc eea-icon-left-container eea-accordion-title"
-                    style="width:100%" i18n:translate="">Older versions</h2>
+                    i18n:translate="">Older versions</h2>
                 <div class="pane">
                     <tal:old metal:define-slot="old">
                         <div id="previous-versions">
