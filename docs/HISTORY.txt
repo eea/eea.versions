@@ -1,6 +1,11 @@
 Changelog
 =========
 
+12.3 - (2020-09-18)
+---------------------------
+* Change: Removed extra icon from older versions
+  [ichim-david refs #120397]
+
 12.2 - (2020-07-21)
 ---------------------------
 * Change: Changed portlet_versions so that we no longer have a div with the
