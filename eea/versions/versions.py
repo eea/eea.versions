@@ -294,6 +294,17 @@ class GetVersions(object):
 
         return self.latest_version().absolute_url()
 
+    def getLatestVersionUrlWithView(self):
+        """ Returns the url of the latest version @@getLatestVersionUrl view
+        """
+        url = self.getLatestVersionUrl()
+        pprops = getToolByName(self.context, 'portal_properties')
+        if pprops:
+            sprops = pprops.site_properties
+            if self.context.portal_type in sprops.typesUseViewActionInListings:
+                url += '/view'
+        return url
+
     def getCurrentLanguage(self):
         """ Return the language of the context
         """
