@@ -235,7 +235,7 @@ class GetVersions(object):
 
         return res
 
-    def earlier_versions(self, obj_url_with_view=False):
+    def earlier_versions(self):
         """ Return a list of older versions, oldest object first
         """
         res = []
@@ -243,12 +243,13 @@ class GetVersions(object):
         versions = self.versions()
         append_view_to_url = False
         if versions:
-            append_view_to_url = self.shouldObjUrlAppendView(versions[0])
-            obj_url_with_view = False if not append_view_to_url else True
+            append_view_to_url = True if \
+                self.shouldObjUrlAppendView(versions[0]) else False
         for version in versions:
             if version.UID() == uid:
                 break
-            res.append(self._obj_info(version, url_with_view=obj_url_with_view))
+            res.append(self._obj_info(version,
+                                      append_view_to_url=append_view_to_url))
 
         res.reverse()  # is this needed?
         return res
@@ -271,7 +272,7 @@ class GetVersions(object):
     def __call__(self):
         return self.enumerate_versions()
 
-    def _obj_info(self, obj, url_with_view=False):
+    def _obj_info(self, obj, append_view_to_url=False):
         """ Extract needed properties for a given persistent object
         """
         state_id = self.wftool().getInfoFor(obj, 'review_state', '(Unknown)')
@@ -286,7 +287,7 @@ class GetVersions(object):
             date = None
 
         obj_url = obj.absolute_url()
-        final_url = obj_url + '/view' if url_with_view else obj_url
+        final_url = obj_url + '/view' if append_view_to_url else obj_url
         return {
             'title': obj.title_or_id(),
             'url': final_url,

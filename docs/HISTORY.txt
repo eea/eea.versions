@@ -3,6 +3,15 @@ Changelog
 
 12.4-dev0 - (unreleased)
 ---------------------------
+* Change: earlier versions of a given object now return with moddified urls
+  to have **/view** appended in case the object.portal_type is in
+  site_properties.typesUseViewActionInListings.
+ See docs/versions.txt for tests on how this affects the returned results.
+ [ichim-david refs #108348]
+* Change: ds_resolve now returns link with **/view** if needed
+ [ichim-david refs #108348]
+* Change: latest version portal message now point user to obj + '/view' if needed
+ [ichim-david refs #108348]
 
 12.3 - (2020-09-18)
 ---------------------------

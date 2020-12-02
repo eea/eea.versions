@@ -4,7 +4,7 @@
 
 <metal:defines metal:define-macro="defines"
         tal:define="versions nocall:versions | nocall:here/@@getVersions;
-                    earlier_versions python:versions.earlier_versions(obj_url_with_view=True);
+                    earlier_versions versions/earlier_versions;
                     isLatest versions/isLatest;
                     toLocalizedTime nocall:context/@@plone/toLocalizedTime;
                     report_versions_view nocall: report_versions_view | nocall:context/@@report_versions_view;">
