@@ -4,7 +4,7 @@
 
 <metal:defines metal:define-macro="defines"
         tal:define="versions nocall:versions | nocall:here/@@getVersions;
-                    earlier_versions versions/earlier_versions;
+                    earlier_versions python:versions.earlier_versions(obj_url_with_view=True);
                     isLatest versions/isLatest;
                     toLocalizedTime nocall:context/@@plone/toLocalizedTime;
                     report_versions_view nocall: report_versions_view | nocall:context/@@report_versions_view;">
@@ -18,7 +18,7 @@
             <div tal:define="isVersionEnhanced isVersionEnhanced | here/@@isVersionEnhanced;
                              anon context/@@plone_portal_state/anonymous;
                              later_versions versions/later_versions;
-                             latest_version versions/latest_version;"
+                             latest_version_url versions/getLatestVersionUrlWithView;"
                     class="eea-available-version"
                     tal:condition="later_versions">
 
@@ -31,7 +31,7 @@
                                     <strong>This is an old version</strong>, kept for reference only.<br><br>
                                 </span>
                                 <span>
-                                   <a class="standardButton" style="font-size:100%;" tal:attributes="href latest_version/absolute_url" i18n:translate="">Go to latest <em tal:condition="not:anon" tal:content="title_state" i18n:name="state" /> version</a>
+                                   <a class="standardButton" style="font-size:100%;" tal:attributes="href latest_version_url" i18n:translate="">Go to latest <em tal:condition="not:anon" tal:content="title_state" i18n:name="state" /> version</a>
                                 </span>
                             </tal:messages>
                             <script>
@@ -39,16 +39,6 @@
                                 $(".warningMessage").fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
                                 });
                             </script>
-                            <ul tal:replace="nothing">
-                                <li tal:repeat="doc later_versions">
-                                    <a tal:define="doc_url doc/url; doc_published doc/date; doc_title doc/title;"
-                                            tal:attributes="href doc_url">
-                                        <tal:date
-                                                replace="python:toLocalizedTime(doc_published) + ' - '" tal:condition="doc_published" />
-                                        <tal:title replace="doc_title"/>
-                                    </a>
-                                </li>
-                            </ul>
                         </div>
                     </tal:cond>
                 </tal:new>
