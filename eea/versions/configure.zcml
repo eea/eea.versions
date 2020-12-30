@@ -77,6 +77,16 @@
         allowed_attributes="getLatestVersionUrl"
         />
 
+  <browser:page
+    for="*"
+    name="getLatestVersionUrlWithView"
+    permission="zope2.View"
+    class=".versions.GetVersionsView"
+    attribute="getLatestVersionUrlWithView"
+    allowed_attributes="getLatestVersionUrlWithView"
+  />
+
+
     <browser:page
         for="*"
         name="isVersionEnhanced"
