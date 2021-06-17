@@ -1,7 +1,7 @@
 Changelog
 =========
 
-12.4-dev0 - (unreleased)
+12.4 - (2021-06-17)
 ---------------------------
 * Change: earlier versions of a given object now return with moddified urls
   to have **/view** appended in case the object.portal_type is in
