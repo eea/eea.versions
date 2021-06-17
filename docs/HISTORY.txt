@@ -1,6 +1,9 @@
 Changelog
 =========
 
+12.5-dev0 - (unreleased)
+---------------------------
+
 12.4 - (2021-06-17)
 ---------------------------
 * Change: earlier versions of a given object now return with moddified urls
