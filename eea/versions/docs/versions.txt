@@ -31,6 +31,11 @@ Lets add a Sample Data.
     >>> data1['c1'].setTitle("Child")
     >>> print list(data1.objectIds())
     ['c1']
+    >>> _ = sandbox.invokeFactory('File', 'file_test')
+    >>> file1 = sandbox._getOb('file_test')
+    >>> file1.setTitle("File test")
+    >>> print file1.title
+    File test
 
 We'll also test relatedItems relationships, so let's add a helper content
 object.
@@ -158,6 +163,58 @@ The last created version is indeed the latest version:
     >>> adapter.isLatest()
     True
 
+Content types with view in url
+------------------------------
+
+In eea.versions 12.4 we introduced the ability to get the latest version url
+with **/view** appended to the url of the object in case the portal_type of the
+object is added in the site_properties **typesUseViewActionInListings**.
+
+This is used by the portalMessage that informs the user that a new version is
+available and we want for the user to view the new version instead of downloading
+it when he clicks on the link to take him to the latest version.
+
+    >>> file2 = create_version(file1)
+    >>> file_adapter = IGetVersions(file2)
+    >>> file_adapter.getLatestVersionUrlWithView() == file2.absolute_url() + '/view'
+    True
+
+Besides the new version portalMessage we also display links to older versions
+when we are on an object that has earlier versions.
+
+For this case in eea.versions 12.4 we introduce several methods to the versions
+adapter to help us with figuring out if the url of the earlier versions need
+to have view appended to the absolute_url.
+
+For Files you can see that **adapter.shouldObjUrlAppendView** will return True
+
+    >>> print file_adapter.shouldObjUrlAppendView(file1)
+    True
+
+While for a Document the check should return False
+    >>> print file_adapter.shouldObjUrlAppendView(data1)
+    False
+
+Now when we get the older versions of the given object earlier_versions checks
+each result by passing the first version to the **shouldObjUrlAppendView** method
+which if True we pass True to **adapter._obj_info** method as
+**append_view_to_url** parameter.
+
+These extra checks will return earlier versions url links with **view** appended
+in case it is needed such as for **File and Image** object.
+
+    >>> print file_adapter._obj_info(file1)['url']
+    http://nohost/plone/sandbox/file_test
+    >>> print file_adapter._obj_info(file1, append_view_to_url=True)['url']
+    http://nohost/plone/sandbox/file_test/view
+    >>> print file_adapter.earlier_versions()[0]['url'] == file1.absolute_url() + '/view'
+    True
+
+While for the Document adapter earlier versions do not require **/view** appended
+
+    >>> print adapter.earlier_versions()[0]['url'] == dataVer.absolute_url()
+    True
+
 
 Anonymous users and the IGetVersions API
 ----------------------------------------
@@ -203,7 +260,7 @@ We use a custom naming scheme to calculate new ids when versioning:
 
     >>> from eea.versions.versions import generateNewId
     >>> print sorted(sandbox.objectIds())
-    ['data1', 'data1-1', 'data1-2', 'r1']
+    ['data1', 'data1-1', 'data1-2', 'file_test', 'file_test-1', 'r1']
 
 Names will be generated in numeric sequences, taking into consideration
 what names are available in the given location:

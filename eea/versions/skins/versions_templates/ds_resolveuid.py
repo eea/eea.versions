@@ -8,11 +8,18 @@
 ##parameters=uuid='',redirect=True
 # (reference_url is supposed to do the same thing, but is broken)
 from Products.CMFCore.utils import getToolByName
-from Products.PythonScripts.standard import html_quote
 from AccessControl import Unauthorized
 
 request = context.REQUEST
 response = request.RESPONSE
+
+def url_with_view(obj, url):
+    pprops = getToolByName(context, 'portal_properties')
+    if pprops:
+        sprops = pprops.site_properties
+        if obj.portal_type in sprops.typesUseViewActionInListings:
+            url += '/view'
+    return url
 
 if not uuid:
     try:
@@ -46,6 +53,7 @@ def redirectBasedOnVersionUID(context, uuid, redirect):
     if len(res) > 0:
         target_obj = res[-1]
         target = target_obj.getURL()
+        target = url_with_view(target_obj, target)
         if not redirect:
             # return find url
             return target
@@ -90,13 +98,12 @@ def redirectBasedOnObjectUID(obj, redirect):
         target = '/'.join(traverse_subpath)
     else:
         target = obj.absolute_url()
-    
     if request.QUERY_STRING:
         target += '?' + request.QUERY_STRING
+    target = url_with_view(obj, target)
     
     if not redirect:
         return target
-    
     return response.redirect(target, status=301)
 
 if not obj:

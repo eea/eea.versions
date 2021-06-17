@@ -240,10 +240,16 @@ class GetVersions(object):
         """
         res = []
         uid = self.context.UID()
-        for version in self.versions():
+        versions = self.versions()
+        append_view_to_url = False
+        if versions:
+            append_view_to_url = True if \
+                self.shouldObjUrlAppendView(versions[0]) else False
+        for version in versions:
             if version.UID() == uid:
                 break
-            res.append(self._obj_info(version))
+            res.append(self._obj_info(version,
+                                      append_view_to_url=append_view_to_url))
 
         res.reverse()  # is this needed?
         return res
@@ -266,7 +272,7 @@ class GetVersions(object):
     def __call__(self):
         return self.enumerate_versions()
 
-    def _obj_info(self, obj):
+    def _obj_info(self, obj, append_view_to_url=False):
         """ Extract needed properties for a given persistent object
         """
         state_id = self.wftool().getInfoFor(obj, 'review_state', '(Unknown)')
@@ -280,9 +286,11 @@ class GetVersions(object):
         if not isinstance(date, DateTime):
             date = None
 
+        obj_url = obj.absolute_url()
+        final_url = obj_url + '/view' if append_view_to_url else obj_url
         return {
             'title': obj.title_or_id(),
-            'url': obj.absolute_url(),
+            'url': final_url,
             'date': date,
             'review_state': state_id,
             'title_state': state,
@@ -293,6 +301,23 @@ class GetVersions(object):
         """
 
         return self.latest_version().absolute_url()
+
+    def shouldObjUrlAppendView(self, obj):
+        pprops = getToolByName(self.context, 'portal_properties')
+        if pprops:
+            sprops = pprops.site_properties
+            if obj.portal_type in sprops.typesUseViewActionInListings:
+                return True
+        return False
+
+    def getLatestVersionUrlWithView(self):
+        """ Returns the url of the latest version @@getLatestVersionUrl view
+        """
+        obj = self.latest_version()
+        append_view_to_url = self.shouldObjUrlAppendView(obj)
+        obj_url = obj.absolute_url()
+        final_url = obj_url + '/view' if append_view_to_url else obj_url
+        return final_url
 
     def getCurrentLanguage(self):
         """ Return the language of the context
