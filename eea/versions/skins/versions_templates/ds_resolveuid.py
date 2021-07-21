@@ -25,7 +25,7 @@ if not uuid:
     try:
         uuid = traverse_subpath.pop(0)
     except:
-        raise Unauthorized, context
+        raise Unauthorized(context)
 
 reference_tool = getToolByName(context, 'reference_catalog')
 obj = reference_tool.lookupObject(uuid)

@@ -58,7 +58,7 @@ def migrate_versionId_storage(obj):
                         obj.absolute_url())
         logger.warning(msg)
 
-    if isinstance(old_storage, basestring):
+    if isinstance(old_storage, str):
         msg = ("Skipping migration of versionId for %s, "
                "already migrated" % obj)
         return
@@ -91,7 +91,7 @@ def evolve(context):
     cat = context.portal_catalog
     index = cat._catalog.getIndex('getVersionId')
     i = 0
-    for rids in index.values():
+    for rids in list(index.values()):
         for rid in rids:
             obj = get_object(cat, rid)
             migrate_versionId_storage(obj)

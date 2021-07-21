@@ -60,7 +60,7 @@ class UpdateCreationDate(BrowserView):
                 if not rt.isVersionable(obj):
                     objs_urls.append(brain.getURL(1))
                     history = obj.workflow_history # persistent mapping
-                    for name, wf_entries in history.items():
+                    for name, wf_entries in list(history.items()):
                         wf_entries = list(wf_entries)
                         wf_entries.append({'action': 'Edited',
                                            'review_state': review_state,

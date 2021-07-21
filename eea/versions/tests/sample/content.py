@@ -6,7 +6,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from eea.versions.tests.sample.interfaces import ISampleData
 from eea.versions.interfaces import IVersionEnhanced
-from zope.interface import implements
+from zope.interface import implementer
 
 
 SampleDataSchema = schemata.ATContentTypeSchema.copy() + atapi.Schema((
@@ -30,10 +30,9 @@ SampleDataSchema['relatedItems'].keepReferencesOnCopy = True
 schemata.finalizeATCTSchema(SampleDataSchema, moveDiscussion=False)
 
 
+@implementer(ISampleData, IVersionEnhanced)
 class SampleData(base.ATCTBTreeFolder):
     """Description of the Example Type"""
-
-    implements(ISampleData, IVersionEnhanced)
 
     meta_type = "Sample Data"
     schema = SampleDataSchema

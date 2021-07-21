@@ -6,7 +6,7 @@ import sys
 import warnings
 from Acquisition import aq_base, aq_inner, aq_parent
 from Persistence import PersistentMapping
-from zope.interface import alsoProvides, implements, providedBy
+from zope.interface import alsoProvides, implementer, providedBy
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import queryAdapter, queryMultiAdapter, getMultiAdapter
@@ -47,11 +47,11 @@ logger = logging.getLogger('eea.versions.versions')
 VERSION_ID = 'versionId'
 
 
+@implementer(IVersionControl)
 class VersionControl(object):
     """ Version adapter
     """
 
-    implements(IVersionControl)
     adapts(IVersionEnhanced)
 
     def __init__(self, context):
@@ -88,14 +88,13 @@ class CanCreateNewVersion(object):
         return IVersionControl(self.context).can_version()
 
 
+@implementer(IGetVersions)
 class GetVersions(object):
     """ Get all versions
 
     The versions are always reordered "on the fly" based on their
     effectiveDate or creationDate. This may create unexpected behaviour!
     """
-    implements(IGetVersions)
-
     versionId = None
 
     def __init__(self, context):
@@ -115,7 +114,7 @@ class GetVersions(object):
 
         failsafe = lambda obj: "Unknown"
         self.state_title_getter = queryMultiAdapter(
-            (self.context, request), name=u'getWorkflowStateTitle') or failsafe
+            (self.context, request), name='getWorkflowStateTitle') or failsafe
 
     @memoize
     def versions(self):
@@ -125,7 +124,7 @@ class GetVersions(object):
         if not self.versionId:
             return [self.context]
 
-        if not isinstance(self.versionId, basestring):
+        if not isinstance(self.versionId, str):
             return [self.context]  # this is an old, unmigrated storage
         cat = getToolByName(self.context, 'portal_catalog', None)
         if not cat:
@@ -383,7 +382,7 @@ def migrate_version(brains, vobj, count, **kwargs):
                                 canonical.getLanguage()
                         IVersionControl(canonical).setVersionId(version_id)
                         canonical.reindexObject(idxs=['getVersionId'])
-                        for trans_tuple in translations.items():
+                        for trans_tuple in list(translations.items()):
                             translation = trans_tuple[1][0]
                             if translation != canonical:
                                 version_id = orig_id + '-' + trans_tuple[0]
@@ -447,7 +446,7 @@ class MigrateVersions(BrowserView):
             'Assessment', 'Data', 'EEAFigure', 'Specification',
             'Indicator FactSheet']
         if vtool:
-            for obj in vtool.values():
+            for obj in list(vtool.values()):
                 if prefix and obj.title not in prefix:
                     continue
                 prefix = obj.title
@@ -499,7 +498,7 @@ class GetWorkflowStateTitle(BrowserView):
             try:
                 title_state = wftool.getWorkflowsFor(obj)[0]. \
                     states[review_state].title
-            except Exception, err:
+            except Exception as err:
                 logger.info(err)
 
         return title_state
@@ -524,11 +523,10 @@ class IsVersionEnhanced(object):
         return isVersionEnhanced(self.context)
 
 
+@implementer(ICreateVersionView)
 class CreateVersion(object):
     """ This view, when called, will create a new version of an object
     """
-    implements(ICreateVersionView)
-
     # usable by ajax view to decide if it should load this view instead
     # of just executing it. The use case is to have a @@createVersion
     # view with a template that allows the user to make some choice
@@ -702,8 +700,8 @@ def create_version(context, reindex=True):
     # Remove comments
     if hasNewDiscussion:
         conversation = IConversation(ver)
-        while conversation.keys():
-            conversation.__delitem__(conversation.keys()[0])
+        while list(conversation.keys()):
+            conversation.__delitem__(list(conversation.keys())[0])
     else:
         if hasattr(aq_base(ver), 'talkback'):
             tb = ver.talkback
@@ -777,9 +775,9 @@ class AssignVersion(object):
                     nextURL += '/view'
         if new_version:
             assign_version(self.context, new_version)
-            message = _(u'Version ID changed.')
+            message = _('Version ID changed.')
         else:
-            message = _(u'Please specify a valid Version ID.')
+            message = _('Please specify a valid Version ID.')
 
         pu.addPortalMessage(message, 'structure')
         return self.request.RESPONSE.redirect(nextURL)
@@ -803,7 +801,7 @@ class RevokeVersion(object):
         revoke_version(self.context)
         self.context.reindexObject(idxs=['getVersionId'])
         pu = getToolByName(self.context, 'plone_utils')
-        message = _(u'Version revoked.')
+        message = _('Version revoked.')
         pu.addPortalMessage(message, 'structure')
 
         # #87691 append /view for ptypes that need it in order to avoid file
@@ -819,6 +817,7 @@ class RevokeVersion(object):
         return self.request.RESPONSE.redirect(nextURL)
 
 
+@implementer(IGetContextInterfaces)
 class GetContextInterfaces(object):
     """ Utility view that returns a list of FQ dotted interface names
 
@@ -826,7 +825,6 @@ class GetContextInterfaces(object):
     is_video python:context.restrictedTraverse('@@plone_interfaces_info').\
              item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
     """
-    implements(IGetContextInterfaces)
 
     def __call__(self):
         ifaces = providedBy(self.context)

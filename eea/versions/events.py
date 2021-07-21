@@ -1,6 +1,6 @@
 """Event handlers
 """
-from zope.interface import implements
+from zope.interface import implementer
 from zope.annotation import IAnnotations
 from zope.component.interfaces import ObjectEvent
 from eea.versions.controlpanel.utils import decrement_version_prefix_number
@@ -9,11 +9,9 @@ from eea.versions.interfaces import IVersionCreatedEvent
 
 VERSION_ID = 'versionId'
 
-
+@implementer(IVersionCreatedEvent)
 class VersionCreatedEvent(ObjectEvent):
     """An event object triggered when new versions of an object are created"""
-
-    implements(IVersionCreatedEvent)
 
     def __init__(self, obj, original):
         self.object = obj

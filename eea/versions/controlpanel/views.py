@@ -117,7 +117,7 @@ class EditPage(form.EditForm):
         """
         return "../@@view"
 
-    @button.buttonAndHandler(_(u"label_apply", default=u"Apply"),
+    @button.buttonAndHandler(_("label_apply", default="Apply"),
                              name='apply')
     def handleApply(self, action):
         """ Apply button
@@ -155,7 +155,7 @@ class EditPage(form.EditForm):
             self.status = self.noChangesMessage
         return True
 
-    @button.buttonAndHandler(_(u"label_cancel", default=u"Cancel"),
+    @button.buttonAndHandler(_("label_cancel", default="Cancel"),
                              name='cancel_add')
     def handleCancel(self, action):
         """ Cancel button

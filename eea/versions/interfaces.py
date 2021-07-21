@@ -37,7 +37,7 @@ class IVersionControl(Interface):
 class IGetVersions(Interface):
     """ Get container versions """
 
-    versionId = Attribute(u"""The version ID string of the context""")
+    versionId = Attribute("""The version ID string of the context""")
 
     def versions(self):
         """Returns all objects that are in the version group
