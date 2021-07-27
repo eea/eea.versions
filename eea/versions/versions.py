@@ -14,9 +14,9 @@ from zope.component.hooks import getSite
 from zope.event import notify
 import transaction
 from DateTime.DateTime import DateTime, time
-from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, eInvalid, \
-    eNoData, eNotFound, eNotSupported, loadMoniker, ConflictError, \
-    escape, MessageDialog, ObjectCopiedEvent, compatibilityCall, \
+from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, \
+    loadMoniker, ConflictError, \
+    ObjectCopiedEvent, compatibilityCall, \
     ObjectClonedEvent, sanity_check, ObjectWillBeMovedEvent, \
     ObjectMovedEvent, notifyContainerModified, cookie_path
 from Products.CMFCore.utils import getToolByName
@@ -41,6 +41,82 @@ try:
     hasDataservice = True
 except ImportError:
     hasDataservice = False
+
+
+try:
+    from OFS.CopySupport import eInvalid, eNoData, eNotFound, eNotSupported, \
+        escape, MessageDialog
+except ImportError:
+    from App.Dialogs import MessageDialog
+    from App.special_dtml import HTML
+    from html import escape
+
+    fMessageDialog = HTML("""
+    <HTML>
+    <HEAD>
+    <TITLE>&dtml-title;</TITLE>
+    </HEAD>
+    <BODY BGCOLOR="#FFFFFF">
+    <FORM ACTION="&dtml-action;" METHOD="GET" <dtml-if
+     target>TARGET="&dtml-target;"</dtml-if>>
+    <TABLE BORDER="0" WIDTH="100%%" CELLPADDING="10">
+    <TR>
+      <TD VALIGN="TOP">
+      <BR>
+      <CENTER><B><FONT SIZE="+6" COLOR="#77003B">!</FONT></B></CENTER>
+      </TD>
+      <TD VALIGN="TOP">
+      <BR><BR>
+      <CENTER>
+      <dtml-var message>
+      </CENTER>
+      </TD>
+    </TR>
+    <TR>
+      <TD VALIGN="TOP">
+      </TD>
+      <TD VALIGN="TOP">
+      <CENTER>
+      <INPUT TYPE="SUBMIT" VALUE="   Ok   ">
+      </CENTER>
+      </TD>
+    </TR>
+    </TABLE>
+    </FORM>
+    </BODY></HTML>""", target='', action='manage_main', title='Changed')
+
+    eInvalid=MessageDialog(
+         title='Clipboard Error',
+         message='The data in the clipboard could not be read, possibly due ' \
+         'to cookie data being truncated by your web browser. Try copying ' \
+         'fewer objects.',
+         action ='manage_main',)
+
+    eNoData=MessageDialog(
+            title='No Data',
+            message='No clipboard data found.',
+            action ='manage_main',)
+
+    eNotFound=MessageDialog(
+              title='Item Not Found',
+              message='One or more items referred to in the clipboard data was ' \
+              'not found. The item may have been moved or deleted after you ' \
+              'copied it.',
+              action ='manage_main',)
+
+    eNotSupported=fMessageDialog(
+                  title='Not Supported',
+                  message=(
+                  'The action against the <em>%s</em> object could not be carried '
+                  'out. '
+                  'One of the following constraints caused the problem: <br><br>'
+                  'The object does not support this operation.'
+                  '<br><br>-- OR --<br><br>'
+                  'The currently logged-in user does not have the <b>Copy or '
+                  'Move</b> permission respective to the object.'
+                  ),
+                  action ='manage_main',)
+
 
 logger = logging.getLogger('eea.versions.versions')
 
