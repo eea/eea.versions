@@ -381,7 +381,7 @@ class GetVersions(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if obj.portal_type in sprops.typesUseViewActionInListings:
+            if obj.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
                 return True
         return False
 
@@ -846,7 +846,7 @@ class AssignVersion(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if self.context.portal_type in sprops.typesUseViewActionInListings:
+            if self.context.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
                 if nextURL[-5:] != '/view':
                     nextURL += '/view'
         if new_version:
@@ -886,7 +886,7 @@ class RevokeVersion(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if self.context.portal_type in sprops.typesUseViewActionInListings:
+            if self.context.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
                 if nextURL[-5:] != '/view':
                     nextURL += '/view'
 

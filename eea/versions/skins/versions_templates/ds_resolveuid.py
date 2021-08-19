@@ -17,7 +17,7 @@ def url_with_view(obj, url):
     pprops = getToolByName(context, 'portal_properties')
     if pprops:
         sprops = pprops.site_properties
-        if obj.portal_type in sprops.typesUseViewActionInListings:
+        if obj.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
             url += '/view'
     return url
 
