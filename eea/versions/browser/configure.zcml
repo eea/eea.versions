@@ -1,6 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="eea">
 
     <browser:viewlet
@@ -37,6 +38,21 @@
         class=".view.ReportVersionsHelperView"
         permission="zope2.View"
         allowed_attributes="report_versions is_report patched_toLocalizedTime"
+    />
+
+    <browser:page
+        name="ds_resolveuid"
+        for="*"
+        class=".view.DsResolveUid"
+        permission="zope2.View"
+    />
+
+    <browser:page
+        zcml:condition="not-installed eea.dataservice"
+        name="getDataForRedirect"
+        class=".view.GetDataForRedirect"
+        for="*"
+        permission="zope2.View"
     />
 
 </configure>

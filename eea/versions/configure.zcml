@@ -35,6 +35,10 @@
         <implements interface=".interfaces.IVersionEnhanced" />
     </class> -->
 
+    <class class="plone.dexterity.content.DexterityContent">
+        <implements interface=".interfaces.IVersionEnhanced" />
+    </class>
+
     <adapter for="*"
         provides=".interfaces.IVersionControl"
         factory=".versions.VersionControl"

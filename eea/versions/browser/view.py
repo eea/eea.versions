@@ -2,7 +2,9 @@
 """
 import logging
 
+from AccessControl import Unauthorized
 from DateTime.DateTime import DateTime
+from plone.app.uuid.utils import uuidToObject
 from plone.memoize import view
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFEditions.utilities import maybeSaveVersion
@@ -131,3 +133,160 @@ class ReportVersionsHelperView(BrowserView):
             if date.year() < 1900:
                 formatted_date = toLocalizedTime(0)
         return formatted_date
+
+
+class GetDataForRedirect(object):
+    """ Get objects to redirect
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self, query=None):
+        if query is None:
+            query = {}
+        cat = getToolByName(self.context, 'portal_catalog')
+        res = cat(**query)
+        if not res:
+            # If no results published try searching for objects
+            # in published_eionet state
+            query['review_state'] = ['published', 'published_eionet']
+            res = cat.unrestrictedSearchResults(**query)
+        return res
+
+
+class DsResolveUid(BrowserView):
+    """
+    """
+    subpath = None
+
+    def publishTraverse(self, request, name):
+        self.uuid = name
+        traverse_subpath = self.request['TraversalRequestNameStack']
+        if traverse_subpath:
+            traverse_subpath = list(traverse_subpath)
+            traverse_subpath.reverse()
+            self.subpath = traverse_subpath
+            self.request['TraversalRequestNameStack'] = []
+        return self
+
+    def __call__(self):
+        context = self.context
+        request = context.REQUEST
+        response = request.RESPONSE
+        traverse_subpath = self.subpath
+        uuid = self.uuid
+        redirect = True
+
+        if not uuid:
+            try:
+                uuid = traverse_subpath.pop(0)
+            except:
+                raise Unauthorized(context)
+
+        try:
+            reference_tool = getToolByName(context, 'reference_catalog')
+            obj = reference_tool.lookupObject(uuid)
+        except:
+            obj = uuidToObject(uuid)
+
+        if not obj:
+            hook = getattr(context, 'kupu_resolveuid_hook', None)
+            if hook:
+                obj = hook(uuid)
+
+            if not obj:
+                self.redirectBasedOnVersionUID(context, uuid, redirect)
+                self.redirectBasedOnShortId(context, redirect)
+                self.redirectNotFound(redirect, response)
+        else:
+            self.redirectBasedOnObjectUID(obj, redirect, traverse_subpath)
+
+    def url_with_view(self, obj, url):
+        pprops = getToolByName(self.context, 'portal_properties')
+        if pprops:
+            sprops = pprops.site_properties
+            if obj.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
+                url += '/view'
+        return url
+
+    def redirectBasedOnVersionUID(self, context, uuid, redirect):
+        """ Version UID based redirect
+        """
+        portal = context.restrictedTraverse('plone_portal_state').portal()
+        permalink_folder = portal.get('eea_permalink_objects')
+        response = context.REQUEST.RESPONSE
+        if permalink_folder:
+            value = permalink_folder.get(uuid)
+            if value:
+                uuid = value.versionId
+            else:
+                data_dict = context.restrictedTraverse('dataVersions')()
+                value = data_dict.get(uuid)
+                if value:
+                    uuid = value
+        query = {'getVersionId': uuid,
+                 'show_inactive': True,
+                 'sort_on': 'effective'}
+
+        resView = context.restrictedTraverse('@@getDataForRedirect')
+        res = resView(query)
+        if len(res) > 0:
+            target_obj = res[-1]
+            target = target_obj.getURL()
+            target = self.url_with_view(target_obj, target)
+            if not redirect:
+                # return find url
+                return target
+            return response.redirect(target, lock=1)
+
+    def redirectBasedOnShortId(self, context, redirect):
+        """ Short ID based redirect
+        """
+        if context.getId() == 'figures':
+            ptype = 'EEAFigure'
+        elif context.getId() == 'data':
+            ptype = 'Data'
+        else:
+            ptype = None
+
+        if ptype:
+            query = {'portal_type': ptype,
+                     'show_inactive': True,
+                     'getShortId': request.get('id', None)}
+            resView = context.restrictedTraverse('@@getDataForRedirect')
+            res = resView(query)
+            if len(res) > 0:
+                target = context.absolute_url() + '/' + res[0].getId
+                if not redirect:
+                    return target
+                return response.redirect(target, lock=1)
+
+    def redirectNotFound(self, redirect, response):
+        """ Redirect not found
+        """
+        if not redirect:
+            return None
+
+        return response.notFoundError(
+            'The link you followed appears to be broken!')
+
+    def redirectBasedOnObjectUID(self, obj, redirect, traverse_subpath):
+        """ Object UID based redirect
+        """
+        request = self.context.REQUEST
+        response = request.RESPONSE
+
+        if traverse_subpath:
+            traverse_subpath.insert(0, obj.absolute_url())
+            target = '/'.join(traverse_subpath)
+        else:
+            target = obj.absolute_url()
+        if request.QUERY_STRING:
+            target += '?' + request.QUERY_STRING
+        target = self.url_with_view(obj, target)
+
+        if not redirect:
+            return target
+        return response.redirect(target, status=301)
