@@ -20,5 +20,9 @@
         tal:content="version" />
     </dd>
 
+    <script type="text/javascript" tal:content="string: context_url='${context/absolute_url}';"></script>
+    <script type="text/javascript" src="jquery.fancybox.js"></script>
+    <link rel="stylesheet" type="text/css" href="jquery.fancybox.css">
   </dl>
+
 </html>

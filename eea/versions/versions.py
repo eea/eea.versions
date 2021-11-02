@@ -30,6 +30,7 @@ from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from plone.memoize.instance import memoize
 
+
 try:
     from plone.app.discussion.interfaces import IConversation
     hasNewDiscussion = True
@@ -320,13 +321,14 @@ class GetVersions(object):
         if versions:
             append_view_to_url = True if \
                 self.shouldObjUrlAppendView(versions[0]) else False
+        # import pdb; pdb.set_trace() # TODO: check if reverse is true
         for version in versions:
             if version.UID() == uid:
                 break
             res.append(self._obj_info(version,
                                       append_view_to_url=append_view_to_url))
-
         res.reverse()  # is this needed?
+        # import pdb; pdb.set_trace()
         return res
 
     def latest_version(self):
@@ -353,8 +355,10 @@ class GetVersions(object):
         state_id = self.wftool().getInfoFor(obj, 'review_state', '(Unknown)')
         state = self.state_title_getter(obj)
 
-        date = obj.getEffectiveDate() or obj.creation_date
-        if not date:
+        # date = obj.getEffectiveDate() or obj.creation_date # getEffectiveDate() is archetypes
+        date = obj.EffectiveDate() or obj.creation_date
+
+        if not date: # TODO: remove I think cause archetypes
             field = obj.getField('lastUpload')  # Note: specific to dataservice
             if field:
                 date = field.getAccessor(obj)()
@@ -576,7 +580,6 @@ class GetWorkflowStateTitle(BrowserView):
                     states[review_state].title
             except Exception as err:
                 logger.info(err)
-
         return title_state
 
 
@@ -629,7 +632,8 @@ class AjaxVersion(object):
         self.context = context
         self.url = context.absolute_url()
         self.request = request
-        self.annotations = self.context.__annotations__
+        # self.annotations = self.context.__annotations__
+        self.annotations = IAnnotations(self.context)
 
     def get_logged_in_user(self):
         """
@@ -643,6 +647,7 @@ class AjaxVersion(object):
         return portal_membership.getAuthenticatedMember().getId()
 
     def __call__(self):
+        # import pdb; pdb.set_trace()
         version_status = self.check_versioning_status()
         if version_status:
             return version_status
@@ -661,6 +666,7 @@ class AjaxVersion(object):
         # situations were a new version was requested and annotation was set
         # but afterwards there was an error or the server was restarted,
         # as such no removing of versioning status being produced
+        # if in_progress and (time() - in_progress) < 200.0:
         if in_progress and (time() - in_progress) < 900.0:
             logger.info('VersioningInProgress in_progress at %s, now %s '
                         ', time since last run == %f',
@@ -751,10 +757,13 @@ def create_version(context, reindex=True):
     ver = parent[new_id]
 
     # #31440 apply related items from original object to the new version
-    ver.setRelatedItems(context.getRelatedItems())
+    # ver.setRelatedItems(context.getRelatedItems()) # for archetypes only
+    ver.relatedItems = context.relatedItems
 
     # Set effective date today
-    ver.setCreationDate(DateTime())
+    # ver.setCreationDate(DateTime()) # Archetypes only
+    ver.creation_date = DateTime()
+
     ver.setEffectiveDate(None)
     ver.setExpirationDate(None)
 
@@ -762,7 +771,7 @@ def create_version(context, reindex=True):
     auth_user = mtool.getAuthenticatedMember()
     auth_username = auth_user.getUserName()
     auth_username_list = [auth_username]
-    current_creators = ver.Creators()
+    current_creators = ver.creators # .Creators is for archetypes
     auth_username_list.extend(current_creators)
     username_list = []
     for name in auth_username_list:
@@ -772,7 +781,7 @@ def create_version(context, reindex=True):
             username_list.append(name)
     new_creators = tuple(username_list)
     ver.setCreators(new_creators)
-
+    # import pdb; pdb.set_trace()
     # Remove comments
     if hasNewDiscussion:
         conversation = IConversation(ver)
