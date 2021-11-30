@@ -12,6 +12,8 @@
     <include package=".controlpanel" />
     <include package=".upgrades" />
 
+    <include zcml:condition="installed Products.Archetypes" file="archetypes.zcml" />
+
     <subscriber
         zcml:condition="installed eea.rdfmarshaller"
         factory=".marshaller.ProductIdModifier"
@@ -30,10 +32,6 @@
         zcml:condition="installed Products.LinguaPlone" />
 
     <adapter factory=".catalog.getVersionIdForIndex" name="getVersionId" />
-<!--
-    <class class="Products.Archetypes.BaseObject.BaseObject">
-        <implements interface=".interfaces.IVersionEnhanced" />
-    </class> -->
 
     <class class="plone.dexterity.content.DexterityContent">
         <implements interface=".interfaces.IVersionEnhanced" />

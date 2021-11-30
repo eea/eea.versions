@@ -23,6 +23,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
 from Products.Five.browser import BrowserView
+from eea.versions import HAS_ARCHETYPES
 from eea.versions.controlpanel.utils import new_version_id
 from eea.versions.events import VersionCreatedEvent
 from eea.versions.interfaces import ICreateVersionView
@@ -355,13 +356,16 @@ class GetVersions(object):
         state_id = self.wftool().getInfoFor(obj, 'review_state', '(Unknown)')
         state = self.state_title_getter(obj)
 
-        # date = obj.getEffectiveDate() or obj.creation_date # getEffectiveDate() is archetypes
-        date = obj.EffectiveDate() or obj.creation_date
+        if HAS_ARCHETYPES:
+            date = obj.getEffectiveDate() or obj.creation_date
 
-        if not date: # TODO: remove I think cause archetypes
-            field = obj.getField('lastUpload')  # Note: specific to dataservice
-            if field:
-                date = field.getAccessor(obj)()
+            if not date:
+                field = obj.getField('lastUpload') # specific eea.dataservice
+                if field:
+                    date = field.getAccessor(obj)()
+        else:
+            date = obj.EffectiveDate() or obj.creation_date
+
         if not isinstance(date, DateTime):
             date = None
 
@@ -756,13 +760,16 @@ def create_version(context, reindex=True):
     # 5. get the version object - no need for a rename anymore
     ver = parent[new_id]
 
-    # #31440 apply related items from original object to the new version
-    # ver.setRelatedItems(context.getRelatedItems()) # for archetypes only
-    ver.relatedItems = context.relatedItems
-
-    # Set effective date today
-    # ver.setCreationDate(DateTime()) # Archetypes only
-    ver.creation_date = DateTime()
+    if HAS_ARCHETYPES:
+        ver.setRelatedItems(context.getRelatedItems())
+        ver.setCreationDate(DateTime())
+        current_creators = ver.Creators
+    else:
+        # #31440 apply related items from original object to the new version
+        ver.relatedItems = context.relatedItems
+        # Set effective date today
+        ver.creation_date = DateTime()
+        current_creators = ver.creators
 
     ver.setEffectiveDate(None)
     ver.setExpirationDate(None)
@@ -771,7 +778,6 @@ def create_version(context, reindex=True):
     auth_user = mtool.getAuthenticatedMember()
     auth_username = auth_user.getUserName()
     auth_username_list = [auth_username]
-    current_creators = ver.creators # .Creators is for archetypes
     auth_username_list.extend(current_creators)
     username_list = []
     for name in auth_username_list:
@@ -781,7 +787,7 @@ def create_version(context, reindex=True):
             username_list.append(name)
     new_creators = tuple(username_list)
     ver.setCreators(new_creators)
-    # import pdb; pdb.set_trace()
+
     # Remove comments
     if hasNewDiscussion:
         conversation = IConversation(ver)
