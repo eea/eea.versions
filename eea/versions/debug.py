@@ -1,6 +1,6 @@
 """Debug views and upgrade utilities
 """
-
+from __future__ import print_function
 from io import StringIO
 from BTrees.IIBTree import IISet, difference
 from Products.Five import BrowserView

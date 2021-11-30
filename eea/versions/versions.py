@@ -389,7 +389,13 @@ class GetVersions(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if obj.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
+
+            try:
+                types = getattr(sprops, 'plone.typesUseViewActionInListings')
+            except AttributeError:
+                types = getattr(sprops, 'typesUseViewActionInListings')
+
+            if obj.portal_type in types:
                 return True
         return False
 
@@ -861,7 +867,13 @@ class AssignVersion(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if self.context.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
+
+            try:
+                types = getattr(sprops, 'plone.typesUseViewActionInListings')
+            except AttributeError:
+                types = getattr(sprops, 'typesUseViewActionInListings')
+
+            if self.context.portal_type in types:
                 if nextURL[-5:] != '/view':
                     nextURL += '/view'
         if new_version:
@@ -901,7 +913,13 @@ class RevokeVersion(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if self.context.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
+
+            try:
+                types = getattr(sprops, 'plone.typesUseViewActionInListings')
+            except AttributeError:
+                types = getattr(sprops, 'typesUseViewActionInListings')
+
+            if self.context.portal_type in types:
                 if nextURL[-5:] != '/view':
                     nextURL += '/view'
 

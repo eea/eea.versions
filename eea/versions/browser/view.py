@@ -207,7 +207,13 @@ class DsResolveUid(BrowserView):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if obj.portal_type in getattr(sprops, 'plone.typesUseViewActionInListings'):
+
+            try:
+                types = getattr(sprops, 'plone.typesUseViewActionInListings')
+            except AttributeError:
+                types = getattr(sprops, 'typesUseViewActionInListings')
+
+            if obj.portal_type in types:
                 url += '/view'
         return url
 
