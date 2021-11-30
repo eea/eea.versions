@@ -162,6 +162,7 @@ class DsResolveUid(BrowserView):
     subpath = None
 
     def publishTraverse(self, request, name):
+        # import pdb; pdb.set_trace()
         self.uuid = name
         traverse_subpath = self.request['TraversalRequestNameStack']
         if traverse_subpath:
@@ -172,6 +173,7 @@ class DsResolveUid(BrowserView):
         return self
 
     def __call__(self):
+        # import pdb; pdb.set_trace()
         context = self.context
         request = context.REQUEST
         response = request.RESPONSE
@@ -260,14 +262,14 @@ class DsResolveUid(BrowserView):
         if ptype:
             query = {'portal_type': ptype,
                      'show_inactive': True,
-                     'getShortId': request.get('id', None)}
+                     'getShortId': context.REQUEST.get('id', None)}
             resView = context.restrictedTraverse('@@getDataForRedirect')
             res = resView(query)
             if len(res) > 0:
                 target = context.absolute_url() + '/' + res[0].getId
                 if not redirect:
                     return target
-                return response.redirect(target, lock=1)
+                return context.REQUEST.RESPONSE.redirect(target, lock=1)
 
     def redirectNotFound(self, redirect, response):
         """ Redirect not found

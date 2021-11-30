@@ -1,3 +1,4 @@
+/* jslint:disable */
 /*!
  * fancyBox - jQuery Plugin
  * version: 2.1.7 (Tue, 28 Feb 2017)
