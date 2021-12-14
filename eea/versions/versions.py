@@ -769,7 +769,7 @@ def create_version(context, reindex=True):
     if HAS_ARCHETYPES:
         ver.setRelatedItems(context.getRelatedItems())
         ver.setCreationDate(DateTime())
-        current_creators = ver.Creators
+        current_creators = ver.Creators()
     else:
         # #31440 apply related items from original object to the new version
         ver.relatedItems = context.relatedItems
