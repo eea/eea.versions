@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<componentregistry>
+    <utilities>
+        <utility
+            interface="eea.versions.controlpanel.interfaces.IEEAVersionsTool"
+            object="portal_eea_versions"/>
+    </utilities>
+</componentregistry>

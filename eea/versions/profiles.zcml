@@ -2,17 +2,28 @@
   xmlns="http://namespaces.zope.org/zope"
   xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
   xmlns:i18n="http://namespaces.zope.org/i18n"
+  xmlns:zcml="http://namespaces.zope.org/zcml"
   i18n_domain="eea">
 
   <i18n:registerTranslations directory="locales" />
 
     <genericsetup:registerProfile
+        zcml:condition="have plone-5"
         name="default"
         title="EEA Versions"
         directory="profiles/default"
         description="Profile for EEA Versions"
         provides="Products.GenericSetup.interfaces.EXTENSION"
     />
+
+  <genericsetup:registerProfile
+      zcml:condition="not-have plone-5"
+      name="default"
+      directory="profiles/plone4"
+      title="EEA Versions"
+      description="Profile for EEA Versions"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
 
     <genericsetup:registerProfile
         name="eea_versions_upgrade_9.0"
@@ -21,5 +32,4 @@
         description="Profile for EEA Versions version 9.0"
         provides="Products.GenericSetup.interfaces.EXTENSION"
     />
-
 </configure>

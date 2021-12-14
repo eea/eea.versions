@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<object xmlns:i18n="http://xml.zope.org/namespaces/i18n" name="portal_actions">
+  <object name="object_buttons">
+    <object name="create_version" meta_type="CMF Action" i18n:domain="eea">
+      <property name="title" i18n:translate="">Create new version</property>
+      <property name="description" i18n:translate=""/>
+      <property name="url_expr">string:javascript:startCreationOfNewVersion();</property>
+      <property name="available_expr">python:'eea.versions.interfaces.IVersionEnhanced' in object.restrictedTraverse('@@get_interfaces')()</property>
+      <property name="permissions">
+        <element value="Modify portal content"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+    <object name="revoke_version" meta_type="CMF Action" i18n:domain="eea">
+      <property name="title" i18n:translate="">Revoke version</property>
+      <property name="description" i18n:translate=""/>
+      <property name="url_expr">string:${globals_view/getCurrentObjectUrl}/@@revokeVersion</property>
+      <property name="available_expr">python:'eea.versions.interfaces.IVersionEnhanced' in object.restrictedTraverse('@@get_interfaces')()</property>
+      <property name="permissions">
+        <element value="Modify portal content"/>
+      </property>
+      <property name="visible">False</property>
+    </object>
+    <object name="assign_version" meta_type="CMF Action" i18n:domain="eea">
+      <property name="title" i18n:translate="">Assign version</property>
+      <property name="description" i18n:translate=""/>
+      <property name="url_expr">string:${globals_view/getCurrentObjectUrl}/@@assignVersion</property>
+      <property name="available_expr">python:'eea.versions.interfaces.IVersionEnhanced' in object.restrictedTraverse('@@get_interfaces')()</property>
+      <property name="permissions">
+        <element value="Modify portal content"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+  </object>
+</object>
