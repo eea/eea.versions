@@ -1,15 +1,15 @@
 """ Custom zope schema
 """
 
-from zope.interface import implements
+from zope.interface import implementer
 from OFS.Folder import Folder
 from eea.versions.controlpanel.interfaces import IEEAVersionsPortalType
 
 
+@implementer(IEEAVersionsPortalType)
 class PortalType(Folder):
     """ Storage for custom portal types
     """
-    implements(IEEAVersionsPortalType)
     meta_type = 'EEA Versions Portal Type'
     _properties = (
         {'id': 'title', 'type': 'string', 'mode': 'w'},

@@ -16,7 +16,7 @@ class VersionStatusViewlet(ViewletBase):
             view template
         """
         plone = getMultiAdapter((self.context, self.request),
-                                name=u'plone_context_state')
+                                name='plone_context_state')
         return plone.is_view_template()
 
 
@@ -37,6 +37,6 @@ class CanonicalURL(ViewletBase):
                 break
         else:
             context_state = getMultiAdapter(
-                (self.context, self.request), name=u'plone_context_state')
+                (self.context, self.request), name='plone_context_state')
             canonical_url = context_state.canonical_object_url()
-        return u'    <link rel="canonical" href="%s" />' % canonical_url
+        return '    <link rel="canonical" href="%s" />' % canonical_url

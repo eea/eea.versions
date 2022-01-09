@@ -1,7 +1,7 @@
 """ EEAVersions Tool
 """
 from zope.component import queryMultiAdapter
-from zope.interface import implements
+from zope.interface import implementer
 from OFS.Folder import Folder
 from Products.CMFCore.utils import getToolByName
 from BTrees.IIBTree import IIBucket
@@ -10,9 +10,9 @@ from eea.versions.controlpanel.interfaces import IEEAVersionsTool
 from eea.versions.controlpanel.interfaces import IEEAVersionsCatalog
 
 
+@implementer(IEEAVersionsTool)
 class EEAVersionsTool(Folder):
     """ A local utility storing all eea versions global settings """
-    implements(IEEAVersionsTool)
 
     id = 'portal_eea_versions'
     title = 'Manages eea versions global settings'

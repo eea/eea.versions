@@ -46,7 +46,7 @@ def evolve(context):
 
         # first, check the brain's versionId
         brain_version = brain.getVersionId
-        if isinstance(brain_version, basestring) and brain_version:
+        if isinstance(brain_version, str) and brain_version:
             # everything fine
             continue
 
@@ -54,7 +54,7 @@ def evolve(context):
             continue    # skipping Discussion Items, they can't be reindexed
 
         versionId = IGetVersions(obj).versionId
-        if isinstance(brain_version, basestring) and not brain_version.strip():
+        if isinstance(brain_version, str) and not brain_version.strip():
             # an empty string, assigning new versionId
             IAnnotations(obj)[VERSION_ID] = _random_id(obj)
             #obj.reindexObject()
@@ -66,7 +66,7 @@ def evolve(context):
             i += 1
             continue
 
-        if isinstance(versionId, basestring) and not versionId.strip():
+        if isinstance(versionId, str) and not versionId.strip():
             # an empty string, assigning new versionId
             IAnnotations(obj)[VERSION_ID] = _random_id(obj)
             #obj.reindexObject()

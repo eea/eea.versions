@@ -1,17 +1,17 @@
 """ Vocabularies
 """
 from zope.schema.interfaces import IVocabularyFactory
-from zope.interface import implements
+from zope.interface import implementer
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 from Products.CMFCore.utils import getToolByName
 #
 # Object provides
 #
+@implementer(IVocabularyFactory)
 class ObjectProvidesVocabulary(object):
     """Vocabulary factory for object provides index.
     """
-    implements(IVocabularyFactory)
 
     def __call__(self, context):
         """ See IVocabularyFactory interface

@@ -6,7 +6,7 @@ import sys
 import warnings
 from Acquisition import aq_base, aq_inner, aq_parent
 from Persistence import PersistentMapping
-from zope.interface import alsoProvides, implements, providedBy
+from zope.interface import alsoProvides, implementer, providedBy
 from zope.annotation.interfaces import IAnnotations
 from zope.component import adapts
 from zope.component import queryAdapter, queryMultiAdapter, getMultiAdapter
@@ -14,21 +14,23 @@ from zope.component.hooks import getSite
 from zope.event import notify
 import transaction
 from DateTime.DateTime import DateTime, time
-from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, eInvalid, \
-    eNoData, eNotFound, eNotSupported, loadMoniker, ConflictError, \
-    escape, MessageDialog, ObjectCopiedEvent, compatibilityCall, \
+from OFS.CopySupport import _cb_encode, _cb_decode, CopyError, \
+    loadMoniker, ConflictError, \
+    ObjectCopiedEvent, compatibilityCall, \
     ObjectClonedEvent, sanity_check, ObjectWillBeMovedEvent, \
     ObjectMovedEvent, notifyContainerModified, cookie_path
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from Products.CMFPlone import utils
 from Products.Five.browser import BrowserView
+from eea.versions import HAS_ARCHETYPES
 from eea.versions.controlpanel.utils import new_version_id
 from eea.versions.events import VersionCreatedEvent
 from eea.versions.interfaces import ICreateVersionView
 from eea.versions.interfaces import IGetVersions, IGetContextInterfaces
 from eea.versions.interfaces import IVersionControl, IVersionEnhanced
 from plone.memoize.instance import memoize
+
 
 try:
     from plone.app.discussion.interfaces import IConversation
@@ -42,16 +44,92 @@ try:
 except ImportError:
     hasDataservice = False
 
+
+try:
+    from OFS.CopySupport import eInvalid, eNoData, eNotFound, eNotSupported, \
+        escape, MessageDialog
+except ImportError:
+    from App.Dialogs import MessageDialog
+    from App.special_dtml import HTML
+    from html import escape
+
+    fMessageDialog = HTML("""
+    <HTML>
+    <HEAD>
+    <TITLE>&dtml-title;</TITLE>
+    </HEAD>
+    <BODY BGCOLOR="#FFFFFF">
+    <FORM ACTION="&dtml-action;" METHOD="GET" <dtml-if
+     target>TARGET="&dtml-target;"</dtml-if>>
+    <TABLE BORDER="0" WIDTH="100%%" CELLPADDING="10">
+    <TR>
+      <TD VALIGN="TOP">
+      <BR>
+      <CENTER><B><FONT SIZE="+6" COLOR="#77003B">!</FONT></B></CENTER>
+      </TD>
+      <TD VALIGN="TOP">
+      <BR><BR>
+      <CENTER>
+      <dtml-var message>
+      </CENTER>
+      </TD>
+    </TR>
+    <TR>
+      <TD VALIGN="TOP">
+      </TD>
+      <TD VALIGN="TOP">
+      <CENTER>
+      <INPUT TYPE="SUBMIT" VALUE="   Ok   ">
+      </CENTER>
+      </TD>
+    </TR>
+    </TABLE>
+    </FORM>
+    </BODY></HTML>""", target='', action='manage_main', title='Changed')
+
+    eInvalid=MessageDialog(
+         title='Clipboard Error',
+         message='The data in the clipboard could not be read, possibly due ' \
+         'to cookie data being truncated by your web browser. Try copying ' \
+         'fewer objects.',
+         action ='manage_main',)
+
+    eNoData=MessageDialog(
+            title='No Data',
+            message='No clipboard data found.',
+            action ='manage_main',)
+
+    eNotFound=MessageDialog(
+              title='Item Not Found',
+              message='One or more items referred to in the clipboard data was ' \
+              'not found. The item may have been moved or deleted after you ' \
+              'copied it.',
+              action ='manage_main',)
+
+    eNotSupported=fMessageDialog(
+                  title='Not Supported',
+                  message=(
+                  'The action against the <em>%s</em> object could not be carried '
+                  'out. '
+                  'One of the following constraints caused the problem: <br><br>'
+                  'The object does not support this operation.'
+                  '<br><br>-- OR --<br><br>'
+                  'The currently logged-in user does not have the <b>Copy or '
+                  'Move</b> permission respective to the object.'
+                  ),
+                  action ='manage_main',)
+
+
 logger = logging.getLogger('eea.versions.versions')
 
 VERSION_ID = 'versionId'
 
 
+@implementer(IVersionControl)
 class VersionControl(object):
     """ Version adapter
     """
 
-    implements(IVersionControl)
     adapts(IVersionEnhanced)
 
     def __init__(self, context):
@@ -88,14 +166,13 @@ class CanCreateNewVersion(object):
         return IVersionControl(self.context).can_version()
 
 
+@implementer(IGetVersions)
 class GetVersions(object):
     """ Get all versions
 
     The versions are always reordered "on the fly" based on their
     effectiveDate or creationDate. This may create unexpected behaviour!
     """
-    implements(IGetVersions)
-
     versionId = None
 
     def __init__(self, context):
@@ -115,7 +192,7 @@ class GetVersions(object):
 
         failsafe = lambda obj: "Unknown"
         self.state_title_getter = queryMultiAdapter(
-            (self.context, request), name=u'getWorkflowStateTitle') or failsafe
+            (self.context, request), name='getWorkflowStateTitle') or failsafe
 
     @memoize
     def versions(self):
@@ -125,7 +202,7 @@ class GetVersions(object):
         if not self.versionId:
             return [self.context]
 
-        if not isinstance(self.versionId, basestring):
+        if not isinstance(self.versionId, str):
             return [self.context]  # this is an old, unmigrated storage
         cat = getToolByName(self.context, 'portal_catalog', None)
         if not cat:
@@ -245,13 +322,14 @@ class GetVersions(object):
         if versions:
             append_view_to_url = True if \
                 self.shouldObjUrlAppendView(versions[0]) else False
+        # import pdb; pdb.set_trace() # TODO: check if reverse is true
         for version in versions:
             if version.UID() == uid:
                 break
             res.append(self._obj_info(version,
                                       append_view_to_url=append_view_to_url))
-
         res.reverse()  # is this needed?
+        # import pdb; pdb.set_trace()
         return res
 
     def latest_version(self):
@@ -278,11 +356,16 @@ class GetVersions(object):
         state_id = self.wftool().getInfoFor(obj, 'review_state', '(Unknown)')
         state = self.state_title_getter(obj)
 
-        date = obj.getEffectiveDate() or obj.creation_date
-        if not date:
-            field = obj.getField('lastUpload')  # Note: specific to dataservice
-            if field:
-                date = field.getAccessor(obj)()
+        if HAS_ARCHETYPES:
+            date = obj.getEffectiveDate() or obj.creation_date
+
+            if not date:
+                field = obj.getField('lastUpload') # specific eea.dataservice
+                if field:
+                    date = field.getAccessor(obj)()
+        else:
+            date = obj.EffectiveDate() or obj.creation_date
+
         if not isinstance(date, DateTime):
             date = None
 
@@ -306,7 +389,13 @@ class GetVersions(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if obj.portal_type in sprops.typesUseViewActionInListings:
+
+            try:
+                types = getattr(sprops, 'plone.typesUseViewActionInListings')
+            except AttributeError:
+                types = getattr(sprops, 'typesUseViewActionInListings')
+
+            if obj.portal_type in types:
                 return True
         return False
 
@@ -383,7 +472,7 @@ def migrate_version(brains, vobj, count, **kwargs):
                                 canonical.getLanguage()
                         IVersionControl(canonical).setVersionId(version_id)
                         canonical.reindexObject(idxs=['getVersionId'])
-                        for trans_tuple in translations.items():
+                        for trans_tuple in list(translations.items()):
                             translation = trans_tuple[1][0]
                             if translation != canonical:
                                 version_id = orig_id + '-' + trans_tuple[0]
@@ -447,7 +536,7 @@ class MigrateVersions(BrowserView):
             'Assessment', 'Data', 'EEAFigure', 'Specification',
             'Indicator FactSheet']
         if vtool:
-            for obj in vtool.values():
+            for obj in list(vtool.values()):
                 if prefix and obj.title not in prefix:
                     continue
                 prefix = obj.title
@@ -499,9 +588,8 @@ class GetWorkflowStateTitle(BrowserView):
             try:
                 title_state = wftool.getWorkflowsFor(obj)[0]. \
                     states[review_state].title
-            except Exception, err:
+            except Exception as err:
                 logger.info(err)
-
         return title_state
 
 
@@ -524,11 +612,10 @@ class IsVersionEnhanced(object):
         return isVersionEnhanced(self.context)
 
 
+@implementer(ICreateVersionView)
 class CreateVersion(object):
     """ This view, when called, will create a new version of an object
     """
-    implements(ICreateVersionView)
-
     # usable by ajax view to decide if it should load this view instead
     # of just executing it. The use case is to have a @@createVersion
     # view with a template that allows the user to make some choice
@@ -555,7 +642,8 @@ class AjaxVersion(object):
         self.context = context
         self.url = context.absolute_url()
         self.request = request
-        self.annotations = self.context.__annotations__
+        # self.annotations = self.context.__annotations__
+        self.annotations = IAnnotations(self.context)
 
     def get_logged_in_user(self):
         """
@@ -569,6 +657,7 @@ class AjaxVersion(object):
         return portal_membership.getAuthenticatedMember().getId()
 
     def __call__(self):
+        # import pdb; pdb.set_trace()
         version_status = self.check_versioning_status()
         if version_status:
             return version_status
@@ -587,6 +676,7 @@ class AjaxVersion(object):
         # situations were a new version was requested and annotation was set
         # but afterwards there was an error or the server was restarted,
         # as such no removing of versioning status being produced
+        # if in_progress and (time() - in_progress) < 200.0:
         if in_progress and (time() - in_progress) < 900.0:
             logger.info('VersioningInProgress in_progress at %s, now %s '
                         ', time since last run == %f',
@@ -676,11 +766,17 @@ def create_version(context, reindex=True):
     # 5. get the version object - no need for a rename anymore
     ver = parent[new_id]
 
-    # #31440 apply related items from original object to the new version
-    ver.setRelatedItems(context.getRelatedItems())
+    if HAS_ARCHETYPES:
+        ver.setRelatedItems(context.getRelatedItems())
+        ver.setCreationDate(DateTime())
+        current_creators = ver.Creators()
+    else:
+        # #31440 apply related items from original object to the new version
+        ver.relatedItems = context.relatedItems
+        # Set effective date today
+        ver.creation_date = DateTime()
+        current_creators = ver.creators
 
-    # Set effective date today
-    ver.setCreationDate(DateTime())
     ver.setEffectiveDate(None)
     ver.setExpirationDate(None)
 
@@ -688,7 +784,6 @@ def create_version(context, reindex=True):
     auth_user = mtool.getAuthenticatedMember()
     auth_username = auth_user.getUserName()
     auth_username_list = [auth_username]
-    current_creators = ver.Creators()
     auth_username_list.extend(current_creators)
     username_list = []
     for name in auth_username_list:
@@ -702,8 +797,8 @@ def create_version(context, reindex=True):
     # Remove comments
     if hasNewDiscussion:
         conversation = IConversation(ver)
-        while conversation.keys():
-            conversation.__delitem__(conversation.keys()[0])
+        while list(conversation.keys()):
+            conversation.__delitem__(list(conversation.keys())[0])
     else:
         if hasattr(aq_base(ver), 'talkback'):
             tb = ver.talkback
@@ -772,14 +867,20 @@ class AssignVersion(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if self.context.portal_type in sprops.typesUseViewActionInListings:
+
+            try:
+                types = getattr(sprops, 'plone.typesUseViewActionInListings')
+            except AttributeError:
+                types = getattr(sprops, 'typesUseViewActionInListings')
+
+            if self.context.portal_type in types:
                 if nextURL[-5:] != '/view':
                     nextURL += '/view'
         if new_version:
             assign_version(self.context, new_version)
-            message = _(u'Version ID changed.')
+            message = _('Version ID changed.')
         else:
-            message = _(u'Please specify a valid Version ID.')
+            message = _('Please specify a valid Version ID.')
 
         pu.addPortalMessage(message, 'structure')
         return self.request.RESPONSE.redirect(nextURL)
@@ -803,7 +904,7 @@ class RevokeVersion(object):
         revoke_version(self.context)
         self.context.reindexObject(idxs=['getVersionId'])
         pu = getToolByName(self.context, 'plone_utils')
-        message = _(u'Version revoked.')
+        message = _('Version revoked.')
         pu.addPortalMessage(message, 'structure')
 
         # #87691 append /view for ptypes that need it in order to avoid file
@@ -812,13 +913,20 @@ class RevokeVersion(object):
         pprops = getToolByName(self.context, 'portal_properties')
         if pprops:
             sprops = pprops.site_properties
-            if self.context.portal_type in sprops.typesUseViewActionInListings:
+
+            try:
+                types = getattr(sprops, 'plone.typesUseViewActionInListings')
+            except AttributeError:
+                types = getattr(sprops, 'typesUseViewActionInListings')
+
+            if self.context.portal_type in types:
                 if nextURL[-5:] != '/view':
                     nextURL += '/view'
 
         return self.request.RESPONSE.redirect(nextURL)
 
 
+@implementer(IGetContextInterfaces)
 class GetContextInterfaces(object):
     """ Utility view that returns a list of FQ dotted interface names
 
@@ -826,7 +934,6 @@ class GetContextInterfaces(object):
     is_video python:context.restrictedTraverse('@@plone_interfaces_info').\
              item_interfaces.provides('eea.mediacentre.interfaces.IVideo');
     """
-    implements(IGetContextInterfaces)
 
     def __call__(self):
         ifaces = providedBy(self.context)

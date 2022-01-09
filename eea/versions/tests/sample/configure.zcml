@@ -3,12 +3,23 @@
 	xmlns="http://namespaces.zope.org/zope"
 	xmlns:five="http://namespaces.zope.org/five"
 	xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
 	xmlns:genericsetup="http://namespaces.zope.org/genericsetup">
 
 
   <five:registerPackage package="." initialize=".initialize" />
   
   <genericsetup:registerProfile
+      zcml:condition="not-have plone-5"
+      name="default"
+      title="Sample"
+      directory="profiles/plone4"
+      description=""
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+  <genericsetup:registerProfile
+      zcml:condition="have plone-5"
       name="default"
       title="Sample"
       directory="profiles/default"

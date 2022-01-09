@@ -1,7 +1,7 @@
 """Debug views and upgrade utilities
 """
-
-from StringIO import StringIO
+from __future__ import print_function
+from io import StringIO
 from BTrees.IIBTree import IISet, difference
 from Products.Five import BrowserView
 from Products.ZCatalog.Lazy import LazyMap
@@ -36,7 +36,7 @@ class GetMissingValuesForIndex(BrowserView):
         """ call this for not indexed results
         """
         rs, length = self.missing_entries_for_index(catalog, index_name)
-        return LazyMap(catalog._catalog.__getitem__, rs.keys(), length)
+        return LazyMap(catalog._catalog.__getitem__, list(rs.keys()), length)
 
     def get_real_versionid(self, brain):
         """get version id recorded in annotation
@@ -67,9 +67,9 @@ class GetMissingValuesForIndex(BrowserView):
         results = [z for z in results if
                 (z.portal_type == portal_type) and self.get_real_versionid(z)]
 
-        print >> out, "Got %s results" % len(results)
+        print("Got %s results" % len(results), file=out)
         for brain in results:
-            print >> out, brain.portal_type, brain.getURL()
+            print(brain.portal_type, brain.getURL(), file=out)
             if fix:
                 obj = brain.getObject()
                 if not IVersionEnhanced.providedBy(obj):
@@ -77,8 +77,8 @@ class GetMissingValuesForIndex(BrowserView):
                 obj.reindexObject()
 
         if fix:
-            print >> out, "Fixed, try calling again this page "\
-                          "to see if different"
+            print("Fixed, try calling again this page "\
+                          "to see if different", file=out)
 
         out.seek(0)
 

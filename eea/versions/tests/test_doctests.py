@@ -3,6 +3,7 @@
 
 import doctest
 import unittest
+from eea.versions import HAS_ARCHETYPES
 from eea.versions.tests.base import FUNCTIONAL_TESTING
 from plone.testing import layered
 
@@ -15,12 +16,23 @@ def test_suite():
     """ Suite
     """
     suite = unittest.TestSuite()
-    suite.addTests([
-        layered(
-            doctest.DocFileSuite(
-                'docs/versions.txt',
-                optionflags=OPTIONFLAGS,
-                package='eea.versions'),
-            layer=FUNCTIONAL_TESTING),
-    ])
+    if HAS_ARCHETYPES:
+        suite.addTests([
+            layered(
+                doctest.DocFileSuite(
+                    'docs/versions.txt',
+                    optionflags=OPTIONFLAGS,
+                    package='eea.versions'),
+                layer=FUNCTIONAL_TESTING),
+        ])
+    else:
+        suite.addTests([
+            layered(
+                doctest.DocFileSuite(
+                    'docs/versions_dexterity.txt',
+                    optionflags=OPTIONFLAGS,
+                    package='eea.versions'),
+                layer=FUNCTIONAL_TESTING),
+        ])
+
     return suite

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<registry>
+  <records prefix="plone.resources/versions-view"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">createversion.js</value>
+  </records>
+
+  <records prefix="plone.bundles/versions-view-bundle"
+           interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+    <value key="resources">
+      <element>versions-view</element>
+    </value>
+    <value key="depends"></value>
+    <value key="csscompilation">++plone++static/versions-view.min.css</value>
+    <value key="jscompilation">++plone++static/versions-view.min.js</value>
+    <value key="compile">False</value>
+    <value key="enabled">True</value>
+    <value key="expression"></value>
+  </records>
+
+</registry>
