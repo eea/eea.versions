@@ -52,6 +52,7 @@ class TestVersioningTool(unittest.TestCase):
         pvtool[vobjs.getId()] = vobjs
         link_id = self.folder.invokeFactory("Link", 'l1')
         link = self.folder[link_id]
+        # import pdb; pdb.set_trace()
         assert IVersionControl(link).versionId == 'LNK-1'
         vobjs.title = 'LINK'
         link2_id = self.folder.invokeFactory("Link", 'l2')

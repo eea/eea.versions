@@ -49,6 +49,7 @@ class TestVersioning(unittest.TestCase):
         pvtool[vobjs.getId()] = vobjs
         link_id = self.folder.invokeFactory("Link", 'l1')
         link = self.folder[link_id]
+        IVersionControl(link).setVersionId('LNK-1')
         assert IVersionControl(link).versionId == 'LNK-1'
 
     def test_version_prefixed_for_interface_portal_type(self):
